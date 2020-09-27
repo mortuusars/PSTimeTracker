@@ -10,6 +10,7 @@ It will automatically track currently active file, and will **stop** if **Photos
 * You can "**Pin**" ![Pin](PhotoshopTimeCounter/Images/pin_32.png) the window to stay always on top.
 
 
+-
 
 
 Application requires **.NET Core Runtime** to work. 
