@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Images\ptc_size.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\Roboto-Light.ttf" />
+    <None Remove="Fonts\Roboto-Medium.ttf" />
+    <None Remove="Fonts\Roboto-Regular.ttf" />
+    <None Remove="Fonts\Roboto-Thin.ttf" />
+    <None Remove="Images\close_32.png" />
+    <None Remove="Images\close_32_red.png" />
+    <None Remove="Images\minimize__bottom_32.png" />
+    <None Remove="Images\minimize__center_32.png" />
+    <None Remove="Images\pin_32.png" />
+    <None Remove="Images\ptc_size.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentWpfChromes" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\Roboto-Light.ttf" />
+    <Resource Include="Fonts\Roboto-Medium.ttf" />
+    <Resource Include="Fonts\Roboto-Regular.ttf" />
+    <Resource Include="Fonts\Roboto-Thin.ttf" />
+    <Resource Include="Images\close_32.png" />
+    <Resource Include="Images\close_32_red.png" />
+    <Resource Include="Images\minimize__bottom_32.png" />
+    <Resource Include="Images\minimize__center_32.png" />
+    <Resource Include="Images\pin_32.png" />
+    <Resource Include="Images\ptc_size.ico" />
+  </ItemGroup>
+
+</Project>
