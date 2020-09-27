@@ -8,4 +8,4 @@ It will automatically track currently active file, and will **stop** if **Photos
 
 **Double click** removes clicked file from list.
 
-You can "**Pin**" the window to stay always on top.
+You can "**Pin**" ![Pin](PhotoshopTimeCounter/Images/pin_32.png) the window to stay always on top.
