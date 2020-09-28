@@ -97,6 +97,31 @@ namespace PhotoshopTimeCounter
             }
         }
 
+        public void SortList(SortingTypes type) {
+            switch (type) {
+                case SortingTypes.Name:
+                    Files = new ObservableCollection<PsFileInfo>(Files.OrderBy(item => item.FileName));
+                    break;
+                case SortingTypes.NameReversed:
+                    Files = new ObservableCollection<PsFileInfo>(Files.OrderByDescending(item => item.FileName));
+                    break;
+                case SortingTypes.Time:
+                    Files = new ObservableCollection<PsFileInfo>(Files.OrderBy(item => item.SecondsActive));
+                    break;
+                case SortingTypes.TimeReversed:
+                    Files = new ObservableCollection<PsFileInfo>(Files.OrderByDescending(item => item.SecondsActive));
+                    break;
+                case SortingTypes.TimeAdded:
+                    Files = new ObservableCollection<PsFileInfo>(Files.OrderBy(item => item.FirstOpenTime));
+                    break;
+                case SortingTypes.TimeAddedReversed:
+                    Files = new ObservableCollection<PsFileInfo>(Files.OrderByDescending(item => item.FirstOpenTime));
+                    break;
+                default:
+                    break;
+            }
+        }
+
 
         /// <summary>
         /// 

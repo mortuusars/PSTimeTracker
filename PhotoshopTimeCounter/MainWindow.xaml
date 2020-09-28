@@ -16,9 +16,9 @@
 
     <Window.Resources>
 
-        
-        <!-- Scroll bar Style-->  
-        
+
+        <!-- Scroll bar Style-->
+
         <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -87,76 +87,84 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
-        
+
+
 
         <!-- Buttons -->
-            <Style x:Key="HeaderButton" TargetType="Button">
-                <Setter Property="Visibility" Value="Hidden"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Width" Value="18"/>
-                <Setter Property="Height" Value="18"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Opacity" Value="0.25"/>
-                <Setter Property="Template" Value="{DynamicResource ButtonNoStyle}"/>
+        <Style x:Key="HeaderButton" TargetType="Button">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Opacity" Value="0.25"/>
+            <Setter Property="Template" Value="{DynamicResource ButtonNoStyle}"/>
 
-                <Style.Triggers>
+            <Style.Triggers>
 
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Opacity" Value="1"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                    </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
 
-                    <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
-                        <Setter Property="Visibility" Value="Visible"/>
-                    </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
 
-                </Style.Triggers>
+            </Style.Triggers>
 
-            </Style>
+        </Style>
 
-            <Style x:Key="Minimize" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <ImageBrush ImageSource="\Images\minimize__bottom_32.png"/>
-                    </Setter.Value>
-                </Setter>
+        <Style x:Key="Minimize" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="\Images\minimize__bottom_32.png"/>
+                </Setter.Value>
+            </Setter>
 
-            </Style>
+        </Style>
 
-            <Style x:Key="AlwaysOnTop" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <ImageBrush ImageSource="\Images\pin_32.png"/>
-                    </Setter.Value>
-                </Setter>
+        <Style x:Key="AlwaysOnTop" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="\Images\pin_32.png"/>
+                </Setter.Value>
+            </Setter>
 
-                <Style.Triggers>
+            <Style.Triggers>
 
-                    <DataTrigger Binding="{Binding AlwaysOnTop}" Value="True">
-                        <Setter Property="Opacity" Value="1"/>
-                    </DataTrigger>
+                <DataTrigger Binding="{Binding AlwaysOnTop}" Value="True">
+                    <Setter Property="Opacity" Value="1"/>
+                </DataTrigger>
 
-                </Style.Triggers>
+            </Style.Triggers>
 
-            </Style>
+        </Style>
 
-            <Style x:Key="Close" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <ImageBrush ImageSource="\Images\close_32.png"/>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background">
-                            <Setter.Value>
-                                <ImageBrush ImageSource="\Images\close_32_red.png"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
+        <Style x:Key="Sort" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="\Images\sort_32.png"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Close" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="\Images\close_32.png"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <ImageBrush ImageSource="\Images\close_32_red.png"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
     </Window.Resources>
 
@@ -188,6 +196,24 @@
                     Command="{Binding AlwaysOnTopCommand}"
                     Style="{StaticResource AlwaysOnTop}"/>
 
+            <Button x:Name="Sort"
+                    Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Command="{Binding SortListCommand}"
+                    Style="{StaticResource Sort}">
+                <Button.Triggers>
+                    <EventTrigger SourceName="Sort" RoutedEvent="Button.Click">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
+                                             From="1" To="1" Duration="0:0:1"/>
+                                <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
+                                             From="1" To="0" Duration="0:0:0.8" BeginTime="0:0:1"/>                                
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+            </Button>
+
             <Button x:Name="MinimizeButton"
                     Grid.Column="1" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
                     Click="MinimizeButton_Click" 
@@ -196,7 +222,7 @@
             <Button x:Name="CloseButton"
                     Grid.Column="2" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
                     Click="CloseButton_Click" 
-                    Style="{StaticResource Close}" />
+                    Style="{StaticResource Close}" />    
 
 
             <!-- Files -->
@@ -247,6 +273,14 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+
+            <Border IsHitTestVisible="False" Opacity="0" x:Name="SortPopup" Background="#eeeeee" Margin="0 0 0 0" Height="22" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <TextBlock  Margin="6 0"
+                        Text="{Binding CurrentSorting}" d:Text="by DateAdded" FontSize="20" FontFamily="{StaticResource RobotoLight}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+            
+
         </Grid>
     </Border>
 </Window>

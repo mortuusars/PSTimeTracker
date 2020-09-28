@@ -18,6 +18,7 @@
     <None Remove="Images\minimize__center_32.png" />
     <None Remove="Images\pin_32.png" />
     <None Remove="Images\ptc_size.ico" />
+    <None Remove="Images\sort_32.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +36,7 @@
     <Resource Include="Images\minimize__center_32.png" />
     <Resource Include="Images\pin_32.png" />
     <Resource Include="Images\ptc_size.ico" />
+    <Resource Include="Images\sort_32.png" />
   </ItemGroup>
 
 </Project>

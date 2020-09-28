@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 using PhotoshopTimeCounter.Commands;
 
@@ -11,15 +13,21 @@ namespace PhotoshopTimeCounter
 
         public bool AlwaysOnTop{ get => alwaysOnTop; set { alwaysOnTop = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlwaysOnTop))); }}
         public int SummarySeconds { get => summarySeconds; set { summarySeconds = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SummarySeconds))); } }
+        public string CurrentSorting { get => currentSorting; set { currentSorting = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSorting))); } }
+
         public ObservableCollection<PsFileInfo> FilesList { get => _counter.Files; }
+
         public ICommand RemoveItemCommand { get; private set; }
         public ICommand AlwaysOnTopCommand { get; private set; }
+        public ICommand SortListCommand { get; private set; }
 
 
         private int summarySeconds;
         private bool alwaysOnTop;
+        private string currentSorting = "";
 
         private TimeCounter _counter;
+        private SortingTypes previousSorting = 0;
 
         public MainWindowViewModel(TimeCounter counter) {
             _counter = counter;
@@ -27,6 +35,7 @@ namespace PhotoshopTimeCounter
 
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
             AlwaysOnTopCommand = new RelayCommand(p => AlwaysOnTopToggle());
+            SortListCommand = new RelayCommand(p => SortList());
 
             _counter.CalculateSummarySeconds();
         }
@@ -37,7 +46,7 @@ namespace PhotoshopTimeCounter
             try {
                 item = (PsFileInfo)parameter;
             }
-            catch (System.Exception) {
+            catch (Exception) {
                 item = null;
             }
 
@@ -48,6 +57,24 @@ namespace PhotoshopTimeCounter
 
         private void AlwaysOnTopToggle() {
             AlwaysOnTop = !AlwaysOnTop;
+        }
+
+        private void SortList() {
+
+            SortingTypes sortBy;
+
+            if (previousSorting >= Enum.GetValues(typeof(SortingTypes)).Cast<SortingTypes>().Max())
+                sortBy = (SortingTypes)0;
+            else {
+                sortBy = previousSorting + 1;
+            }
+
+            previousSorting = sortBy;
+
+            _counter.SortList(sortBy);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilesList)));
+
+            CurrentSorting = sortBy.ToString();
         }
     }
 }
