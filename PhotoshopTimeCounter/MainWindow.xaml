@@ -8,81 +8,155 @@
         mc:Ignorable="d"
         Title="Photoshop Time Counter"  Name="window"
         Height="300" Width="300" MinWidth="200" 
-        MinHeight="24" MaxWidth="600" MaxHeight="600" SizeToContent="Height"
+        MinHeight="24" MaxWidth="600" MaxHeight="424" SizeToContent="Height"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"        
-        WindowStyle="None" ResizeMode="CanResize" AllowsTransparency="True"
+        WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True"
         Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True" 
         Topmost="{Binding AlwaysOnTop, Mode=TwoWay}">
 
     <Window.Resources>
 
+        
+        <!-- Scroll bar Style-->
+        
+        <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                            <Border x:Name="ScrollBarRectangle" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Tag" Value="Horizontal">
+                                <Setter TargetName="ScrollBarRectangle" Property="Width" Value="Auto" />
+                                <Setter TargetName="ScrollBarRectangle" Property="Height" Value="7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Margin" Value="-10,0,-5,0" />
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+            <Setter Property="Foreground" Value="#FFA1A1A1" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="GridRoot" Width="8" Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="ScrollBarThumb" Background="{TemplateBinding Foreground}" Style="{StaticResource ScrollThumbs}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="ScrollBarThumb" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Orientation" Value="Horizontal">
+                                <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Width" Value="Auto" />
+                                <Setter Property="Height" Value="8" />
+                                <Setter TargetName="ScrollBarThumb" Property="Tag" Value="Horizontal" />
+                                <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                                <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        
+
         <!-- Buttons -->
-        <Style x:Key="HeaderButton" TargetType="Button">
-            <Setter Property="Visibility" Value="Hidden"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Width" Value="18"/>
-            <Setter Property="Height" Value="18"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Opacity" Value="0.25"/>
-            <Setter Property="Template" Value="{DynamicResource ButtonNoStyle}"/>
+            <Style x:Key="HeaderButton" TargetType="Button">
+                <Setter Property="Visibility" Value="Hidden"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Width" Value="18"/>
+                <Setter Property="Height" Value="18"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Opacity" Value="0.25"/>
+                <Setter Property="Template" Value="{DynamicResource ButtonNoStyle}"/>
 
-            <Style.Triggers>
-                
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Opacity" Value="1"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>
-                </Trigger>
+                <Style.Triggers>
 
-                <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
-                    <Setter Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-                
-            </Style.Triggers>
-            
-        </Style>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                    </Trigger>
 
-        <Style x:Key="Minimize" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <ImageBrush ImageSource="\Images\minimize__bottom_32.png"/>
-                </Setter.Value>
-            </Setter>
-            
-        </Style>
+                    <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
+                        <Setter Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
 
-        <Style x:Key="AlwaysOnTop" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <ImageBrush ImageSource="\Images\pin_32.png"/>
-                </Setter.Value>
-            </Setter>
+                </Style.Triggers>
 
-            <Style.Triggers>
-                
-                <DataTrigger Binding="{Binding AlwaysOnTop}" Value="True">
-                    <Setter Property="Opacity" Value="1"/>
-                </DataTrigger>
-                
-            </Style.Triggers>
+            </Style>
 
-        </Style>
+            <Style x:Key="Minimize" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <ImageBrush ImageSource="\Images\minimize__bottom_32.png"/>
+                    </Setter.Value>
+                </Setter>
 
-        <Style x:Key="Close" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <ImageBrush ImageSource="\Images\close_32.png"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <ImageBrush ImageSource="\Images\close_32_red.png"/>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+            </Style>
+
+            <Style x:Key="AlwaysOnTop" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <ImageBrush ImageSource="\Images\pin_32.png"/>
+                    </Setter.Value>
+                </Setter>
+
+                <Style.Triggers>
+
+                    <DataTrigger Binding="{Binding AlwaysOnTop}" Value="True">
+                        <Setter Property="Opacity" Value="1"/>
+                    </DataTrigger>
+
+                </Style.Triggers>
+
+            </Style>
+
+            <Style x:Key="Close" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <ImageBrush ImageSource="\Images\close_32.png"/>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <ImageBrush ImageSource="\Images\close_32_red.png"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
 
     </Window.Resources>
 
@@ -102,13 +176,13 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->    
-            
+            <!-- Header -->
+
             <TextBlock Margin="0 -2" Grid.Column="1" d:Text="00:00:13" Text="{Binding SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" 
                    FontSize="22" FontFamily="{StaticResource RobotoLight}" Foreground="#252525"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-            
+
             <Button x:Name="Pin"
                     Grid.Column="0" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
                     Command="{Binding AlwaysOnTopCommand}"
@@ -124,54 +198,55 @@
                     Click="CloseButton_Click" 
                     Style="{StaticResource Close}" />
 
-            
+
             <!-- Files -->
-            
-            <ItemsControl Grid.Row="1" Grid.ColumnSpan="3" 
-                          ItemsSource="{Binding FilesList}" Background="Transparent" BorderThickness="0">
-                
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        
-                        <Border Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
-                            <Border.InputBindings>
-                                <MouseBinding  Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+            <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
+
+                <ItemsControl ItemsSource="{Binding FilesList}" Background="Transparent" BorderThickness="0">
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+
+                            <Border Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
+                                <Border.InputBindings>
+                                    <MouseBinding  Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type Window}},
                                                          Path=DataContext.RemoveItemCommand}" CommandParameter="{Binding}" Gesture="LeftDoubleClick"/>
-                            </Border.InputBindings>
+                                </Border.InputBindings>
 
-                            <Border.Style>                                
-                                <Style TargetType="{x:Type Border}">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
 
-                                    <Setter Property="Background" Value="#30ffffff"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#bbffffff"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
+                                        <Setter Property="Background" Value="#30ffffff"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#bbffffff"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <!-- FileName -->
-                                <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="0" Margin="8 0" 
+                                    <!-- FileName -->
+                                    <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="0" Margin="8 0" 
                                    Text="{Binding FileName}" FontSize="16" VerticalAlignment="Center"/>
-                                
-                                <!-- Time -->
-                                <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="2" Margin="8 0" 
+
+                                    <!-- Time -->
+                                    <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="2" Margin="8 0" 
                                    Text="{Binding SecondsActive, Converter={StaticResource SecondsToTimeConverter}}" FontSize="16" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </Grid>
     </Border>
 </Window>
