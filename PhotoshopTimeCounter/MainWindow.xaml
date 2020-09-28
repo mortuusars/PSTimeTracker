@@ -17,8 +17,7 @@
     <Window.Resources>
 
         
-        <!-- Scroll bar Style-->
-        
+        <!-- Scroll bar Style-->        
         <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
             <Setter Property="Template">
                 <Setter.Value>
