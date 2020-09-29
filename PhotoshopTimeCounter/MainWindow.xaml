@@ -197,8 +197,7 @@
                     Style="{StaticResource AlwaysOnTop}"/>
 
             <Button x:Name="Sort"
-                    Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
-                    Command="{Binding SortListCommand}"
+                    Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Sort_Click"
                     Style="{StaticResource Sort}">
                 <Button.Triggers>
                     <EventTrigger SourceName="Sort" RoutedEvent="Button.Click">
@@ -207,7 +206,7 @@
                                 <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
                                              From="1" To="1" Duration="0:0:1"/>
                                 <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
-                                             From="1" To="0" Duration="0:0:0.8" BeginTime="0:0:1"/>                                
+                                             From="1" To="0" Duration="0:0:0.8" BeginTime="0:0:1"/>
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -222,64 +221,73 @@
             <Button x:Name="CloseButton"
                     Grid.Column="2" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
                     Click="CloseButton_Click" 
-                    Style="{StaticResource Close}" />    
+                    Style="{StaticResource Close}" />
 
 
             <!-- Files -->
             <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto">
 
-                <ItemsControl ItemsSource="{Binding FilesList}" Background="Transparent" BorderThickness="0">
-
+                <ItemsControl x:Name="MainItemsControl" AlternationCount="2"
+                              ItemsSource="{Binding FilesList}" Background="Transparent" BorderThickness="0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
+                            <Grid x:Name="ItemGrid" Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
 
-                            <Border Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
-                                <Border.InputBindings>
-                                    <MouseBinding  Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                <Grid.InputBindings>
+                                    <MouseBinding Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type Window}},
                                                          Path=DataContext.RemoveItemCommand}" CommandParameter="{Binding}" Gesture="LeftDoubleClick"/>
-                                </Border.InputBindings>
+                                </Grid.InputBindings>
 
-                                <Border.Style>
-                                    <Style TargetType="{x:Type Border}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
 
-                                        <Setter Property="Background" Value="#30ffffff"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#bbffffff"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
 
-                                    <!-- FileName -->
-                                    <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="0" Margin="8 0" 
+                                <!-- FileName -->
+                                <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="0" Margin="8 0" 
                                    Text="{Binding FileName}" FontSize="16" VerticalAlignment="Center"/>
 
-                                    <!-- Time -->
-                                    <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="2" Margin="8 0" 
+                                <!-- Time -->
+                                <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="2" Margin="8 0" 
                                    Text="{Binding SecondsActive, Converter={StaticResource SecondsToTimeConverter}}" FontSize="16" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                
+                            </Grid>
 
-                                </Grid>
-                            </Border>
+                            <DataTemplate.Triggers>
+                                
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                    <Setter Property="Background" TargetName="ItemGrid" Value="#30ffffff"/>
+                                </Trigger>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="Background" TargetName="ItemGrid" Value="#30cccccc"/>
+                                </Trigger>
+
+                                <DataTrigger Binding="{Binding IsCurrentlyActive}" Value="True">
+                                    <Setter Property="Background" TargetName="ItemGrid" Value="#30222222"/>
+                                </DataTrigger>
+
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="ItemGrid" Value="#aaffffff"/>
+                                </Trigger>
+
+                            </DataTemplate.Triggers>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
 
-            <Border IsHitTestVisible="False" Opacity="0" x:Name="SortPopup" Background="#eeeeee" Margin="0 0 0 0" Height="22" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top">
-                <TextBlock  Margin="6 0"
+            <Border x:Name="SortPopup" IsHitTestVisible="False" Opacity="0" Background="#eeeeee"
+                    Margin="0" Height="22" Grid.Row="0" Grid.Column="1" 
+                    HorizontalAlignment="Center" VerticalAlignment="Top">
+                <TextBlock  Margin="6 0" x:Name="SortingPopup"
                         Text="{Binding CurrentSorting}" d:Text="by DateAdded" FontSize="20" FontFamily="{StaticResource RobotoLight}"
                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
-            
+
 
         </Grid>
     </Border>

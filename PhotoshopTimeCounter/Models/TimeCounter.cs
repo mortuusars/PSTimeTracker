@@ -15,7 +15,8 @@ namespace PhotoshopTimeCounter
     public class TimeCounter
     {
         private const string JSON_FILENAME = "files.json";
-        private string JSON_FILEPATH = App.APP_FOLDER_PATH + JSON_FILENAME;
+        
+        private string jsonFilepath = App.APP_FOLDER_PATH + JSON_FILENAME;
 
         #region Last Input Time
 
@@ -142,9 +143,9 @@ namespace PhotoshopTimeCounter
                 return;
             }
 
-            if (process.ProcessName != "Photoshop" || process == null)
+            if (process == null || process.ProcessName != "Photoshop") {
                 return;
-
+            }
 
             // Get filename from PS window title
             string fileName = Regex.Match(process.MainWindowTitle, @".*\s@").Value;
@@ -153,6 +154,7 @@ namespace PhotoshopTimeCounter
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
 
+            CalculateSummarySeconds();
 
             // Find current filename in list, if it was opened before
             // Add filename to list if it's new
@@ -167,7 +169,7 @@ namespace PhotoshopTimeCounter
 
             // Add seconds
             currentlyOpenedFile.SecondsActive++;
-            CalculateSummarySeconds();
+            currentlyOpenedFile.IsCurrentlyActive = true;
         }
 
         public void CalculateSummarySeconds() {
@@ -175,6 +177,7 @@ namespace PhotoshopTimeCounter
 
             foreach (var fileEntry in Files) {
                 SummarySeconds += fileEntry.SecondsActive;
+                fileEntry.IsCurrentlyActive = false;
             }
 
             SummaryChanged?.Invoke(this, SummarySeconds);
@@ -192,7 +195,7 @@ namespace PhotoshopTimeCounter
             string json = JsonSerializer.Serialize(listOfFiles, new JsonSerializerOptions() { WriteIndented = true });
 
             try {
-                File.WriteAllText(JSON_FILEPATH, json);
+                File.WriteAllText(jsonFilepath, json);
             }
             catch (Exception ex) {
                 MessageBox.Show($"Error writing to file: {ex.Message}", App.APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
@@ -211,7 +214,7 @@ namespace PhotoshopTimeCounter
             Exception exception = null;
 
             try {
-                string jsonString = File.ReadAllText(JSON_FILEPATH);
+                string jsonString = File.ReadAllText(jsonFilepath);
                 restoredList = JsonSerializer.Deserialize<ICollection<PsFileInfo>>(jsonString);
             }
             catch (Exception ex) {

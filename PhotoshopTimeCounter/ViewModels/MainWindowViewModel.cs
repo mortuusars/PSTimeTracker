@@ -13,21 +13,24 @@ namespace PhotoshopTimeCounter
 
         public bool AlwaysOnTop{ get => alwaysOnTop; set { alwaysOnTop = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlwaysOnTop))); }}
         public int SummarySeconds { get => summarySeconds; set { summarySeconds = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SummarySeconds))); } }
-        public string CurrentSorting { get => currentSorting; set { currentSorting = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSorting))); } }
+        //public string CurrentSorting { get => currentSorting; set { currentSorting = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSorting))); } }
+
+        //public bool SortingPopupIsVisible { get => sortingPopupIsVisible; set { sortingPopupIsVisible = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SortingPopupIsVisible))); } }
 
         public ObservableCollection<PsFileInfo> FilesList { get => _counter.Files; }
 
         public ICommand RemoveItemCommand { get; private set; }
         public ICommand AlwaysOnTopCommand { get; private set; }
-        public ICommand SortListCommand { get; private set; }
-
+        //public ICommand SortListCommand { get; private set; }
 
         private int summarySeconds;
         private bool alwaysOnTop;
-        private string currentSorting = "";
+        //private bool sortingPopupIsVisible;
+        //private string currentSorting = "";
 
         private TimeCounter _counter;
-        private SortingTypes previousSorting = 0;
+        //private SortingTypes previousSorting = 0;
+
 
         public MainWindowViewModel(TimeCounter counter) {
             _counter = counter;
@@ -35,9 +38,10 @@ namespace PhotoshopTimeCounter
 
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
             AlwaysOnTopCommand = new RelayCommand(p => AlwaysOnTopToggle());
-            SortListCommand = new RelayCommand(p => SortList());
+            //SortListCommand = new RelayCommand(p => SortList());
 
             _counter.CalculateSummarySeconds();
+            //`_counter.Files.CollectionChanged += (s, e) => SortingPopupIsVisible = _counter.Files.Count == 0 ? false : true;
         }
 
         private void RemoveItem(object parameter) {
@@ -59,6 +63,7 @@ namespace PhotoshopTimeCounter
             AlwaysOnTop = !AlwaysOnTop;
         }
 
+        /*
         private void SortList() {
 
             SortingTypes sortBy;
@@ -76,5 +81,6 @@ namespace PhotoshopTimeCounter
 
             CurrentSorting = sortBy.ToString();
         }
+        */
     }
 }

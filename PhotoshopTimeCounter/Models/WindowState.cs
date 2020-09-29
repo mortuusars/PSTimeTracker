@@ -5,5 +5,6 @@
         public double Left { get; set; }
         public double Top { get; set; }
         public bool AlwaysOnTop { get; set; }
+        public SortingTypes SortingOrder { get; set; }
     }
 }

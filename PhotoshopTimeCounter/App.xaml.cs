@@ -32,7 +32,7 @@ namespace PhotoshopTimeCounter
             MainWindow = new MainWindow();
 
             _mainWindowViewModel = new MainWindowViewModel(_counter);
-            _mainWindowViewModel.AlwaysOnTop = MainWindow.Topmost;  // Crude workaround to setting saved AlwaysOnTop on load.
+            _mainWindowViewModel.AlwaysOnTop = MainWindow.Topmost;  // Workaround to setting saved AlwaysOnTop on load.
 
             MainWindow.DataContext = _mainWindowViewModel;
             MainWindow.Show();

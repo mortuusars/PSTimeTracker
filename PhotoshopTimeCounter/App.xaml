@@ -12,6 +12,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <local:SecondsToTimeConverter x:Key="SecondsToTimeConverter"/>
+            <local:SecondsToTimeConverter x:Key="BoolToVisibilityConverter"/>
 
 
 
