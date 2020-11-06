@@ -17,6 +17,7 @@
     <None Remove="Fonts\Roboto-Thin.ttf" />
     <None Remove="Images\close_32.png" />
     <None Remove="Images\close_32_red.png" />
+    <None Remove="Images\corner-handle_24.png" />
     <None Remove="Images\minimize__bottom_32.png" />
     <None Remove="Images\minimize__center_32.png" />
     <None Remove="Images\pin_32.png" />
@@ -35,6 +36,7 @@
     <Resource Include="Fonts\Roboto-Thin.ttf" />
     <Resource Include="Images\close_32.png" />
     <Resource Include="Images\close_32_red.png" />
+    <Resource Include="Images\corner-handle_24.png" />
     <Resource Include="Images\minimize__bottom_32.png" />
     <Resource Include="Images\minimize__center_32.png" />
     <Resource Include="Images\pin_32.png" />

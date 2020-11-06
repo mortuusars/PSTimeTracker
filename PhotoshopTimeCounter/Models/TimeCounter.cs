@@ -124,9 +124,6 @@ namespace PhotoshopTimeCounter
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
         private void CollectInfo() {
 
             Process process;

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace PhotoshopTimeCounter
 {
@@ -18,19 +22,35 @@ namespace PhotoshopTimeCounter
 
         private SortingTypes currentSorting;
 
-        public MainWindow() {
+        public MainWindow()
+        {
             InitializeComponent();
 
-            WindowState windowState = LoadMainWindowState();
-            this.Left = windowState.Left;
-            this.Top = windowState.Top;
-            this.Topmost = windowState.AlwaysOnTop;
-            this.currentSorting = windowState.SortingOrder;
+            SetWindowFromState();
 
             MainItemsControl.Items.IsLiveSorting = true;
 
             SortList(currentSorting);
         }
+
+        #region Resising Window
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImportAttribute("user32.dll")]
+        public static extern bool ReleaseCapture();
+
+        private enum ResizeDirection { Left = 61441, Right = 61442, Top = 61443, Bottom = 61446, BottomRight = 61448, }
+
+        private void ResizeButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("entered event");
+            var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
+            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.BottomRight, IntPtr.Zero);
+        }
+
+        #endregion
 
         private void SortList(SortingTypes sortBy) {
             MainItemsControl.Items.SortDescriptions.Clear();
@@ -74,10 +94,11 @@ namespace PhotoshopTimeCounter
             this.Close();
         }
 
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             this.DragMove();
         }
 
+        
 
         private WindowState LoadMainWindowState() {
             try {
@@ -89,9 +110,26 @@ namespace PhotoshopTimeCounter
             }
         }
 
+        private void SetWindowFromState()
+        {
+            WindowState windowState = LoadMainWindowState();
+            this.Left = windowState.Left;
+            this.Top = windowState.Top;
+            this.Width = windowState.Width;
+            this.Height = windowState.Height;
+            this.Topmost = windowState.AlwaysOnTop;
+            this.currentSorting = windowState.SortingOrder;
+        }
+
         private void SaveMainWindowState() {
             try {
-                string jsonString = JsonSerializer.Serialize(new WindowState() { Left = this.Left, Top = this.Top, AlwaysOnTop = this.Topmost, SortingOrder = this.currentSorting }, new JsonSerializerOptions() { WriteIndented = true });
+                string jsonString = JsonSerializer.Serialize(new WindowState() { 
+                    Left = this.Left,
+                    Top = this.Top,
+                    Width = this.ActualWidth,
+                    Height = this.ActualHeight,
+                    AlwaysOnTop = this.Topmost,
+                    SortingOrder = this.currentSorting }, new JsonSerializerOptions() { WriteIndented = true });
                 File.WriteAllText(MAIN_WINDOW_STATE_FILEPATH, jsonString);
             }
             catch (Exception) {
@@ -113,5 +151,7 @@ namespace PhotoshopTimeCounter
 
             SortList(sortBy);
         }
+
+        
     }
 }
