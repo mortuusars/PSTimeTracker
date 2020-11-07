@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace PhotoshopTimeCounter
 {
@@ -10,6 +11,7 @@ namespace PhotoshopTimeCounter
     public partial class App : Application
     {
         public const string APP_NAME = "PhotoshopTimeCounter";
+        private const int TOOLTIP_DELAY = 500;
 
         /// <summary>
         /// Path to Temp\PhotoshopTimeCounter\ folder.  Ends with backslash.
@@ -23,20 +25,18 @@ namespace PhotoshopTimeCounter
 
         private void Application_Startup(object sender, StartupEventArgs e) {
 
+            // Increase tooltip delay
+            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
+
             CreateTempFolder();
 
             _counter = new TimeCounter();
             _counter.Start();
 
-
-            MainWindow = new MainWindow();
-
             _mainWindowViewModel = new MainWindowViewModel(_counter);
-            _mainWindowViewModel.AlwaysOnTop = MainWindow.Topmost;  // Workaround to setting saved AlwaysOnTop on load.
 
-            MainWindow.DataContext = _mainWindowViewModel;
+            MainWindow = new MainWindow() { DataContext = _mainWindowViewModel};
             MainWindow.Show();
-
         }
 
         private void CreateTempFolder() {

@@ -8,9 +8,9 @@
         mc:Ignorable="d"
         Title="Photoshop Time Counter"  
         Name="window"
-        Height="300" Width="300" MinWidth="200" MinHeight="24"     
+        Height="300" Width="300" MinWidth="240" MinHeight="82"  
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="False"
-        Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True" 
+        Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True"
         Topmost="{Binding AlwaysOnTop, Mode=TwoWay}">
 
     <Window.Resources>
@@ -116,7 +116,7 @@
 
         <Style x:Key="DefaultButtonNoStyle" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Visibility" Value="Visible"/>
-        </Style> 
+        </Style>
 
         <Style x:Key="Minimize" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
@@ -136,7 +136,7 @@
 
             <Style.Triggers>
 
-                <DataTrigger Binding="{Binding AlwaysOnTop}" Value="True">
+                <DataTrigger Binding="{ Binding ElementName=window, Path=AlwaysOnTop }" Value="True">
                     <Setter Property="Opacity" Value="1"/>
                 </DataTrigger>
 
@@ -148,6 +148,14 @@
             <Setter Property="Background">
                 <Setter.Value>
                     <ImageBrush ImageSource="\Images\sort_32.png"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="Clear" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="\Images\delete_24.png"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -168,7 +176,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="Resize" TargetType="Button" BasedOn="{StaticResource DefaultButtonNoStyle}">
             <Setter Property="Background">
                 <Setter.Value>
@@ -184,77 +192,94 @@
         <f:AeroGlassChrome/>
     </f:AeroGlassChrome.AeroGlassChrome>
 
-    <Border BorderBrush="#353535" BorderThickness="1.4">
+    <Border BorderBrush="{StaticResource MainBorderBrush}" BorderThickness="1.4">
+
         <Grid Margin="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="26"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="18"/>
             </Grid.RowDefinitions>
 
             <!-- Header -->
 
-            <Border Background="#10bababa" Grid.ColumnSpan="3" MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+            <Grid Name="HeaderContainer" 
+                  Background="Transparent"
+                  MouseLeftButtonDown="Header_MouseLeftButtonDown">
 
-            <TextBlock Margin="0 -2" Grid.Column="1" d:Text="00:00:13" Text="{Binding SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" 
-                   FontSize="22" FontFamily="{StaticResource RobotoLight}" Foreground="#252525"
-                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Name="SummaryTime" IsHitTestVisible="False"                        
+                       Text="{Binding SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" d:Text="00:00:13"
+                       FontSize="22" FontFamily="{StaticResource RobotoLight}" 
+                       Foreground="{StaticResource MainForegroundBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <StackPanel Name="LeftHeaderButtonsContainer" Orientation="Horizontal" HorizontalAlignment="Left">
+
+                    <Button x:Name="AlwaysOnTopButton" d:Visibility="Visible"
+                            Style="{StaticResource AlwaysOnTop}"
+                            ToolTip="Keep window always on top"
+                            Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Click="AlwaysOnTop_Click"/>
 
 
-            <Button x:Name="Pin"
-                    Grid.Column="0" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
-                    Command="{Binding AlwaysOnTopCommand}"
-                    Style="{StaticResource AlwaysOnTop}"/>
-
-            <Button x:Name="Sort"
-                    Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Sort_Click"
-                    Style="{StaticResource Sort}">
-                <Button.Triggers>
-                    <EventTrigger SourceName="Sort" RoutedEvent="Button.Click">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
+                    <Button x:Name="Sort" d:Visibility="Visible"
+                            ToolTip="Sort list"
+                            Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Sort_Click"
+                            Style="{StaticResource Sort}">
+                        <Button.Triggers>
+                            <EventTrigger SourceName="Sort" RoutedEvent="Button.Click">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
                                              From="1" To="1" Duration="0:0:1"/>
-                                <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
+                                        <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
                                              From="1" To="0" Duration="0:0:0.8" BeginTime="0:0:1"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Button.Triggers>
-            </Button>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    
+                    <Button x:Name="Clear" d:Visibility="Visible"
+                            ToolTip="Clear all items"
+                            Style="{StaticResource Clear}"
+                            Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Command="{Binding ClearCommand}" />
 
-            <Button x:Name="MinimizeButton"
-                    Grid.Column="1" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Click="MinimizeButton_Click" 
-                    Style="{StaticResource Minimize}"/>
+                </StackPanel>
 
-            <Button x:Name="CloseButton"
-                    Grid.Column="2" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Click="CloseButton_Click" 
-                    Style="{StaticResource Close}" />
+                <StackPanel Name="RightHeaderButtonsContainer" Orientation="Horizontal" HorizontalAlignment="Right">
 
-            <Border x:Name="SortPopup" IsHitTestVisible="False" Opacity="0" Background="#eeeeee"
-                    Margin="0" Height="22" Grid.Row="0" Grid.Column="1" 
-                    HorizontalAlignment="Center" VerticalAlignment="Top">
-                <TextBlock  Margin="6 0" x:Name="SortingPopup"
-                        Text="{Binding CurrentSorting}" d:Text="by DateAdded" FontSize="20" FontFamily="{StaticResource RobotoLight}"
-                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Border>
+                    <Button x:Name="MinimizeButton" d:Visibility="Visible"
+                            ToolTip="Minimize"
+                            Grid.Column="1" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
+                            Click="MinimizeButton_Click" 
+                            Style="{StaticResource Minimize}"/>
+
+                    <Button x:Name="CloseButton" d:Visibility="Visible"
+                            ToolTip="Close"
+                            Grid.Column="2" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
+                            Click="CloseButton_Click" 
+                            Style="{StaticResource Close}" />
+
+                </StackPanel>
+
+            </Grid>
+
+
+
+
+            
 
             <!-- Files -->
-            <ScrollViewer Grid.Row="1" Grid.ColumnSpan="3" VerticalScrollBarVisibility="Auto" Margin="1">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="1">
 
                 <ItemsControl x:Name="MainItemsControl" AlternationCount="2"
                               ItemsSource="{Binding FilesList}" Background="Transparent" BorderThickness="0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid x:Name="ItemGrid" Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
-
+                                
                                 <Grid.InputBindings>
                                     <MouseBinding Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                                          AncestorType={x:Type Window}},
@@ -268,6 +293,15 @@
                                 </Grid.ColumnDefinitions>
 
 
+                                <Grid.ToolTip>
+                                    <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="First opened: "/>
+                                            <TextBlock Text="{Binding FirstOpenTime, Converter={StaticResource DateTimeToStringConverter}}"/>
+                                        </StackPanel>                                        
+                                    </StackPanel>
+                                </Grid.ToolTip>
+
                                 <!-- FileName -->
                                 <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="0" Margin="8 0" 
                                    Text="{Binding FileName}" FontSize="16" VerticalAlignment="Center"/>
@@ -276,11 +310,11 @@
                                 <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="2" Margin="8 0" 
                                    Text="{Binding SecondsActive, Converter={StaticResource SecondsToTimeConverter}}" FontSize="16" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                                
+
                             </Grid>
 
                             <DataTemplate.Triggers>
-                                
+
                                 <Trigger Property="ItemsControl.AlternationIndex" Value="0">
                                     <Setter Property="Background" TargetName="ItemGrid" Value="#30ffffff"/>
                                 </Trigger>
@@ -301,11 +335,24 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-
             
+            <Border Name="SortPopup" Grid.Row="1" IsHitTestVisible="False" 
+                    Opacity="0" Background="#eeeeee"
+                    Margin="4" Height="24" 
+                    HorizontalAlignment="Center" VerticalAlignment="Top">
+                <TextBlock  Margin="2 0" x:Name="SortingPopup"
+                        Text="{Binding CurrentSorting}" d:Text="by DateAdded" FontSize="22" 
+                        FontFamily="{StaticResource RobotoLight}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Direction="-90" Opacity="0.6"/>
+                </Border.Effect>
+            </Border>
+
+
             <!-- Status Bar -->
 
-            <Grid Grid.Row="2" Grid.ColumnSpan="3">
+            <Grid Grid.Row="2">
 
                 <TextBlock Margin="6 2" Text="{Binding ItemsCount}" d:Text="27 files" FontSize="12" FontFamily="{StaticResource RobotoLight}" VerticalAlignment="Center"/>
 

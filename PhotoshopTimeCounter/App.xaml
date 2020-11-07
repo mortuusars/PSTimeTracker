@@ -9,10 +9,12 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Fonts/Fonts.xaml"/>
+                <ResourceDictionary Source="Colors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <local:SecondsToTimeConverter x:Key="SecondsToTimeConverter"/>
-            <local:SecondsToTimeConverter x:Key="BoolToVisibilityConverter"/>
+            <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <local:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
 
 
 

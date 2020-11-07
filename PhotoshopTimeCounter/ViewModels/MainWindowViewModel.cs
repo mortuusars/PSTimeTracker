@@ -18,7 +18,8 @@ namespace PhotoshopTimeCounter
         public ObservableCollection<PsFileInfo> FilesList { get => _counter.Files; }
 
         public ICommand RemoveItemCommand { get; private set; }
-        public ICommand AlwaysOnTopCommand { get; private set; }
+
+        public ICommand ClearCommand { get; private set; }
 
         private string itemsCount;
         private int summarySeconds;
@@ -32,7 +33,7 @@ namespace PhotoshopTimeCounter
             _counter.SummaryChanged += (_, seconds) => SummarySeconds = seconds;
 
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
-            AlwaysOnTopCommand = new RelayCommand(_ => AlwaysOnTopToggle());
+            ClearCommand = new RelayCommand(_ => FilesList.Clear());
 
             FilesList.CollectionChanged += (s, e) => SetFilesCountString();
 
@@ -65,10 +66,6 @@ namespace PhotoshopTimeCounter
             FilesList.Remove(item);
 
             _counter.CalculateSummarySeconds();
-        }
-
-        private void AlwaysOnTopToggle() {
-            AlwaysOnTop = !AlwaysOnTop;
         }
     }
 }
