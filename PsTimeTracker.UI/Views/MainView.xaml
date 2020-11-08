@@ -147,7 +147,7 @@
         <Style x:Key="Sort" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush ImageSource="\Images\sort_32.png"/>
+                    <ImageBrush ImageSource="\Images\sort_24.png"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -223,11 +223,21 @@
 
 
                     <Button x:Name="Sort" d:Visibility="Visible"
-                            ToolTip="Sort list"
-                            Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Sort_Click"
+                            ToolTip="{Binding Path=CurrentSortingString, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                            Grid.Column="1" Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top" Click="Sort_Click" MouseRightButtonUp="Sort_RightClick"
                             Style="{StaticResource Sort}">
                         <Button.Triggers>
                             <EventTrigger SourceName="Sort" RoutedEvent="Button.Click">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
+                                             From="1" To="1" Duration="0:0:1"/>
+                                        <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"
+                                             From="1" To="0" Duration="0:0:0.8" BeginTime="0:0:1"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger SourceName="Sort" RoutedEvent="Button.MouseRightButtonUp">
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimation Storyboard.TargetName="SortPopup" Storyboard.TargetProperty="Opacity"

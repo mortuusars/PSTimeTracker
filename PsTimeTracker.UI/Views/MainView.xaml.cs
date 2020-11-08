@@ -33,6 +33,8 @@ namespace PSTimeTracker.UI
             }
         }
 
+        public string CurrentSortingString { get => $"Current sorting: {currentSorting}"; }
+
         private bool alwaysOnTop;
         private SortingTypes currentSorting;
 
@@ -108,6 +110,9 @@ namespace PSTimeTracker.UI
             }
 
             SortingPopup.Text = sortBy.ToString();
+            currentSorting = sortBy;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSortingString)));
         }
 
         private void AlwaysOnTop_Click(object sender, RoutedEventArgs e)
@@ -117,7 +122,7 @@ namespace PSTimeTracker.UI
 
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = System.Windows.WindowState.Minimized;
+            this.WindowState = WindowState.Minimized;
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -143,6 +148,20 @@ namespace PSTimeTracker.UI
             }
 
             currentSorting = sortBy;
+
+            SortList(sortBy);
+        }
+
+        private void Sort_RightClick(object sender, MouseButtonEventArgs e)
+        {
+            SortingTypes sortBy;
+
+            if (currentSorting <= Enum.GetValues(typeof(SortingTypes)).Cast<SortingTypes>().Min())
+                sortBy = Enum.GetValues(typeof(SortingTypes)).Cast<SortingTypes>().Max();
+            else
+            {
+                sortBy = currentSorting - 1;
+            }
 
             SortList(sortBy);
         }
@@ -199,5 +218,7 @@ namespace PSTimeTracker.UI
         }
 
         #endregion
+
+        
     }
 }
