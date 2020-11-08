@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Windows;
 using PSTimeTracker.Core;
 
 namespace PSTimeTracker.UI
@@ -31,33 +28,43 @@ namespace PSTimeTracker.UI
                 numberOfRecordsToKeep = value;
             }
         }
-        int numberOfRecordsToKeep = 6;
-
+        private int numberOfRecordsToKeep = 6;
 
         /// <summary>
         /// Delay in milliseconds between savings to file.
         /// </summary>
         public int WriteInterval { get; set; } = 3000;
 
-        ObservableCollection<PsFile> _collectionToSave;
-        FileInfo[] recordFiles;
+        private ObservableCollection<PsFile> _collectionToSave;
+        private FileInfo[] recordFiles;
 
-        string lastRestoredFileName = "";
+        private bool shouldSave;
+        private string lastRestoredFileName = "";
 
+        /// <summary>
+        /// Manages reading/writing of records to files.
+        /// </summary>
+        /// <param name="collectionToSave">Collection that will be saved to a file.</param>
         public RecordManager(ObservableCollection<PsFile> collectionToSave)
         {
             _collectionToSave = collectionToSave;
 
+            Directory.CreateDirectory(App.APP_RECORDS_FOLDER_PATH);
+            
             LoadFiles();
             RemoveExcessFiles();
         }
+
+        #region Public Methods
 
         /// <summary>
         /// Repeatedly saving to file with a <see cref="WriteInterval"/>.
         /// </summary>
         public async void StartSaving()
         {
-            while (true)
+            shouldSave = true;
+
+            while (shouldSave)
             {
                 Save();
                 await Task.Delay(WriteInterval);
@@ -65,28 +72,11 @@ namespace PSTimeTracker.UI
         }
 
         /// <summary>
-        /// Adds info about record files to recordFiles list.
+        /// Stops repeated saving of a record collection.
         /// </summary>
-        private void LoadFiles()
+        public void StopSaving()
         {
-            try
-            {
-                recordFiles = new DirectoryInfo(App.APP_RECORDS_PATH).GetFiles();
-            }
-            catch (Exception ex)
-            {
-                App.DisplayErrorMessage(ex.Message);
-            }
-        }
-
-        private void RemoveExcessFiles()
-        {
-            while (recordFiles.Length > NumberOfRecordsToKeep)
-            {
-                var file = recordFiles.OrderBy(f => f.LastWriteTime).FirstOrDefault();
-                LoadFiles();
-                file.Delete();
-            }
+            shouldSave = false;
         }
 
         /// <summary>
@@ -105,7 +95,7 @@ namespace PSTimeTracker.UI
                 if (SaveToLastLoadedFile && string.IsNullOrWhiteSpace(lastRestoredFileName) == false)
                     File.WriteAllText(lastRestoredFileName, jsonContents);
                 else
-                    File.WriteAllText(App.APP_RECORDS_PATH + "/" + App.SESSION_ID + ".json", jsonContents);
+                    File.WriteAllText(App.APP_RECORDS_FOLDER_PATH + "/" + App.SESSION_ID + ".json", jsonContents);
             }
             catch (Exception ex)
             {
@@ -113,6 +103,9 @@ namespace PSTimeTracker.UI
             }
         }
 
+        /// <summary>
+        /// Load most recent record from file.
+        /// </summary>
         public ObservableCollection<PsFile> LoadLast()
         {
             ObservableCollection<PsFile> newList = new ObservableCollection<PsFile>();
@@ -136,5 +129,39 @@ namespace PSTimeTracker.UI
             return newList;
         }
 
+        #endregion
+
+
+        #region Private Methods
+
+        /// <summary>
+        /// Adds info about record files to recordFiles list.
+        /// </summary>
+        private void LoadFiles()
+        {
+            try
+            {
+                recordFiles = new DirectoryInfo(App.APP_RECORDS_FOLDER_PATH).GetFiles();
+            }
+            catch (Exception ex)
+            {
+                App.DisplayErrorMessage(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Deletes oldest records. Stops when number of records is under allowed amount.
+        /// </summary>
+        private void RemoveExcessFiles()
+        {
+            while (recordFiles.Length > NumberOfRecordsToKeep)
+            {
+                var file = recordFiles.OrderBy(f => f.LastWriteTime).FirstOrDefault();
+                LoadFiles();
+                file.Delete();
+            }
+        }
+
+        #endregion
     }
 }

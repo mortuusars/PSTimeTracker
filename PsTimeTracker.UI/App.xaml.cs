@@ -14,14 +14,16 @@ namespace PSTimeTracker.UI
     {
         public const string APP_NAME = "PSTimeTracker";
 
-        private const string RECORD_FOLDER_NAME = "Records";
+        private const string RECORDS_FOLDER_NAME = "records";
+        private const string CRASHES_FOLDER_NAME = "crash-reports";
         private const int TOOLTIP_DELAY = 500;
 
         public static readonly string SESSION_ID = new Random((int)DateTimeOffset.Now.ToUnixTimeSeconds()).Next().ToString();
 
-        // Paths to Temp\APPNAME\ and Temp\APPNAME\Records folders. Ends with backslash
-        public static readonly string APP_FOLDER_PATH = Path.GetTempPath() + APP_NAME + @"\";
-        public static readonly string APP_RECORDS_PATH = APP_FOLDER_PATH + RECORD_FOLDER_NAME + @"\";
+        // Paths to Local/APPNAME and nested folders
+        public static readonly string APP_FOLDER_PATH = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/{APP_NAME}/";
+        public static readonly string APP_RECORDS_FOLDER_PATH = $"{APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
+        public static readonly string APP_CRASHES_FOLDER_PATH = $"{APP_FOLDER_PATH}{CRASHES_FOLDER_NAME}/";
 
         CollectorService _collectorService;
         RecordManager _recordManager;
@@ -30,7 +32,11 @@ namespace PSTimeTracker.UI
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             SetupAppProperties();
-            CreateTempFolder();
+            // Create folder for app files, if it does not exists already.
+            Directory.CreateDirectory(APP_FOLDER_PATH);
+
+            // Handle crash-reports
+            AppDomain.CurrentDomain.UnhandledException += App_UnhandledException;
 
 
             ObservableCollection<PsFile> recordCollection = new ObservableCollection<PsFile>();
@@ -43,6 +49,19 @@ namespace PSTimeTracker.UI
 
             MainWindow = new MainView() { DataContext = _mainWindowViewModel };
             MainWindow.Show();
+
+            //throw new NotImplementedException();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            new CrashReportManager().CleanUpFolder();
+            base.OnExit(e);
+        }
+
+        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            new CrashReportManager().ReportCrash(e.ExceptionObject.ToString());
         }
 
         private static void SetupAppProperties()
@@ -57,14 +76,10 @@ namespace PSTimeTracker.UI
             MessageBox.Show(message, APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private void CreateTempFolder() {
-            try {
-                Directory.CreateDirectory(APP_FOLDER_PATH);
-                Directory.CreateDirectory(APP_FOLDER_PATH + "/" + RECORD_FOLDER_NAME);
-            }
-            catch (Exception ex) {
-                MessageBox.Show($"Cannot write to Temp folder: {ex.Message}", APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        private void CreateTempFolder()
+        {
+            Directory.CreateDirectory(APP_FOLDER_PATH + "/" + RECORDS_FOLDER_NAME);
+            Directory.CreateDirectory(APP_FOLDER_PATH + "/" + CRASHES_FOLDER_NAME);
         }
 
         #endregion

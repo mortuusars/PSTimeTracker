@@ -8,10 +8,9 @@
         mc:Ignorable="d"
         Title="Photoshop Time Counter"  
         Name="window"
-        Height="140" Width="240" MinWidth="240" MinHeight="140"  
+        Height="116" Width="240" MinWidth="240" MinHeight="116" SizeToContent="Height"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="False"
-        Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True"
-        Topmost="{Binding AlwaysOnTop, Mode=TwoWay}">
+        Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True">
 
     <Window.Resources>
 
@@ -201,8 +200,9 @@
                 <RowDefinition Height="18"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->
-
+            
+        <!--#region Header -->
+            
             <Grid Name="HeaderContainer" 
                   Background="Transparent"
                   MouseLeftButtonDown="Header_MouseLeftButtonDown">
@@ -277,16 +277,16 @@
             </Grid>
 
 
-
+        <!--#endregion-->
 
             
 
             <!-- Files -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="1">
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
 
-                <ItemsControl x:Name="MainItemsControl" AlternationCount="2"
+                <ListView x:Name="MainItemsControl" AlternationCount="2"
                               ItemsSource="{Binding PsFilesList}" Background="Transparent" BorderThickness="0">
-                    <ItemsControl.ItemTemplate>
+                    <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid x:Name="ItemGrid" Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
                                 
@@ -342,12 +342,12 @@
 
                             </DataTemplate.Triggers>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    </ListView.ItemTemplate>
+                </ListView>
             </ScrollViewer>
 
 
-            <Grid Name="RestoreDialog" Grid.Row="1" Width="214" Height="70" 
+            <Grid Name="RestoreDialog" Grid.Row="1" Width="214" Height="60" 
                   Visibility="{Binding CanRestorePreviousList, Converter={StaticResource BoolToVisibilityConverter}}">
                 <local:RestoreDialog/>
             </Grid>
@@ -357,7 +357,7 @@
                     Margin="4"
                     HorizontalAlignment="Center" VerticalAlignment="Top">
                 <TextBlock  Margin="4" x:Name="SortingPopup"
-                        Text="{Binding CurrentSorting}" d:Text="by DateAdded" FontSize="22" 
+                        d:Text="by DateAdded" FontSize="22"
                         FontFamily="{StaticResource RobotoLight}"
                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Border.Effect>
@@ -372,10 +372,38 @@
 
                 <TextBlock Margin="6 2" Text="{Binding ItemsCount}" d:Text="27 files" FontSize="12" FontFamily="{StaticResource RobotoLight}" VerticalAlignment="Center"/>
 
-                <Button x:Name="ResizeButton" Style="{StaticResource Resize}"
-                        Width="18" Height="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" PreviewMouseLeftButtonDown="ResizeButton_MouseLeftButtonDown"/>
+                <!--<Button x:Name="ResizeButton" Style="{StaticResource Resize}"
+                        Width="18" Height="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" PreviewMouseLeftButtonDown="ResizeButton_MouseLeftButtonDown"/>-->
 
             </Grid>
+
+            
+            <!-- Resize Borders -->
+
+            <Grid x:Name="RightResizeBorder" Background="Transparent"
+                  Grid.RowSpan="3" Width="5" Margin="-4"
+                  HorizontalAlignment="Right" 
+                  MouseLeftButtonDown="RightResizeBorder_MouseLeftButtonDown" 
+                  MouseEnter="SideResizeBorder_MouseEnter" MouseLeave="ResizeBorder_MouseLeave">
+                
+            </Grid>
+
+            <Grid x:Name="LeftResizeBorder" Background="Transparent"
+                  Grid.RowSpan="3" Width="5" Margin="-4"
+                  HorizontalAlignment="Left" 
+                  MouseLeftButtonDown="LeftResizeBorder_MouseLeftButtonDown"
+                  MouseEnter="SideResizeBorder_MouseEnter" MouseLeave="ResizeBorder_MouseLeave">
+
+            </Grid>
+
+            <Grid x:Name="BottomResizeBorder" Background="Transparent"
+                  Grid.RowSpan="3" Height="5" Margin="-4"
+                  VerticalAlignment="Bottom"
+                  MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"
+                  MouseEnter="BottomResizeBorder_MouseEnter" MouseLeave="ResizeBorder_MouseLeave">
+
+            </Grid>
+
         </Grid>
     </Border>
 </Window>

@@ -33,7 +33,7 @@ namespace PSTimeTracker.UI
             }
         }
 
-        public string CurrentSortingString { get => $"Current sorting: {currentSorting}"; }
+        public string CurrentSortingString { get => $"Sorted by: {currentSorting}"; }
 
         private bool alwaysOnTop;
         private SortingTypes currentSorting;
@@ -71,13 +71,44 @@ namespace PSTimeTracker.UI
 
         private enum ResizeDirection { Left = 61441, Right = 61442, Top = 61443, Bottom = 61446, BottomRight = 61448, }
 
-        private void ResizeButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        // Sides
+        private void LeftResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("entered event");
+            Debug.WriteLine("LeftResizeBorderMouseDown");
             var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
-            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.BottomRight, IntPtr.Zero);
+            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Left, IntPtr.Zero);
+            this.SizeToContent = SizeToContent.Height;
+        }
+        private void RightResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("RightResizeBorderMouseDown");
+            var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
+            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Right, IntPtr.Zero);
+            this.SizeToContent = SizeToContent.Height;
         }
 
+        private void SideResizeBorder_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.SizeWE;
+        }
+
+        // Bottom
+        private void BottomResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("BottomResizeBorderMouseDown");
+            var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
+            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Bottom, IntPtr.Zero);
+        }
+
+        private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.SizeNS;
+        }
+
+        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+        }
         #endregion
 
 
@@ -216,6 +247,8 @@ namespace PSTimeTracker.UI
                 MessageBox.Show("Cannot save window state: " + ex.Message, "PSTimerTracker", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
 
         #endregion
 
