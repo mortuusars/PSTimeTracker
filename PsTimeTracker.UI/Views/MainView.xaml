@@ -1,14 +1,14 @@
-﻿<Window x:Class="PhotoshopTimeCounter.MainWindow"
+﻿<Window x:Class="PSTimeTracker.UI.MainView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:f="clr-namespace:FluentWpfChromes;assembly=FluentWpfChromes"
-        xmlns:local="clr-namespace:PhotoshopTimeCounter"
+        xmlns:local="clr-namespace:PSTimeTracker.UI"
         mc:Ignorable="d"
         Title="Photoshop Time Counter"  
         Name="window"
-        Height="300" Width="300" MinWidth="240" MinHeight="82"  
+        Height="140" Width="240" MinWidth="240" MinHeight="140"  
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="False"
         Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True"
         Topmost="{Binding AlwaysOnTop, Mode=TwoWay}">
@@ -275,7 +275,7 @@
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="1">
 
                 <ItemsControl x:Name="MainItemsControl" AlternationCount="2"
-                              ItemsSource="{Binding FilesList}" Background="Transparent" BorderThickness="0">
+                              ItemsSource="{Binding PsFilesList}" Background="Transparent" BorderThickness="0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid x:Name="ItemGrid" Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
@@ -297,7 +297,7 @@
                                     <StackPanel Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="First opened: "/>
-                                            <TextBlock Text="{Binding FirstOpenTime, Converter={StaticResource DateTimeToStringConverter}}"/>
+                                            <TextBlock Text="{Binding FirstActiveTime, Converter={StaticResource DateTimeToStringConverter}}"/>
                                         </StackPanel>                                        
                                     </StackPanel>
                                 </Grid.ToolTip>
@@ -308,7 +308,7 @@
 
                                 <!-- Time -->
                                 <TextBlock FontFamily="{StaticResource RobotoLight}" Grid.Column="2" Margin="8 0" 
-                                   Text="{Binding SecondsActive, Converter={StaticResource SecondsToTimeConverter}}" FontSize="16" 
+                                   Text="{Binding TrackedSeconds, Converter={StaticResource SecondsToTimeConverter}}" FontSize="16" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                             </Grid>
@@ -335,17 +335,23 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+
+
+            <Grid Name="RestoreDialog" Grid.Row="1" Width="214" Height="70" 
+                  Visibility="{Binding CanRestorePreviousList, Converter={StaticResource BoolToVisibilityConverter}}">
+                <local:RestoreDialog/>
+            </Grid>
             
             <Border Name="SortPopup" Grid.Row="1" IsHitTestVisible="False" 
                     Opacity="0" Background="#eeeeee"
-                    Margin="4" Height="24" 
+                    Margin="4"
                     HorizontalAlignment="Center" VerticalAlignment="Top">
-                <TextBlock  Margin="2 0" x:Name="SortingPopup"
+                <TextBlock  Margin="4" x:Name="SortingPopup"
                         Text="{Binding CurrentSorting}" d:Text="by DateAdded" FontSize="22" 
                         FontFamily="{StaticResource RobotoLight}"
                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="6" ShadowDepth="2" Direction="-90" Opacity="0.6"/>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Direction="-90" Opacity="0.4"/>
                 </Border.Effect>
             </Border>
 

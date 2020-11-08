@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
-namespace PhotoshopTimeCounter
+namespace PSTimeTracker.UI
 {
     [ValueConversion(typeof(DateTimeOffset), typeof(string))]
     public class DateTimeToStringConverter : IValueConverter

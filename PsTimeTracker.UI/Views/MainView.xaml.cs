@@ -9,13 +9,14 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using PSTimeTracker.Core;
 
-namespace PhotoshopTimeCounter
+namespace PSTimeTracker.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainView : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -36,15 +37,9 @@ namespace PhotoshopTimeCounter
         private SortingTypes currentSorting;
 
 
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
-
-            //SetWindowFromState();
-
-            //MainItemsControl.Items.IsLiveSorting = true;
-
-            //SortList(currentSorting);
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -83,29 +78,32 @@ namespace PhotoshopTimeCounter
 
         #endregion
 
+
+        #region Buttons
+
         private void SortList(SortingTypes sortBy)
         {
             MainItemsControl.Items.SortDescriptions.Clear();
 
             switch (sortBy)
             {
-                case SortingTypes.Name:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFileInfo.FileName), ListSortDirection.Ascending));
+                case SortingTypes.NameABC:
+                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Ascending));
                     break;
-                case SortingTypes.NameReversed:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFileInfo.FileName), ListSortDirection.Descending));
+                case SortingTypes.NameZYX:
+                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Descending));
                     break;
-                case SortingTypes.Time:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFileInfo.SecondsActive), ListSortDirection.Ascending));
+                case SortingTypes.TimeShorter:
+                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Ascending));
                     break;
-                case SortingTypes.TimeReversed:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFileInfo.SecondsActive), ListSortDirection.Descending));
+                case SortingTypes.TimeLonger:
+                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Descending));
                     break;
-                case SortingTypes.TimeAdded:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFileInfo.FirstOpenTime), ListSortDirection.Ascending));
+                case SortingTypes.FirstOpened:
+                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Ascending));
                     break;
-                case SortingTypes.TimeAddedReversed:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFileInfo.FirstOpenTime), ListSortDirection.Descending));
+                case SortingTypes.LastOpened:
+                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Descending));
                     break;
             }
 
@@ -150,25 +148,27 @@ namespace PhotoshopTimeCounter
         }
 
 
+        #endregion
+
 
         #region State
 
-        private WindowState LoadMainWindowState()
+        private MainViewState LoadMainWindowState()
         {
             try
             {
                 string jsonString = File.ReadAllText(MAIN_WINDOW_STATE_FILEPATH);
-                return JsonSerializer.Deserialize<WindowState>(jsonString);
+                return JsonSerializer.Deserialize<MainViewState>(jsonString);
             }
             catch (Exception)
             {
-                return new WindowState();
+                return new MainViewState();
             }
         }
 
         private void SetWindowFromState()
         {
-            WindowState windowState = LoadMainWindowState();
+            MainViewState windowState = LoadMainWindowState();
             this.Left = windowState.Left;
             this.Top = windowState.Top;
             this.Width = windowState.Width;
@@ -181,7 +181,7 @@ namespace PhotoshopTimeCounter
         {
             try
             {
-                string jsonString = JsonSerializer.Serialize(new WindowState()
+                string jsonString = JsonSerializer.Serialize(new MainViewState()
                 {
                     Left = this.Left,
                     Top = this.Top,
@@ -192,15 +192,12 @@ namespace PhotoshopTimeCounter
                 }, new JsonSerializerOptions() { WriteIndented = true });
                 File.WriteAllText(MAIN_WINDOW_STATE_FILEPATH, jsonString);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                MessageBox.Show("Cannot save window state: " + ex.Message, "PSTimerTracker", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-
         #endregion
-
-
     }
 }

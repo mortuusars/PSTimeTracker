@@ -1,6 +1,8 @@
-﻿namespace PhotoshopTimeCounter
+﻿using PSTimeTracker.Core;
+
+namespace PSTimeTracker.UI
 {
-    public class WindowState
+    public class MainViewState
     {
         public double Left { get; set; }
         public double Top { get; set; }

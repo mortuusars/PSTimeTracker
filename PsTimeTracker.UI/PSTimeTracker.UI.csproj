@@ -28,6 +28,11 @@
 
   <ItemGroup>
     <PackageReference Include="FluentWpfChromes" Version="1.0.1" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PSTimeTracker.Core\PSTimeTracker.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
