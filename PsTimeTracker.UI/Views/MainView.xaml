@@ -8,12 +8,23 @@
         mc:Ignorable="d"
         Title="Photoshop Time Counter"  
         Name="window"
-        Height="116" Width="240" MinWidth="240" MinHeight="116" SizeToContent="Height"
+        Height="100" Width="240" MinWidth="240" MinHeight="100" SizeToContent="Height"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="False"
         Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True">
 
     <Window.Resources>
 
+        <ContextMenu x:Key="HeaderContextMenu">
+            <MenuItem Header="Clear all" Command="{Binding ClearCommand}">
+                <MenuItem.Icon>
+                    <Image Source="\Images\delete_24.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+
+        <Storyboard x:Key="ButtonAnimation">
+            <DoubleAnimation Duration="0:0:0.3" From="0" To="0.5" Storyboard.TargetProperty="Opacity"/>
+        </Storyboard>
 
         <!-- Scroll bar Style-->
 
@@ -87,26 +98,56 @@
         </Style>
 
 
+        <!--#region Header TextBlock Styles -->
+        
+        <Style x:Key="HeaderTextBlockStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="{StaticResource RobotoLight}"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Foreground" Value="{StaticResource MainForegroundBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        
+        <Style x:Key="SummaryTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource HeaderTextBlockStyle}">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
 
-        <!-- Buttons -->
-        <Style x:Key="HeaderButton" TargetType="Button">
+        <Style x:Key="ItemsCountTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource HeaderTextBlockStyle}">
             <Setter Property="Visibility" Value="Hidden"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!--#endregion-->
+
+        <!--#region Button Styles -->
+        <Style x:Key="HeaderButton" TargetType="Button">
+            <Setter Property="Visibility" Value="Visible"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Width" Value="18"/>
             <Setter Property="Height" Value="18"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Opacity" Value="0.25"/>
+            <Setter Property="Opacity" Value="0.0"/>
             <Setter Property="Template" Value="{DynamicResource ButtonNoStyle}"/>
 
             <Style.Triggers>
 
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Opacity" Value="1"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>                    
                 </Trigger>
 
                 <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
-                    <Setter Property="Visibility" Value="Visible"/>
+                    <Setter Property="Opacity" Value="0.3"/>
                 </DataTrigger>
 
             </Style.Triggers>
@@ -175,15 +216,8 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <Style x:Key="Resize" TargetType="Button" BasedOn="{StaticResource DefaultButtonNoStyle}">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <ImageBrush ImageSource="\Images\corner-handle_24.png"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Opacity" Value="0.5"/>
-        </Style>
+        
+        <!--#endregion-->
 
     </Window.Resources>
 
@@ -197,7 +231,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="26"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="18"/>
             </Grid.RowDefinitions>
 
             
@@ -205,13 +238,18 @@
             
             <Grid Name="HeaderContainer" 
                   Background="Transparent"
-                  MouseLeftButtonDown="Header_MouseLeftButtonDown">
+                  MouseLeftButtonDown="Header_MouseLeftButtonDown" ContextMenu="{StaticResource HeaderContextMenu}">
 
-                <TextBlock Name="SummaryTime" IsHitTestVisible="False"                        
-                       Text="{Binding SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" d:Text="00:00:13"
-                       FontSize="22" FontFamily="{StaticResource RobotoLight}" 
-                       Foreground="{StaticResource MainForegroundBrush}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Name="SummaryTime"
+                           Text="{Binding SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" 
+                           d:Text="00:00:13"
+                           Style="{StaticResource SummaryTextStyle}"/>
+
+                <TextBlock Name="ItemsCount"
+                           Text="{Binding ItemsCount}" d:Text="00:00:13"
+                           Style="{StaticResource ItemsCountTextStyle}"/>
+
+
 
                 <StackPanel Name="LeftHeaderButtonsContainer" Orientation="Horizontal" HorizontalAlignment="Left">
 
@@ -250,11 +288,11 @@
                         </Button.Triggers>
                     </Button>
                     
-                    <Button x:Name="Clear" d:Visibility="Visible"
+                    <!--<Button x:Name="Clear" d:Visibility="Visible"
                             ToolTip="Clear all items"
                             Style="{StaticResource Clear}"
                             Margin="2" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Command="{Binding ClearCommand}" />
+                            Command="{Binding ClearCommand}" />-->
 
                 </StackPanel>
 
@@ -364,18 +402,6 @@
                     <DropShadowEffect BlurRadius="10" ShadowDepth="2" Direction="-90" Opacity="0.4"/>
                 </Border.Effect>
             </Border>
-
-
-            <!-- Status Bar -->
-
-            <Grid Grid.Row="2">
-
-                <TextBlock Margin="6 2" Text="{Binding ItemsCount}" d:Text="27 files" FontSize="12" FontFamily="{StaticResource RobotoLight}" VerticalAlignment="Center"/>
-
-                <!--<Button x:Name="ResizeButton" Style="{StaticResource Resize}"
-                        Width="18" Height="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" PreviewMouseLeftButtonDown="ResizeButton_MouseLeftButtonDown"/>-->
-
-            </Grid>
 
             
             <!-- Resize Borders -->
