@@ -284,9 +284,9 @@
             <!-- Files -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
 
-                <ListView x:Name="MainItemsControl" AlternationCount="2"
+                <ItemsControl x:Name="MainItemsControl" AlternationCount="2"
                               ItemsSource="{Binding PsFilesList}" Background="Transparent" BorderThickness="0">
-                    <ListView.ItemTemplate>
+                    <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid x:Name="ItemGrid" Grid.ColumnSpan="2" Margin="2" Height="22" Width="auto">
                                 
@@ -342,8 +342,8 @@
 
                             </DataTemplate.Triggers>
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </ScrollViewer>
 
 
