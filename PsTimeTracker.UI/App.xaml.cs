@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using PSTimeTracker.Core;
 
 namespace PSTimeTracker.UI
@@ -35,10 +36,6 @@ namespace PSTimeTracker.UI
             // Create folder for app files, if it does not exists already.
             Directory.CreateDirectory(APP_FOLDER_PATH);
 
-            // Handle crash-reports
-            AppDomain.CurrentDomain.UnhandledException += App_UnhandledException;
-
-
             ObservableCollection<PsFile> recordCollection = new ObservableCollection<PsFile>();
 
             _recordManager = new RecordManager(recordCollection);
@@ -49,19 +46,12 @@ namespace PSTimeTracker.UI
 
             MainWindow = new MainView() { DataContext = _mainWindowViewModel };
             MainWindow.Show();
-
-            //throw new NotImplementedException();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             new CrashReportManager().CleanUpFolder();
             base.OnExit(e);
-        }
-
-        private void App_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            new CrashReportManager().ReportCrash(e.ExceptionObject.ToString());
         }
 
         private static void SetupAppProperties()
@@ -83,5 +73,12 @@ namespace PSTimeTracker.UI
         }
 
         #endregion
+
+        // Create crash-report and shutdown application on unhandled exception.
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            new CrashReportManager().ReportCrash(e.Exception.ToString());
+            this.Shutdown();
+        }
     }
 }
