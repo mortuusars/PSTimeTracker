@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using PSTimeTracker.UI.Services;
 using PSTimeTracker.Core;
 
 namespace PSTimeTracker.UI
@@ -59,19 +60,10 @@ namespace PSTimeTracker.UI
             ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
         }
 
-        #region Utility
         public static void DisplayErrorMessage(string message)
         {
             MessageBox.Show(message, APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
-        private void CreateTempFolder()
-        {
-            Directory.CreateDirectory(APP_FOLDER_PATH + "/" + RECORDS_FOLDER_NAME);
-            Directory.CreateDirectory(APP_FOLDER_PATH + "/" + CRASHES_FOLDER_NAME);
-        }
-
-        #endregion
 
         // Create crash-report and shutdown application on unhandled exception.
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

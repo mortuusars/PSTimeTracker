@@ -6,18 +6,19 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using PSTimeTracker.Core;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker.UI.Services
 {
     public class RecordManager
     {
-        /// <summary>
-        /// If set to true, list will be written to the file that was restored.
-        /// </summary>
+        #region Properties
+
+        /// <summary>If set to true, list will be written to the file that was restored.</summary>
         public bool SaveToLastLoadedFile { get; set; }
 
-        /// <summary>
-        /// How many records(files) will be kept. 1 - 200. Default: 6
-        /// </summary>
+        /// <summary>True if records are present and we can restore them.</summary>
+        public bool IsRestoringAvailable { get; private set; }
+
+        /// <summary>How many records(files) will be kept. 1 - 200. Default: 6 </summary>
         public int NumberOfRecordsToKeep
         {
             get => numberOfRecordsToKeep;
@@ -30,19 +31,17 @@ namespace PSTimeTracker.UI
         }
         private int numberOfRecordsToKeep = 6;
 
-        /// <summary>
-        /// Delay in milliseconds between savings to file.
-        /// </summary>
+        /// <summary>Delay in milliseconds between savings to file.</summary>
         public int WriteInterval { get; set; } = 3000;
 
-        private ObservableCollection<PsFile> _collectionToSave;
+        #endregion
+
+        private readonly ObservableCollection<PsFile> _collectionToSave;
 
         private bool shouldSave;
         private string lastRestoredFileName = "";
 
-        /// <summary>
-        /// Manages reading/writing of records to files.
-        /// </summary>
+        /// <summary>Manages reading/writing of records to files.</summary>
         /// <param name="collectionToSave">Collection that will be saved to a file.</param>
         public RecordManager(ObservableCollection<PsFile> collectionToSave)
         {
@@ -50,15 +49,14 @@ namespace PSTimeTracker.UI
 
             Directory.CreateDirectory(App.APP_RECORDS_FOLDER_PATH);
 
-            GetOrderedRecordFiles();
-            RemoveExcessRecordFiles();
+            FileInfo[] files = GetOrderedRecordFiles();
+            if (files.Length > 0) IsRestoringAvailable = true;
+            RemoveExcessRecordFiles(files);
         }
 
         #region Public Methods
 
-        /// <summary>
-        /// Repeatedly saving to file with a <see cref="WriteInterval"/>.
-        /// </summary>
+        /// <summary>Repeatedly saving to file with a <see cref="WriteInterval"/>.</summary>
         public async void StartSaving()
         {
             shouldSave = true;
@@ -70,9 +68,7 @@ namespace PSTimeTracker.UI
             }
         }
 
-        /// <summary>
-        /// Stops repeated saving of a record collection.
-        /// </summary>
+        /// <summary>Stops repeated saving of a record collection.</summary>
         public void StopSaving()
         {
             shouldSave = false;
@@ -125,7 +121,6 @@ namespace PSTimeTracker.UI
 
         #endregion
 
-
         #region Private Methods
 
         /// <summary>Gets array of record files from a folder. Orders it by last written time - oldest first.</summary>
@@ -146,13 +141,11 @@ namespace PSTimeTracker.UI
         }
 
         /// <summary> Deletes oldest records. Stops when number of records is under allowed amount.</summary>
-        private void RemoveExcessRecordFiles()
+        private void RemoveExcessRecordFiles(FileInfo[] files)
         {
-            var recordFiles = GetOrderedRecordFiles();
-
-            while (recordFiles.Length > NumberOfRecordsToKeep)
+            while (files.Length > NumberOfRecordsToKeep)
             {
-                var file = recordFiles.FirstOrDefault();
+                var file = files.FirstOrDefault();
                 file?.Delete();
 
                 // Refresh files list

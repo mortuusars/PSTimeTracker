@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using PSTimeTracker.UI.Services;
 using PSTimeTracker.Core;
 
 namespace PSTimeTracker.UI
@@ -10,49 +11,44 @@ namespace PSTimeTracker.UI
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int SummarySeconds { get; private set; } = 0;
-        public string ItemsCount { get; private set; }
-        public ObservableCollection<PsFile> PsFilesList { get; private set; }
-        public bool CanRestorePreviousList { get; set; }
+        #region Properties
 
-        public ICommand RemoveItemCommand { get; }
-        public ICommand ClearCommand { get; }
+        public int SummarySeconds { get; private set; }
+        public string ItemsCount { get; private set; }
+        public ObservableCollection<PsFile> PsFilesList { get; }
+        public bool CanRestorePreviousList { get; private set; }
+
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
+        public ICommand RemoveItemCommand { get; }
+        public ICommand ClearCommand { get; }
 
+        #endregion
 
+        private readonly CollectorService _collector;
+        private readonly RecordManager _recordManager;
 
-        private CollectorService _collector;
-        private RecordManager _recordManager;
-
-        ObservableCollection<PsFile> restoredCollection;
-
-
-        public MainWindowViewModel(ObservableCollection<PsFile> collection, CollectorService collector, RecordManager recordManager)
+        public MainWindowViewModel(ObservableCollection<PsFile> psFilesList, CollectorService collector, RecordManager recordManager)
         {
-            PsFilesList = collection;
+            PsFilesList = psFilesList;
+            PsFilesList.CollectionChanged += (s, e) => SetFilesCountString();
 
             _collector = collector;
             _collector.SummarySecondsChanged += (_, seconds) => SummarySeconds = seconds;
 
             _recordManager = recordManager;
 
+            RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking(); });
+            StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
+
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
 
-            RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking();});
-            StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
-
-            PsFilesList.CollectionChanged += (s, e) => SetFilesCountString();
-
             SetFilesCountString();
 
-
-            restoredCollection = _recordManager.LoadLastRecord();
-
-            if (restoredCollection.Count > 0)
+            if (_recordManager.IsRestoringAvailable)
                 CanRestorePreviousList = true;
-            else 
+            else
                 StartTracking();
         }
 
@@ -60,7 +56,7 @@ namespace PSTimeTracker.UI
         {
             PsFilesList.Clear();
 
-            foreach (var file in restoredCollection)
+            foreach (var file in _recordManager.LoadLastRecord())
             {
                 PsFilesList.Add(file);
             }
