@@ -41,7 +41,6 @@ namespace PSTimeTracker.UI
             _recordManager = new RecordManager(recordCollection);
             _collectorService = new CollectorService(recordCollection);
 
-
             _mainWindowViewModel = new MainWindowViewModel(recordCollection, _collectorService, _recordManager);
 
             MainWindow = new MainView() { DataContext = _mainWindowViewModel };

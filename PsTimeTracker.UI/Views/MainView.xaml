@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:f="clr-namespace:FluentWpfChromes;assembly=FluentWpfChromes"
-        xmlns:local="clr-namespace:PSTimeTracker.UI"
+        xmlns:local="clr-namespace:PSTimeTracker.UI" xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Photoshop Time Counter"  
         Name="window"
@@ -14,6 +14,10 @@
 
     <Window.Resources>
 
+
+        <sys:Double x:Key="ButtonDefaultOpacity">0.3</sys:Double>
+        
+        
         <ContextMenu x:Key="HeaderContextMenu">
             <MenuItem Header="Clear all" Command="{Binding ClearCommand}">
                 <MenuItem.Icon>
@@ -131,23 +135,36 @@
 
         <!--#region Button Styles -->
         <Style x:Key="HeaderButton" TargetType="Button">
-            <Setter Property="Visibility" Value="Visible"/>
+            <Setter Property="Visibility" Value="Hidden"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Width" Value="18"/>
             <Setter Property="Height" Value="18"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Opacity" Value="0.0"/>
+            <Setter Property="Opacity" Value="{StaticResource ButtonDefaultOpacity}"/>
             <Setter Property="Template" Value="{DynamicResource ButtonNoStyle}"/>
 
             <Style.Triggers>
 
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Opacity" Value="1"/>
-                    <Setter Property="BorderBrush" Value="Transparent"/>                    
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.1" To=".8" Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:0.3" To="{StaticResource ButtonDefaultOpacity}" 
+                                                 Storyboard.TargetProperty="Opacity"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
                 </Trigger>
-
+                
                 <DataTrigger Binding="{Binding ElementName=window, Path=IsMouseOver}" Value="True">
-                    <Setter Property="Opacity" Value="0.3"/>
+                    <Setter Property="Visibility" Value="Visible"/>
                 </DataTrigger>
 
             </Style.Triggers>
