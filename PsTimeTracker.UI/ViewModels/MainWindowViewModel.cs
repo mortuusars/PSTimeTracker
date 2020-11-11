@@ -48,7 +48,7 @@ namespace PSTimeTracker.UI
             SetFilesCountString();
 
 
-            restoredCollection = _recordManager.LoadLast();
+            restoredCollection = _recordManager.LoadLastRecord();
 
             if (restoredCollection.Count > 0)
                 CanRestorePreviousList = true;
