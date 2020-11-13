@@ -24,6 +24,9 @@ namespace PSTimeTracker
         public ICommand RemoveItemCommand { get; }
         public ICommand ClearCommand { get; }
 
+        public ICommand TrackOnlyOnActiveCommand { get; }
+        
+
         #endregion
 
         private readonly TrackingService _trackingService;
@@ -46,6 +49,8 @@ namespace PSTimeTracker
 
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
+
+            TrackOnlyOnActiveCommand = new RelayCommand(_ => ConfigManager.Config.OnlyActiveWindow = !ConfigManager.Config.OnlyActiveWindow);
 
             #endregion
 

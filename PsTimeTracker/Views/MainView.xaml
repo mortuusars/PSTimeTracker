@@ -315,6 +315,12 @@
 
                 <StackPanel Name="RightHeaderButtonsContainer" Orientation="Horizontal" HorizontalAlignment="Right">
 
+                    <Button x:Name="CheckActiveButton" d:Visibility="Visible"
+                            ToolTip="Minimize"
+                            Grid.Column="1" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
+                            Command="{Binding TrackOnlyOnActiveCommand}"
+                            Style="{StaticResource Minimize}"/>
+                    
                     <Button x:Name="MinimizeButton" d:Visibility="Visible"
                             ToolTip="Minimize"
                             Grid.Column="1" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Top"
