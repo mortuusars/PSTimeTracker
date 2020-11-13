@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -144,13 +145,14 @@ namespace PSTimeTracker.Services
         /// <summary> Deletes oldest records. Stops when number of records is under allowed amount.</summary>
         private void RemoveExcessRecordFiles(FileInfo[] files)
         {
+            Debug.WriteLine("Entered removeexcess method");
             while (files.Length > NumberOfRecordsToKeep)
             {
                 var file = files.FirstOrDefault();
                 file?.Delete();
-
                 // Refresh files list
-                GetOrderedRecordFiles();
+                files = GetOrderedRecordFiles();
+
             }
         }
 

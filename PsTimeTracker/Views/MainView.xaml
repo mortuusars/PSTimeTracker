@@ -6,7 +6,7 @@
         xmlns:f="clr-namespace:FluentWpfChromes;assembly=FluentWpfChromes"
         xmlns:local="clr-namespace:PSTimeTracker" xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Photoshop Time Counter"  
+        Title="Photoshop Time Tracker"  
         Name="window"
         Height="100" Width="240" MinWidth="240" MinHeight="100" SizeToContent="Height"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="False"

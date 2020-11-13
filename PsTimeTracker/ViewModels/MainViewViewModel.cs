@@ -26,24 +26,28 @@ namespace PSTimeTracker
 
         #endregion
 
-        private readonly CollectorService _collector;
+        private readonly TrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
-        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, CollectorService collector, RecordManager recordManager)
+        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, TrackingService trackingService, RecordManager recordManager)
         {
             PsFilesList = psFilesList;
             PsFilesList.CollectionChanged += (s, e) => SetFilesCountString();
 
-            _collector = collector;
-            _collector.SummarySecondsChanged += (_, seconds) => SummarySeconds = seconds;
+            _trackingService = trackingService;
+            _trackingService.SummarySecondsChanged += (_, seconds) => SummarySeconds = seconds;
 
             _recordManager = recordManager;
+
+            #region Commands
 
             RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking(); });
             StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
 
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
+
+            #endregion
 
             SetFilesCountString();
 
@@ -67,7 +71,7 @@ namespace PSTimeTracker
 
         private void StartTracking()
         {
-            _collector.StartCollecting();
+            _trackingService.StartTracking();
             _recordManager.StartSaving();
         }
 

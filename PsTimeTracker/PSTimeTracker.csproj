@@ -8,6 +8,7 @@
     <SignAssembly>false</SignAssembly>
     <Version>1.1</Version>
     <Authors>Evgeny Daubel</Authors>
+    <StartupObject>PSTimeTracker.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
