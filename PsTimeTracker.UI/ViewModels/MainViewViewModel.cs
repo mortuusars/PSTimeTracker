@@ -7,7 +7,7 @@ using PSTimeTracker.Core;
 
 namespace PSTimeTracker.UI
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainViewViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -28,7 +28,7 @@ namespace PSTimeTracker.UI
         private readonly CollectorService _collector;
         private readonly RecordManager _recordManager;
 
-        public MainWindowViewModel(ObservableCollection<PsFile> psFilesList, CollectorService collector, RecordManager recordManager)
+        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, CollectorService collector, RecordManager recordManager)
         {
             PsFilesList = psFilesList;
             PsFilesList.CollectionChanged += (s, e) => SetFilesCountString();

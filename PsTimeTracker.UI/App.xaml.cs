@@ -29,7 +29,7 @@ namespace PSTimeTracker.UI
 
         CollectorService _collectorService;
         RecordManager _recordManager;
-        MainWindowViewModel _mainWindowViewModel;
+        MainViewViewModel _mainWindowViewModel;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -42,7 +42,7 @@ namespace PSTimeTracker.UI
             _recordManager = new RecordManager(recordCollection);
             _collectorService = new CollectorService(recordCollection);
 
-            _mainWindowViewModel = new MainWindowViewModel(recordCollection, _collectorService, _recordManager);
+            _mainWindowViewModel = new MainViewViewModel(recordCollection, _collectorService, _recordManager);
 
             MainWindow = new MainView() { DataContext = _mainWindowViewModel };
             MainWindow.Show();
