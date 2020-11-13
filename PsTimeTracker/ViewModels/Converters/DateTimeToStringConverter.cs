@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using PSTimeTracker.Core;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
-    [ValueConversion(typeof(int), typeof(string))]
-    public class SecondsToTimeConverter : IValueConverter
+    [ValueConversion(typeof(DateTimeOffset), typeof(string))]
+    public class DateTimeToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return TimeFormatter.GetTimeStringFromSecods((int)value);
+            DateTimeOffset time = (DateTimeOffset)value;
+
+            return time.ToString("MMM-dd HH:mm");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (int)((TimeSpan)value).TotalSeconds;
+            throw new NotImplementedException();
         }
     }
 }

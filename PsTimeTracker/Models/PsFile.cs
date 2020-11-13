@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace PSTimeTracker.Core
+namespace PSTimeTracker.Models
 {
     public class PsFile : INotifyPropertyChanged
     {

@@ -4,10 +4,11 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using PSTimeTracker.UI.Services;
+using PSTimeTracker.Services;
 using PSTimeTracker.Core;
+using PSTimeTracker.Models;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
     /// <summary>
     /// Interaction logic for App.xaml

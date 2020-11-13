@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PSTimeTracker.Core\PSTimeTracker.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Fonts\Roboto-Light.ttf" />
     <Resource Include="Fonts\Roboto-Medium.ttf" />
     <Resource Include="Fonts\Roboto-Regular.ttf" />

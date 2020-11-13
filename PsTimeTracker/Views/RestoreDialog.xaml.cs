@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
     /// <summary>
     /// Interaction logic for RestoreDialog.xaml

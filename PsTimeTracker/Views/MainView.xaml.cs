@@ -10,8 +10,9 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using PSTimeTracker.Core;
+using PSTimeTracker.Models;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -118,6 +119,7 @@ namespace PSTimeTracker.UI
         {
             MainItemsControl.Items.SortDescriptions.Clear();
 
+            // TODO: Sorting in viewmodel
             switch (sortBy)
             {
                 case SortingTypes.NameABC:
@@ -227,7 +229,7 @@ namespace PSTimeTracker.UI
             currentSorting = windowState.SortingOrder;
         }
 
-        private void SaveMainWindowState()
+        public void SaveMainWindowState()
         {
             try
             {

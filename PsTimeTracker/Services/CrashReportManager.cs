@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PSTimeTracker.UI.Services
+namespace PSTimeTracker.Services
 {
     public class CrashReportManager
     {

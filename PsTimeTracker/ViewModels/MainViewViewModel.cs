@@ -2,10 +2,11 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
-using PSTimeTracker.UI.Services;
+using PSTimeTracker.Services;
 using PSTimeTracker.Core;
+using PSTimeTracker.Models;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
     public class MainViewViewModel : INotifyPropertyChanged
     {

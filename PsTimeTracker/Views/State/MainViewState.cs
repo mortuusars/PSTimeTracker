@@ -1,6 +1,6 @@
 ﻿using PSTimeTracker.Core;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
     public class MainViewState
     {

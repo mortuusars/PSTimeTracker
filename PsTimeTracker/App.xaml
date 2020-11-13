@@ -1,7 +1,7 @@
-﻿<Application x:Class="PSTimeTracker.UI.App"
+﻿<Application x:Class="PSTimeTracker.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:PSTimeTracker.UI"
+             xmlns:local="clr-namespace:PSTimeTracker"
              Startup="Application_Startup"
                 DispatcherUnhandledException="Application_DispatcherUnhandledException"
              >

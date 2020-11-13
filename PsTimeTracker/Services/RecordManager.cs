@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using PSTimeTracker.Core;
+using PSTimeTracker.Models;
 
-namespace PSTimeTracker.UI.Services
+namespace PSTimeTracker.Services
 {
     public class RecordManager
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace PSTimeTracker.UI
+namespace PSTimeTracker
 {
     public class RelayCommand : ICommand
     {
