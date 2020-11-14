@@ -51,9 +51,11 @@ namespace PSTimeTracker
 
             SetWindowFromState();
 
-            MainItemsControl.Items.IsLiveSorting = true;
+            HeaderContainer.MouseLeftButtonDown += (s, _) => DragMove();
 
-            SortList(currentSorting);
+            //MainItemsControl.Items.IsLiveSorting = true;
+
+            //SortList(currentSorting);
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -114,7 +116,7 @@ namespace PSTimeTracker
 
 
         #region Buttons
-
+        /*
         private void SortList(SortingTypes sortBy)
         {
             MainItemsControl.Items.SortDescriptions.Clear();
@@ -198,7 +200,7 @@ namespace PSTimeTracker
 
             SortList(sortBy);
         }
-
+        */
 
         #endregion
 
@@ -252,8 +254,13 @@ namespace PSTimeTracker
 
 
 
+
         #endregion
 
-        
+        private void Close_LeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            this.Close();
+        }
     }
 }

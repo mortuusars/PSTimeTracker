@@ -1,12 +1,24 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:PhotoshopTimeCounter">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
-    <Color x:Key="MainBorder">#353535</Color>
+    <Color x:Key="GradientTop">#e9e9e9</Color>
+    <Color x:Key="GradientBottom">#c7c7c7</Color>
+
+
+    <Color x:Key="MainBorder">#777777</Color>
     <SolidColorBrush x:Key="MainBorderBrush" Color="{StaticResource MainBorder}"/>
-    
-    <Color x:Key="MainForeground">#252525</Color>
+    <Color x:Key="HeaderBorder">#bbbbbb</Color>
+    <SolidColorBrush x:Key="HeaderBorderBrush" Color="{StaticResource HeaderBorder}"/>
+
+    <Color x:Key="HeaderBackground">#f6f6f6</Color>
+    <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="{StaticResource HeaderBackground}"/>
+
+    <Color x:Key="HeaderForeground">#6d6d6d</Color>
+    <SolidColorBrush x:Key="HeaderForegroundBrush" Color="{StaticResource HeaderForeground}"/>
+
+    <Color x:Key="MainForeground">#666666</Color>
     <SolidColorBrush x:Key="MainForegroundBrush" Color="{StaticResource MainForeground}"/>
+
 
 </ResourceDictionary>

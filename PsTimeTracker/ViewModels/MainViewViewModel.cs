@@ -19,6 +19,7 @@ namespace PSTimeTracker
         public int SummarySeconds { get; private set; }
         public string ItemsCount { get; private set; }
         public ObservableCollection<PsFile> PsFilesList { get; }
+        public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
 
         public ICommand RestoreAndStartCommand { get; }
@@ -37,7 +38,7 @@ namespace PSTimeTracker
         public MainViewViewModel(ObservableCollection<PsFile> psFilesList, ITrackingService trackingService, RecordManager recordManager)
         {
             PsFilesList = psFilesList;
-            PsFilesList.CollectionChanged += (s, e) => SetFilesCountString();
+            PsFilesList.CollectionChanged += (s, e) => OnCollectionChanged();
 
             _trackingService = trackingService;
             _trackingService.SummarySecondsChanged += (_, seconds) => SummarySeconds = seconds;
@@ -64,6 +65,12 @@ namespace PSTimeTracker
                 StartTracking();
         }
 
+        private void OnCollectionChanged()
+        {
+            SetFilesCountString();
+            ListIsEmpty = PsFilesList.Count < 1;
+        }
+
         private void Restore()
         {
             PsFilesList.Clear();
@@ -80,6 +87,7 @@ namespace PSTimeTracker
         {
             _trackingService.StartTracking();
             _recordManager.StartSaving();
+            CanRestorePreviousList = false;
         }
 
         private void SetFilesCountString()
