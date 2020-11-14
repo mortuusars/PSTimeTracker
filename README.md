@@ -1,5 +1,5 @@
 
-# Photoshop Time Counter
+# Photoshop Time Tracker
 Allows you to track how much time you spend working on files in Photoshop.
 
 ![](showcase.gif)
