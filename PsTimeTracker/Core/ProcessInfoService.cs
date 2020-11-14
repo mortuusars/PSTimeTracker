@@ -21,6 +21,12 @@ namespace PSTimeTracker.Core
 
         #endregion
 
+        /// <summary>Returns <see langword="true"/> if PS window is active.</summary>
+        public bool PhotoshopWindowIsActive { get { return GetActiveWindowProcess().ProcessName == PS_NAME; } }
+
+        /// <summary>Returns <see langword="true"/> if PS is running.</summary>
+        public bool PhotoshopIsRunning { get { return GetPhotoshopProcess() != null; } }
+
         private const string PS_NAME = "Photoshop";
 
         /// <summary>Returns <see langword="null"/> if Photoshop is not active.</summary>
@@ -39,12 +45,19 @@ namespace PSTimeTracker.Core
         /// <summary>Returns <see langword="null"/> if Photoshop process is not found.</summary>
         public string GetPhotoshopWindowTitle()
         {
-            Process psProcess = Process.GetProcessesByName(PS_NAME).FirstOrDefault();
+            Process psProcess = GetPhotoshopProcess();
 
             if (psProcess != null)
                 return psProcess.MainWindowTitle;
             else
                 return null;
+        }
+
+        /// <summary>Returns <see langword="null"/> if not running.</summary>
+        /// <returns></returns>
+        private static Process GetPhotoshopProcess()
+        {
+            return Process.GetProcessesByName(PS_NAME).FirstOrDefault();
         }
 
         private Process GetActiveWindowProcess()

@@ -29,7 +29,7 @@ namespace PSTimeTracker
         public static readonly string APP_RECORDS_FOLDER_PATH = $"{APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
         public static readonly string APP_CRASHES_FOLDER_PATH = $"{APP_FOLDER_PATH}{CRASHES_FOLDER_NAME}/";
 
-        TrackingService _trackingService;
+        ITrackingService _trackingService;
         RecordManager _recordManager;
         MainViewViewModel _mainWindowViewModel;
 
@@ -40,7 +40,7 @@ namespace PSTimeTracker
             ObservableCollection<PsFile> recordCollection = new ObservableCollection<PsFile>();
 
             _recordManager = new RecordManager(recordCollection);
-            _trackingService = new TrackingService(recordCollection, new ProcessInfoService(), ConfigManager.Config);
+            _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService(), ConfigManager.Config);
 
             _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
 

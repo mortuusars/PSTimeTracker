@@ -31,10 +31,10 @@ namespace PSTimeTracker
 
         #endregion
 
-        private readonly TrackingService _trackingService;
+        private readonly ITrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
-        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, TrackingService trackingService, RecordManager recordManager)
+        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, ITrackingService trackingService, RecordManager recordManager)
         {
             PsFilesList = psFilesList;
             PsFilesList.CollectionChanged += (s, e) => SetFilesCountString();

@@ -7,10 +7,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PSTimeTracker.Models;
 using PSTimeTracker.Services;
+using Photoshop;
 
 namespace PSTimeTracker.Core
 {
-    public class TrackingService : ITrackingService
+    public class ComTrackingService : ITrackingService
     {
         public event EventHandler<int> SummarySecondsChanged;
 
@@ -60,7 +61,7 @@ namespace PSTimeTracker.Core
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="psFilesList">Collection to write to.</param>
-        public TrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
+        public ComTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
         {
             _psFilesList = psFilesList;
             _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();
@@ -85,8 +86,11 @@ namespace PSTimeTracker.Core
             isRunning = true;
             while (isRunning)
             {
-                if ((CheckAFK && IdleTime.TotalSeconds < AFKTime) || !CheckAFK)
-                    Track();
+                if (_processInfoService.PhotoshopIsRunning)
+                {
+                    if ((CheckAFK && IdleTime.TotalSeconds < AFKTime) || !CheckAFK)
+                        Track();
+                }
 
                 await Task.Delay(1000);
             }
@@ -102,30 +106,35 @@ namespace PSTimeTracker.Core
 
         private void Track()
         {
-            string title = _processInfoService.GetActivePhotoshopWindowTitle();
+            string fileName;
 
-            // If filename is null - ps is not active.
-            if (title == null)
+            try
+            {
+                fileName = new ApplicationClass().ActiveDocument.Name;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            
+
+            if (_processInfoService.PhotoshopWindowIsActive)
+            {
+                psTimeSinceLastActive = 0;
+            }
+            else
             {
                 psTimeSinceLastActive++;
+
                 // If should check for active and time is larger than allowed.
                 if (CheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive)
                     return;
-                else
-                {
-                    title = _processInfoService.GetPhotoshopWindowTitle();
-                    // If null - PS is not running.
-                    if (title == null)
-                        return;
-                }
             }
-            else
-                psTimeSinceLastActive = 0;
-
-            string fileName = GetFileNameFromTitle(title);
 
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
+
+            //string fileName = GetFileNameFromTitle(fileName);
 
             PsFile currentlyOpenedFile = GetOrCreateCurrentlyOpenedFile(fileName);
 
