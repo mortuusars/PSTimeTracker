@@ -10,7 +10,7 @@ using PSTimeTracker.Services;
 
 namespace PSTimeTracker.Core
 {
-    public class TrackingService : ITrackingService
+    public class TitleTrackingService : ITrackingService
     {
         public event EventHandler<int> SummarySecondsChanged;
 
@@ -60,7 +60,7 @@ namespace PSTimeTracker.Core
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="psFilesList">Collection to write to.</param>
-        public TrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
+        public TitleTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
         {
             _psFilesList = psFilesList;
             _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();

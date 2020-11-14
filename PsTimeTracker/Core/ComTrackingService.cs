@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PSTimeTracker.Models;
 using PSTimeTracker.Services;
@@ -55,9 +54,11 @@ namespace PSTimeTracker.Core
         private int summarySeconds;
         private int psTimeSinceLastActive;
 
-        readonly ObservableCollection<PsFile> _psFilesList;
-        readonly ProcessInfoService _processInfoService;
-        readonly Config _config;
+        private PsFile lastActiveFile;
+
+        private readonly ObservableCollection<PsFile> _psFilesList;
+        private readonly ProcessInfoService _processInfoService;
+        private readonly Config _config;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="psFilesList">Collection to write to.</param>
@@ -98,7 +99,7 @@ namespace PSTimeTracker.Core
 
         public void StopTracking()
         {
-            if (isRunning == false)
+            if (!isRunning)
                 return;
 
             isRunning = false;
@@ -106,8 +107,8 @@ namespace PSTimeTracker.Core
 
         private void Track()
         {
+            // Getting fileName from photoshop
             string fileName;
-
             try
             {
                 fileName = new ApplicationClass().ActiveDocument.Name;
@@ -116,36 +117,32 @@ namespace PSTimeTracker.Core
             {
                 return;
             }
-            
-
-            if (_processInfoService.PhotoshopWindowIsActive)
-            {
-                psTimeSinceLastActive = 0;
-            }
-            else
-            {
-                psTimeSinceLastActive++;
-
-                // If should check for active and time is larger than allowed.
-                if (CheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive)
-                    return;
-            }
 
             if (string.IsNullOrWhiteSpace(fileName))
                 return;
 
-            //string fileName = GetFileNameFromTitle(fileName);
+            // How much time has passed since PS was active
+            psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
+
+            // If should check for active and time is larger than allowed.
+            if (CheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) 
+                return;
+
+            // Removing active flag from previous file
+            if (lastActiveFile != null)
+                lastActiveFile.IsCurrentlyActive = false;
 
             PsFile currentlyOpenedFile = GetOrCreateCurrentlyOpenedFile(fileName);
 
-            // Add seconds
+            // Change current file
             currentlyOpenedFile.TrackedSeconds++;
-
-            CountSummarySeconds();
-
             currentlyOpenedFile.IsCurrentlyActive = true;
             currentlyOpenedFile.LastActiveTime = DateTimeOffset.Now;
 
+            // Set current as last active
+            lastActiveFile = currentlyOpenedFile;
+
+            CountSummarySeconds();
         }
 
         /// <summary>Finds current filename in list, if it was opened before, otherwise adds file to a list.</summary>
@@ -165,16 +162,6 @@ namespace PSTimeTracker.Core
             return currentlyOpenedFile;
         }
 
-        private string GetFileNameFromTitle(string title)
-        {
-            // Get filename from PS window title.
-            // Photoshop changes window title depending on what file is open. 
-            // DSC00000.jpg @ 100% (Layer 1, RGB/8)
-            // Next we get all chars untill "@", and that is our filename.
-            string fileName = Regex.Match(title, @".*\s@").Value;
-            return fileName.Replace(" @", "");
-        }
-
         public void CountSummarySeconds()
         {
             int newCount = 0;
@@ -182,7 +169,6 @@ namespace PSTimeTracker.Core
             foreach (var file in _psFilesList)
             {
                 newCount += file.TrackedSeconds;
-                file.IsCurrentlyActive = false;
             }
 
             summarySeconds = newCount;
