@@ -7,13 +7,14 @@ using System.Windows.Threading;
 using PSTimeTracker.Services;
 using PSTimeTracker.Core;
 using PSTimeTracker.Models;
+using Photoshop;
 
 namespace PSTimeTracker
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         public const string APP_NAME = "PSTimeTracker";
 
