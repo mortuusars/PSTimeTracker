@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\Montserrat-Light.ttf" />
+    <None Remove="Fonts\Montserrat-Medium.ttf" />
+    <None Remove="Fonts\Montserrat-Regular.ttf" />
+    <None Remove="Fonts\Montserrat-SemiBold.ttf" />
     <None Remove="Fonts\Roboto-Light.ttf" />
     <None Remove="Fonts\Roboto-Medium.ttf" />
     <None Remove="Fonts\Roboto-Regular.ttf" />
@@ -46,6 +50,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Fonts\Montserrat-Light.ttf" />
+    <Resource Include="Fonts\Montserrat-Medium.ttf" />
+    <Resource Include="Fonts\Montserrat-Regular.ttf" />
+    <Resource Include="Fonts\Montserrat-SemiBold.ttf" />
     <Resource Include="Fonts\Roboto-Light.ttf" />
     <Resource Include="Fonts\Roboto-Medium.ttf" />
     <Resource Include="Fonts\Roboto-Regular.ttf" />
