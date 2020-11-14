@@ -12,7 +12,6 @@ namespace PSTimeTracker.Core
 {
     public class TrackingService
     {
-        public event EventHandler<string> ErrorOccured;
         public event EventHandler<int> SummarySecondsChanged;
 
         #region Last Input Time

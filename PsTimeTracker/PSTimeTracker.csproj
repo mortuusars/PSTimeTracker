@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Images\ptc_size.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Images\ptc_size.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
     <Version>1.1</Version>
     <Authors>Evgeny Daubel</Authors>
@@ -16,21 +16,22 @@
     <None Remove="Fonts\Roboto-Medium.ttf" />
     <None Remove="Fonts\Roboto-Regular.ttf" />
     <None Remove="Fonts\Roboto-Thin.ttf" />
-    <None Remove="Images\close_32.png" />
-    <None Remove="Images\close_32_red.png" />
-    <None Remove="Images\corner-handle_24.png" />
-    <None Remove="Images\delete_24.png" />
-    <None Remove="Images\minimize__bottom_32.png" />
-    <None Remove="Images\minimize__center_32.png" />
-    <None Remove="Images\pin_32.png" />
-    <None Remove="Images\ptc_size.ico" />
-    <None Remove="Images\sort_24.png" />
-    <None Remove="Images\sort_32.png" />
+    <None Remove="Resources\Images\close_32.png" />
+    <None Remove="Resources\Images\close_32_red.png" />
+    <None Remove="Resources\Images\corner-handle_24.png" />
+    <None Remove="Resources\Images\delete_24.png" />
+    <None Remove="Resources\Images\minimize__bottom_32.png" />
+    <None Remove="Resources\Images\minimize__center_32.png" />
+    <None Remove="Resources\Images\pin_32.png" />
+    <None Remove="Resources\Images\ptc_size.ico" />
+    <None Remove="Resources\Images\sort_24.png" />
+    <None Remove="Resources\Images\sort_32.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentWpfChromes" Version="1.0.1" />
-    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -38,16 +39,16 @@
     <Resource Include="Fonts\Roboto-Medium.ttf" />
     <Resource Include="Fonts\Roboto-Regular.ttf" />
     <Resource Include="Fonts\Roboto-Thin.ttf" />
-    <Resource Include="Images\close_32.png" />
-    <Resource Include="Images\close_32_red.png" />
-    <Resource Include="Images\corner-handle_24.png" />
-    <Resource Include="Images\delete_24.png" />
-    <Resource Include="Images\minimize__bottom_32.png" />
-    <Resource Include="Images\minimize__center_32.png" />
-    <Resource Include="Images\pin_32.png" />
-    <Resource Include="Images\ptc_size.ico" />
-    <Resource Include="Images\sort_24.png" />
-    <Resource Include="Images\sort_32.png" />
+    <Resource Include="Resources\Images\close_32.png" />
+    <Resource Include="Resources\Images\close_32_red.png" />
+    <Resource Include="Resources\Images\corner-handle_24.png" />
+    <Resource Include="Resources\Images\delete_24.png" />
+    <Resource Include="Resources\Images\minimize__bottom_32.png" />
+    <Resource Include="Resources\Images\minimize__center_32.png" />
+    <Resource Include="Resources\Images\pin_32.png" />
+    <Resource Include="Resources\Images\ptc_size.ico" />
+    <Resource Include="Resources\Images\sort_24.png" />
+    <Resource Include="Resources\Images\sort_32.png" />
   </ItemGroup>
 
 </Project>

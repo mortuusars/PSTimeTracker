@@ -40,7 +40,6 @@ namespace PSTimeTracker
 
             _recordManager = new RecordManager(recordCollection);
             _trackingService = new TrackingService(recordCollection, new ProcessInfoService(), ConfigManager.Config);
-            _trackingService.ErrorOccured += (s, e) => DisplayErrorMessage(e);
 
             _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
 

@@ -44,7 +44,9 @@ namespace PSTimeTracker.Services
 
     public class Config : INotifyPropertyChanged
     {
+        #pragma warning disable 0067
         public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 0067
 
         public int NumberOfRecordsToKeep { get; set; } = 6;
         public bool CheckAFK { get; set; } = true;

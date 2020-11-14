@@ -11,7 +11,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Fonts/Fonts.xaml"/>
-                <ResourceDictionary Source="Colors.xaml"/>
+                <ResourceDictionary Source="Resources/Colors.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <local:SecondsToTimeConverter x:Key="SecondsToTimeConverter"/>

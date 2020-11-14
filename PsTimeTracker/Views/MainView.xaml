@@ -3,14 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:f="clr-namespace:FluentWpfChromes;assembly=FluentWpfChromes"
         xmlns:local="clr-namespace:PSTimeTracker" xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Photoshop Time Tracker"  
         Name="window"
         Height="100" Width="240" MinWidth="240" MinHeight="100" SizeToContent="Height"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="False"
-        Background="#bbffffff"  f:AeroGlassChrome.IsHitTestVisibleInChrome="True">
+        Background="#cfcfcf">
 
     <Window.Resources>
 
@@ -21,7 +20,7 @@
         <ContextMenu x:Key="HeaderContextMenu">
             <MenuItem Header="Clear all" Command="{Binding ClearCommand}">
                 <MenuItem.Icon>
-                    <Image Source="\Images\delete_24.png"/>
+                    <Image Source="\Resources\Images\delete_24.png"/>
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>
@@ -178,7 +177,7 @@
         <Style x:Key="Minimize" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush ImageSource="\Images\minimize__bottom_32.png"/>
+                    <ImageBrush ImageSource="\Resources\Images\minimize__bottom_32.png"/>
                 </Setter.Value>
             </Setter>
 
@@ -187,7 +186,7 @@
         <Style x:Key="AlwaysOnTop" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush ImageSource="\Images\pin_32.png"/>
+                    <ImageBrush ImageSource="\Resources\Images\pin_32.png"/>
                 </Setter.Value>
             </Setter>
 
@@ -204,7 +203,7 @@
         <Style x:Key="Sort" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush ImageSource="\Images\sort_24.png"/>
+                    <ImageBrush ImageSource="\Resources\Images\sort_24.png"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -212,7 +211,7 @@
         <Style x:Key="Clear" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush ImageSource="\Images\delete_24.png"/>
+                    <ImageBrush ImageSource="\Resources\Images\delete_24.png"/>
                 </Setter.Value>
             </Setter>
         </Style>
@@ -220,14 +219,14 @@
         <Style x:Key="Close" TargetType="Button" BasedOn="{StaticResource HeaderButton}">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush ImageSource="\Images\close_32.png"/>
+                    <ImageBrush ImageSource="\Resources\Images\close_32.png"/>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background">
                         <Setter.Value>
-                            <ImageBrush ImageSource="\Images\close_32_red.png"/>
+                            <ImageBrush ImageSource="\Resources\Images\close_32_red.png"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>
@@ -237,10 +236,6 @@
         <!--#endregion-->
 
     </Window.Resources>
-
-    <f:AeroGlassChrome.AeroGlassChrome>
-        <f:AeroGlassChrome/>
-    </f:AeroGlassChrome.AeroGlassChrome>
 
     <Border BorderBrush="{StaticResource MainBorderBrush}" BorderThickness="1.4">
 
