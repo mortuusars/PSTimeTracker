@@ -21,11 +21,16 @@ namespace PSTimeTracker
         public ObservableCollection<PsFile> PsFilesList { get; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
+        public bool MenuIsOpen { get; private set; }
+        public string SelectedItemsInfo { get; set; } = "PS Time Tracker";
 
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
+        public ICommand SelectionChangedCommand { get; }
         public ICommand RemoveItemCommand { get; }
         public ICommand ClearCommand { get; }
+
+        public ICommand MenuCommand { get; }
 
         public ICommand TrackOnlyOnActiveCommand { get; }
         
@@ -50,10 +55,12 @@ namespace PSTimeTracker
             RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking(); });
             StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
 
+            SelectionChangedCommand = new RelayCommand(_ => RefreshSelectedItemsInfo());
             RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
 
             TrackOnlyOnActiveCommand = new RelayCommand(_ => ConfigManager.Config.OnlyActiveWindow = !ConfigManager.Config.OnlyActiveWindow);
+            MenuCommand = new RelayCommand(_ => MenuIsOpen = !MenuIsOpen);
 
             #endregion
 
@@ -100,6 +107,28 @@ namespace PSTimeTracker
                 ItemsCount = filesCount + " files";
             else
                 ItemsCount = "";
+        }
+
+        private void RefreshSelectedItemsInfo()
+        {
+
+            int itemsCount = 0;
+            int summary = 0;
+
+            foreach (var item in PsFilesList)
+            {
+                if (item.IsSelected)
+                {
+                    itemsCount++;
+                    summary += item.TrackedSeconds;
+                }
+            }
+
+            if (itemsCount > 0)
+                SelectedItemsInfo = $"Files: {itemsCount} | {TimeFormatter.GetTimeStringFromSecods(summary)}";
+            else
+                SelectedItemsInfo = "PS Time Tracker";
+
         }
 
         private void RemoveItem(object parameter)

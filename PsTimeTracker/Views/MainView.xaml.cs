@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
@@ -10,7 +9,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using PSTimeTracker.Core;
-using PSTimeTracker.Models;
 
 namespace PSTimeTracker
 {
@@ -34,6 +32,8 @@ namespace PSTimeTracker
             }
         }
 
+        public bool IsHeightResized { get; set; }
+
         public string CurrentSortingString { get => $"Sorted by: {currentSorting}"; }
 
         private bool alwaysOnTop;
@@ -51,7 +51,7 @@ namespace PSTimeTracker
 
             SetWindowFromState();
 
-            HeaderContainer.MouseLeftButtonDown += (s, _) => DragMove();
+            HeaderContainer.MouseLeftButtonDown += (s, _) => { this.DragMove(); this.MainListView.SelectedItem = null; };
 
             //MainItemsControl.Items.IsLiveSorting = true;
 
@@ -101,6 +101,7 @@ namespace PSTimeTracker
             Debug.WriteLine("BottomResizeBorderMouseDown");
             var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Bottom, IntPtr.Zero);
+            IsHeightResized = true;
         }
 
         private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e)
@@ -111,11 +112,25 @@ namespace PSTimeTracker
         private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Arrow;
+            IsHeightResized = false;
         }
         #endregion
 
 
         #region Buttons
+
+        private void Close_LeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            this.Close();
+        }
+
+        private void Minimize_LeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            this.WindowState = WindowState.Minimized;
+        }
+
         /*
         private void SortList(SortingTypes sortBy)
         {
@@ -257,10 +272,6 @@ namespace PSTimeTracker
 
         #endregion
 
-        private void Close_LeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            this.Close();
-        }
+        
     }
 }

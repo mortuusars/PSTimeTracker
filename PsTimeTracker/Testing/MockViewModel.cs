@@ -11,13 +11,9 @@ namespace PSTimeTracker.Testing
 
         public ObservableCollection<PsFile> Files { get; set; } = new ObservableCollection<PsFile>()
         {
-            new PsFile() { FileName = "DSC9123asdasdasdasdasdasd3", TrackedSeconds = 241 },
+            new PsFile() { FileName = "DSC9123asdasdasdasdasdasd3", TrackedSeconds = 241, IsCurrentlyActive = true},
             new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999 },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 0 },
+            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
             new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 }
         };
     }
