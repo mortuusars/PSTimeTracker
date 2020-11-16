@@ -118,7 +118,7 @@ namespace PSTimeTracker.Services
                 App.DisplayErrorMessage("Cannot restore previous records: " + ex.Message);
             }
 
-            return newList;
+            return CleanListProperties(newList);
         }
 
         #endregion
@@ -154,6 +154,17 @@ namespace PSTimeTracker.Services
                 files = GetOrderedRecordFiles();
 
             }
+        }
+
+        private ObservableCollection<PsFile> CleanListProperties(ObservableCollection<PsFile> listToClean)
+        {
+            foreach (var item in listToClean)
+            {
+                item.IsSelected = false;
+                item.IsCurrentlyActive = false;
+            }
+
+            return listToClean;
         }
 
         #endregion
