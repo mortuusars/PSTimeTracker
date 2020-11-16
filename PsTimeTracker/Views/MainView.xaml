@@ -10,18 +10,21 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         Title="Photoshop Time Tracker"  
         Name="mainWindow"
-        Width="290" MinWidth="290"
-        Height="200" MinHeight="200"
-        SizeToContent="Manual"
+        Width="280" MinWidth="280"
+        Height="1080" MinHeight="200"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True"
         Background="{x:Null}"
         d:DataContext="{d:DesignInstance Type=test:MockViewModel, IsDesignTimeCreatable=True}" >
+
+    <Window.InputBindings>
+        <KeyBinding Key="Delete" Command="{Binding RemoveItemsCommand}"/>
+    </Window.InputBindings>
 
     <Window.Resources>
 
         <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="3" Direction="-90" Opacity="0.3"/>
 
-        <sys:Double x:Key="ResizeBorderThickness">6</sys:Double>
+        <sys:Double x:Key="ResizeBorderThickness">9</sys:Double>
 
         <Style x:Key="ResizeBorder" TargetType="{x:Type Border}">
             <Setter Property="Background" Value="Transparent"/>
@@ -57,11 +60,11 @@
         </Style>
 
         <Style TargetType="{x:Type ScrollBar}">
-            <Setter Property="Margin" Value="-10,0,-17,0" />
+            <Setter Property="Margin" Value="-20,0,-17,0" />
             <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
             <Setter Property="Foreground" Value="#FFA1A1A1" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Width" Value="8" />
+            <Setter Property="Width" Value="42"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ScrollBar}">
@@ -108,7 +111,7 @@
 
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="Foreground" Value="#888888"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -203,9 +206,9 @@
         </Style>
 
         <Style x:Key="ListViewContainer" TargetType="{x:Type ListView}">
-            <Setter Property="Margin" Value="5 4"/>
-            <Setter Property="Background" Value="{x:Null}"/>
+            <Setter Property="Background" Value="{StaticResource MainGradient}"/>
             <Setter Property="BorderBrush" Value="{x:Null}"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Visibility" Value="Visible"/>
 
             <Style.Triggers>
@@ -219,8 +222,8 @@
             <Setter Property="Background" Value="{StaticResource ListItemBGBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ListItemBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="0 1.5"/>
-            
+            <Setter Property="Margin" Value="0 2.5"/>
+
             <Style.Triggers>
 
                 <DataTrigger Binding="{Binding IsCurrentlyActive}" Value="True">
@@ -284,12 +287,12 @@
         </DataTemplate>
 
         <Style x:Key="ListGrid" TargetType="{x:Type Grid}">
-            <Setter Property="Height" Value="Auto"/>
+            <!--<Setter Property="Height" Value="Auto"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ElementName=mainWindow, Path=IsHeightResized}" Value="True">
                     <Setter Property="Height" Value="NaN"/>
                 </DataTrigger>
-            </Style.Triggers>
+            </Style.Triggers>-->
         </Style>
 
         <!--#endregion-->
@@ -338,7 +341,8 @@
 
             <Grid Name="HeaderContainer" 
                   Grid.Row="0"
-                  Background="{StaticResource HeaderBackgroundBrush}">
+                  Background="{StaticResource HeaderBackgroundBrush}"
+                  MouseLeftButtonDown="HeaderContainer_MouseLeftButtonDown">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30"/>
@@ -366,12 +370,12 @@
                            Foreground="{StaticResource HeaderForegroundBrush}"
                            Text="{Binding SelectedItemsInfo}" d:Text="Info or title"/>
 
-                    <Image Style="{StaticResource Menu}"
+                <Image Style="{StaticResource Menu}"
                            Margin="4 0 0 0">
-                        <Image.InputBindings>
-                            <MouseBinding Gesture="LeftClick" Command="{Binding MenuCommand}"/>
-                        </Image.InputBindings>
-                    </Image>
+                    <Image.InputBindings>
+                        <MouseBinding Gesture="LeftClick" Command="{Binding MenuCommand}"/>
+                    </Image.InputBindings>
+                </Image>
 
 
                 <StackPanel Name="RightHeaderButtonsContainer" 
@@ -393,14 +397,13 @@
 
             <!--#endregion-->
 
-            <Grid x:Name="CentralContainer"
-              Grid.Row="1"
-              Height="auto"           
-              Background="{StaticResource MainGradient}">
 
-                <!-- List -->
-                <ListView Name="MainListView"
-                          MaxHeight="700" 
+            <!-- List -->
+            <ListView Name="MainListView"
+                      Grid.Row="1"
+                      Height="Auto"
+                      MaxHeight="600"
+                      Padding="5 4"
                       ItemsSource="{Binding PsFilesList}" d:ItemsSource="{Binding Files}"
                       VerticalAlignment="Top"                          
                       HorizontalContentAlignment="Stretch"
@@ -410,28 +413,28 @@
                       Style="{StaticResource ListViewContainer}"
                       >
 
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="SelectionChanged">
-                            <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
 
-                </ListView>
+            </ListView>
 
-                <!-- Can Restore Dialog -->
-                <Grid Background="{StaticResource MainGradient}"
+            <!-- Can Restore Dialog -->
+            <Grid Background="{StaticResource MainGradient}"
                 Height="70"
+                Grid.Row="1"
                 VerticalAlignment="Top"
                 Visibility="{Binding CanRestorePreviousList, Converter={StaticResource BoolToVisibilityConverter}}"
-                d:Visibility="Collapsed">
-                    <local:RestoreDialog/>
-                </Grid>
-
+                d:Visibility="Hidden">
+                <local:RestoreDialog/>
             </Grid>
 
 
             <Border x:Name="LeftResizeBorder"
                     Grid.RowSpan="2"
+                    Margin="-6 0"
                     HorizontalAlignment="Left"
                     Style="{StaticResource SideResizeBorder}"
                     MouseLeftButtonDown="LeftResizeBorder_MouseLeftButtonDown"
@@ -440,6 +443,7 @@
 
             <Border x:Name="RightResizeBorder"
                     Grid.RowSpan="2"
+                    Margin="-8 0"
                     HorizontalAlignment="Right"
                     Style="{StaticResource SideResizeBorder}"
                     MouseLeftButtonDown="RightResizeBorder_MouseLeftButtonDown"
@@ -448,11 +452,14 @@
 
             <Border x:Name="BottomResizeBorder"
                     Grid.RowSpan="2"
+                    Margin="0 -6"
                     Style="{StaticResource BottomResizeBorder}"
                     VerticalAlignment="Bottom"
                     MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"
+                    MouseRightButtonDown="BottomResizeBorder_MouseRightButtonDown"
                     MouseEnter="BottomResizeBorder_MouseEnter"
-                    MouseLeave="ResizeBorder_MouseLeave"/>
+                    MouseLeave="ResizeBorder_MouseLeave"
+                    MouseMove="BottomResizeBorder_MouseMove"/>
 
 
 
@@ -531,7 +538,7 @@
                    VerticalAlignment="Bottom"
                    HorizontalAlignment="Center"
                    d:Text="123123"/>-->
-        
+
 
     </Grid>
 

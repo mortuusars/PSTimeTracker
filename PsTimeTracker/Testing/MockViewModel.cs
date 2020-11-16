@@ -14,6 +14,9 @@ namespace PSTimeTracker.Testing
             new PsFile() { FileName = "DSC9123asdasdasdasdasdasd3", TrackedSeconds = 241, IsCurrentlyActive = true},
             new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 },
             new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
+            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
+            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
+            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
             new PsFile() { FileName = "DSC91233", TrackedSeconds = 241 }
         };
     }

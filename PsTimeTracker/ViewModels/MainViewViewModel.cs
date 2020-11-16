@@ -5,6 +5,7 @@ using System.Windows.Input;
 using PSTimeTracker.Services;
 using PSTimeTracker.Core;
 using PSTimeTracker.Models;
+using System.Collections.Generic;
 
 namespace PSTimeTracker
 {
@@ -27,7 +28,7 @@ namespace PSTimeTracker
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
         public ICommand SelectionChangedCommand { get; }
-        public ICommand RemoveItemCommand { get; }
+        public ICommand RemoveItemsCommand { get; }
         public ICommand ClearCommand { get; }
 
         public ICommand MenuCommand { get; }
@@ -56,7 +57,7 @@ namespace PSTimeTracker
             StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
 
             SelectionChangedCommand = new RelayCommand(_ => RefreshSelectedItemsInfo());
-            RemoveItemCommand = new RelayCommand(p => RemoveItem(p));
+            RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
 
             TrackOnlyOnActiveCommand = new RelayCommand(_ => ConfigManager.Config.OnlyActiveWindow = !ConfigManager.Config.OnlyActiveWindow);
@@ -128,18 +129,14 @@ namespace PSTimeTracker
                 SelectedItemsInfo = $"Files: {itemsCount} | {TimeFormatter.GetTimeStringFromSecods(summary)}";
             else
                 SelectedItemsInfo = "PS Time Tracker";
-
         }
 
-        private void RemoveItem(object parameter)
+        private void RemoveSelectedItems()
         {
-            try
+            for (int i = PsFilesList.Count - 1; i >= 0; i--)
             {
-                PsFilesList.Remove((PsFile)parameter);
-            }
-            catch (Exception ex)
-            {
-                App.DisplayErrorMessage("Error removing item from list: " + ex.Message);
+                if (PsFilesList[i].IsSelected)
+                    PsFilesList.RemoveAt(i);
             }
         }
     }
