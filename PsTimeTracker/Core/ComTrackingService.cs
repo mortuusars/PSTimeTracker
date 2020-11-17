@@ -12,6 +12,9 @@ namespace PSTimeTracker.Core
 {
     public class ComTrackingService : ITrackingService
     {
+        private const int CODE_NO_ACTIVE_DOCUMENT = -2147352565;
+        private const int CODE_APP_IS_BUSY = -2147417846;        
+
         public event EventHandler<int> SummarySecondsChanged;
 
         #region Last Input Time
@@ -41,6 +44,7 @@ namespace PSTimeTracker.Core
 
         #endregion
 
+        public int CheckDelayMS { get; set; } = 1000;
         /// <summary><see langword="true"/> by default. Controls if tracking should stop when user is afk for more than <see cref="AFKTime"/> seconds.</summary>
         public bool CheckAFK { get; set; }
         /// <summary>Maximum allowed AFK Time in seconds. Default is 6 seconds.</summary>
@@ -94,42 +98,66 @@ namespace PSTimeTracker.Core
 
         private void Track()
         {
-            // Getting fileName from photoshop
-            string fileName;
-            try
-            {
-                fileName = new ApplicationClass().ActiveDocument.Name;
-            }
-            catch (Exception)
-            {
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(fileName))
-                return;
-
-            // How much time has passed since PS was active
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
+            if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) return;
 
-            // If should check for active and time is larger than allowed.
-            if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) 
-                return;
-
-            // Removing active flag from previous file
             if (lastActiveFile != null)
                 lastActiveFile.IsCurrentlyActive = false;
 
-            PsFile currentlyOpenedFile = GetOrCreateCurrentlyOpenedFile(fileName);
+            PsFile currentlyActiveFile;
+            string fileName = GetFileNameInTime(100);
 
-            // Change current file
+            if (fileName == null) return;
+            else if (fileName == string.Empty)
+            {
+                if (lastActiveFile == null) return;
+                else currentlyActiveFile = lastActiveFile;
+            }
+            else
+                currentlyActiveFile = GetOrCreateCurrentlyOpenedFile(fileName);
+
+            ChangeFileRecord(currentlyActiveFile);
+
+            lastActiveFile = currentlyActiveFile;
+
+            CountSummarySeconds();
+        }
+
+        private string GetFileNameInTime(int milliseconds)
+        {
+            var task = Task.Run(() => GetFileName());
+            if (task.Wait(milliseconds))
+                return task.Result;
+            else
+                return "";
+        }
+
+        /// <summary>Gets currently active document name.</summary>
+        /// <returns>
+        /// <br>Empty string if PS is busy.</br>
+        /// <br><see langword="null"/> if no documents open.</br>
+        /// </returns>
+        private string GetFileName()
+        {
+            try
+            {
+                return new ApplicationClass().ActiveDocument.Name;
+            }
+            catch (Exception ex) when (ex.InnerException.HResult == CODE_APP_IS_BUSY)
+            {
+                return "";
+            }
+            catch (Exception ex) when (ex.InnerException.HResult == CODE_NO_ACTIVE_DOCUMENT)
+            {
+                return null;
+            }
+        }
+
+        private void ChangeFileRecord(PsFile currentlyOpenedFile)
+        {
             currentlyOpenedFile.TrackedSeconds++;
             currentlyOpenedFile.IsCurrentlyActive = true;
             currentlyOpenedFile.LastActiveTime = DateTimeOffset.Now;
-
-            // Set current as last active
-            lastActiveFile = currentlyOpenedFile;
-
-            CountSummarySeconds();
         }
 
         /// <summary>Finds current filename in list, if it was opened before, otherwise adds file to a list.</summary>
@@ -161,7 +189,5 @@ namespace PSTimeTracker.Core
             summarySeconds = newCount;
             SummarySecondsChanged?.Invoke(this, summarySeconds);
         }
-
-
     }
 }
