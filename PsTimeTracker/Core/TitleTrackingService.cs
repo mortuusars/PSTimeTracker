@@ -46,7 +46,7 @@ namespace PSTimeTracker.Core
         /// <summary>Maximum allowed AFK Time in seconds. Default is 6 seconds.</summary>
         public int AFKTime { get; set; } = 6;
         /// <summary><see langword="true"/> by default. Controls if Photoshop should be active. Photoshop still needs to be running, obviously. </summary>
-        public bool CheckActiveProcess { get; set; }
+        public bool OnlyCheckActiveProcess { get; set; }
         /// <summary>How much time can pass after PS is not active that will still count. Default is 2 seconds</summary>
         public int MaxTimeSinceLastActive { get; set; } = 2;
 
@@ -74,10 +74,10 @@ namespace PSTimeTracker.Core
 
         private void LoadConfigSettings()
         {
-            CheckAFK = _config.CheckAFK;
-            CheckActiveProcess = _config.OnlyActiveWindow;
+            CheckAFK = _config.StopWhenAFK;
+            OnlyCheckActiveProcess = _config.TrackOnlyWhenWindowActive;
 
-            Debug.WriteLine("CheckActiveProcess is: " + CheckActiveProcess);
+            Debug.WriteLine("CheckActiveProcess is: " + OnlyCheckActiveProcess);
         }
 
         public async void StartTracking()
@@ -109,7 +109,7 @@ namespace PSTimeTracker.Core
             {
                 psTimeSinceLastActive++;
                 // If should check for active and time is larger than allowed.
-                if (CheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive)
+                if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive)
                     return;
                 else
                 {

@@ -46,7 +46,7 @@ namespace PSTimeTracker.Core
         /// <summary>Maximum allowed AFK Time in seconds. Default is 6 seconds.</summary>
         public int AFKTime { get; set; } = 6;
         /// <summary><see langword="true"/> by default. Controls if Photoshop should be active. Photoshop still needs to be running, obviously. </summary>
-        public bool CheckActiveProcess { get; set; }
+        public bool OnlyCheckActiveProcess { get; set; }
         /// <summary>How much time can pass after PS is not active that will still count. Default is 2 seconds</summary>
         public int MaxTimeSinceLastActive { get; set; } = 2;
 
@@ -58,28 +58,15 @@ namespace PSTimeTracker.Core
 
         private readonly ObservableCollection<PsFile> _psFilesList;
         private readonly ProcessInfoService _processInfoService;
-        private readonly Config _config;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="psFilesList">Collection to write to.</param>
-        public ComTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
+        public ComTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService)
         {
             _psFilesList = psFilesList;
             _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();
 
             _processInfoService = processInfoService;
-            _config = config;
-            _config.PropertyChanged += (s, e) => LoadConfigSettings();
-
-            LoadConfigSettings();
-        }
-
-        private void LoadConfigSettings()
-        {
-            CheckAFK = _config.CheckAFK;
-            CheckActiveProcess = _config.OnlyActiveWindow;
-
-            Debug.WriteLine("CheckActiveProcess is: " + CheckActiveProcess);
         }
 
         public async void StartTracking()
@@ -125,7 +112,7 @@ namespace PSTimeTracker.Core
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
 
             // If should check for active and time is larger than allowed.
-            if (CheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) 
+            if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) 
                 return;
 
             // Removing active flag from previous file

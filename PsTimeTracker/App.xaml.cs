@@ -7,14 +7,13 @@ using System.Windows.Threading;
 using PSTimeTracker.Services;
 using PSTimeTracker.Core;
 using PSTimeTracker.Models;
-using Photoshop;
 
 namespace PSTimeTracker
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : System.Windows.Application
+    public partial class App : Application
     {
         public const string APP_NAME = "PSTimeTracker";
 
@@ -29,24 +28,31 @@ namespace PSTimeTracker
         public static readonly string APP_RECORDS_FOLDER_PATH = $"{APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
         public static readonly string APP_CRASHES_FOLDER_PATH = $"{APP_FOLDER_PATH}{CRASHES_FOLDER_NAME}/";
 
-        ITrackingService _trackingService;
-        RecordManager _recordManager;
-        MainViewViewModel _mainWindowViewModel;
+        private ConfigManager _configManager;
+
+        private ITrackingService _trackingService;
+        private RecordManager _recordManager;
+        private MainViewViewModel _mainWindowViewModel;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            SetupSettings(); // Load config, and other things.
+            SetupSettings();
 
             ObservableCollection<PsFile> recordCollection = new ObservableCollection<PsFile>();
 
+            _configManager = new ConfigManager();
+            _configManager.ConfigChanged += OnConfigChanged;
+
             _recordManager = new RecordManager(recordCollection);
-            _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService(), ConfigManager.Config);
+            _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService());
 
             _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
 
             MainWindow = new MainView() { DataContext = _mainWindowViewModel };
             MainWindow.Show();
         }
+
+        
 
         public static void DisplayErrorMessage(string message)
         {
@@ -61,12 +67,15 @@ namespace PSTimeTracker
 
 
 
+        private void OnConfigChanged(object sender, EventArgs e)
+        {
+            _trackingService.CheckAFK = ConfigManager.Config.StopWhenAFK;
+            _trackingService.OnlyCheckActiveProcess = ConfigManager.Config.TrackOnlyWhenWindowActive;
+        }
+
         private static void SetupSettings()
         {
             Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
-
-            ConfigManager.Load();
-            ConfigManager.Config.PropertyChanged += (s, e) => ConfigManager.Save();
             
             // Increase tooltip delay
             ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));

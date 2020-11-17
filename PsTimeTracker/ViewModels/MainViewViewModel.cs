@@ -60,7 +60,7 @@ namespace PSTimeTracker
             RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
 
-            TrackOnlyOnActiveCommand = new RelayCommand(_ => ConfigManager.Config.OnlyActiveWindow = !ConfigManager.Config.OnlyActiveWindow);
+            TrackOnlyOnActiveCommand = new RelayCommand(_ => ConfigManager.Config.TrackOnlyWhenWindowActive = !ConfigManager.Config.TrackOnlyWhenWindowActive);
             MenuCommand = new RelayCommand(_ => MenuIsOpen = !MenuIsOpen);
 
             #endregion
