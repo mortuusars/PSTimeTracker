@@ -99,6 +99,7 @@ namespace PSTimeTracker.Core
         private void Track()
         {
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
+            Debug.WriteLine(psTimeSinceLastActive);
             if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) return;
 
             if (lastActiveFile != null)

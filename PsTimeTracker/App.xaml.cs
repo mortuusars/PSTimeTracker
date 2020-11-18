@@ -45,6 +45,7 @@ namespace PSTimeTracker
 
             _recordManager = new RecordManager(recordCollection);
             _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService());
+            SetTrackerSettings();
 
             _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
 
@@ -69,6 +70,11 @@ namespace PSTimeTracker
 
         private void OnConfigChanged(object sender, EventArgs e)
         {
+            SetTrackerSettings();
+        }
+
+        private void SetTrackerSettings()
+        {
             _trackingService.CheckAFK = ConfigManager.Config.StopWhenAFK;
             _trackingService.OnlyCheckActiveProcess = ConfigManager.Config.TrackOnlyWhenWindowActive;
         }
@@ -84,7 +90,13 @@ namespace PSTimeTracker
         // Create crash-report and shutdown application on unhandled exception.
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            new CrashReportManager().ReportCrash(e.Exception.ToString());
+            var crashMessage = $"HResult: {e.Exception.HResult}\nError: {e.Exception}\n Inner: {e.Exception.InnerException}";
+
+            new CrashReportManager().ReportCrash(crashMessage);
+
+            if (ConfigManager.Config.DisplayErrorMessage)
+                DisplayErrorMessage(crashMessage);
+
             this.Shutdown();
         }
     }
