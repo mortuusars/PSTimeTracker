@@ -6,24 +6,27 @@ using PSTimeTracker.Services;
 using PSTimeTracker.Core;
 using PSTimeTracker.Models;
 using System.Collections.Generic;
+using PSTimeTracker.ViewModels;
+using System.Linq;
 
 namespace PSTimeTracker
 {
     public class MainViewViewModel : INotifyPropertyChanged
     {
-        #pragma warning disable 0067
+#pragma warning disable 0067
         public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore 0067
+#pragma warning restore 0067
 
         #region Properties
 
+        public MenuViewModel MenuViewModel { get; }
+
         public int SummarySeconds { get; private set; }
-        public string ItemsCount { get; private set; }
         public ObservableCollection<PsFile> PsFilesList { get; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
         public bool MenuIsOpen { get; private set; }
-        public string SelectedItemsInfo { get; set; } = "PS Time Tracker";
+        public string ItemsInfo { get; set; } = "PS Time Tracker";
 
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
@@ -33,21 +36,23 @@ namespace PSTimeTracker
 
         public ICommand MenuCommand { get; }
 
-        public ICommand TrackOnlyOnActiveCommand { get; }
-        
-
         #endregion
+
+        private int selectedItemsCount;
 
         private readonly ITrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
-        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, ITrackingService trackingService, RecordManager recordManager)
+
+        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
         {
             PsFilesList = psFilesList;
-            PsFilesList.CollectionChanged += (s, e) => OnCollectionChanged();
+            //PsFilesList.CollectionChanged += (s, e) => OnCollectionChanged();
+
+            MenuViewModel = menuViewModel;
 
             _trackingService = trackingService;
-            _trackingService.SummarySecondsChanged += (_, seconds) => SummarySeconds = seconds;
+            _trackingService.SummarySecondsChanged += (_, seconds) => UpdateInfo(seconds);
 
             _recordManager = recordManager;
 
@@ -56,16 +61,15 @@ namespace PSTimeTracker
             RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking(); });
             StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
 
-            SelectionChangedCommand = new RelayCommand(_ => RefreshSelectedItemsInfo());
+            SelectionChangedCommand = new RelayCommand(items => RefreshSelectedItemsInfo(items));
             RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
 
-            TrackOnlyOnActiveCommand = new RelayCommand(_ => ConfigManager.Config.TrackOnlyWhenWindowActive = !ConfigManager.Config.TrackOnlyWhenWindowActive);
-            MenuCommand = new RelayCommand(_ => MenuIsOpen = !MenuIsOpen);
+            MenuCommand = new RelayCommand(_ => MenuViewModel.IsMenuOpen = !MenuViewModel.IsMenuOpen);
 
             #endregion
 
-            SetFilesCountString();
+            //SetFilesCountString();
 
             if (_recordManager.IsRestoringAvailable)
                 CanRestorePreviousList = true;
@@ -73,11 +77,17 @@ namespace PSTimeTracker
                 StartTracking();
         }
 
-        private void OnCollectionChanged()
+        private void UpdateInfo(int seconds)
         {
-            SetFilesCountString();
-            ListIsEmpty = PsFilesList.Count < 1;
+            if (selectedItemsCount == 0)
+                ItemsInfo = TimeFormatter.GetTimeStringFromSecods(seconds);
         }
+
+        //private void OnCollectionChanged()
+        //{
+        //    //SetFilesCountString();
+        //    ListIsEmpty = PsFilesList.Count < 1;
+        //}
 
         private void Restore()
         {
@@ -98,37 +108,30 @@ namespace PSTimeTracker
             CanRestorePreviousList = false;
         }
 
-        private void SetFilesCountString()
+        private void RefreshSelectedItemsInfo(object selectedItems)
         {
-            int filesCount = PsFilesList.Count;
+            System.Collections.IList justList = (System.Collections.IList)selectedItems;
+            var list = justList.Cast<PsFile>().ToList();
 
-            if (filesCount == 1)
-                ItemsCount = filesCount + " file";
-            else if (filesCount > 1)
-                ItemsCount = filesCount + " files";
-            else
-                ItemsCount = "";
-        }
-
-        private void RefreshSelectedItemsInfo()
-        {
-
-            int itemsCount = 0;
-            int summary = 0;
-
-            foreach (var item in PsFilesList)
+            if (list == null || list.Count < 1)
             {
-                if (item.IsSelected)
-                {
-                    itemsCount++;
-                    summary += item.TrackedSeconds;
-                }
+                selectedItemsCount = 0;
             }
-
-            if (itemsCount > 0)
-                SelectedItemsInfo = $"Files: {itemsCount} | {TimeFormatter.GetTimeStringFromSecods(summary)}";
             else
-                SelectedItemsInfo = "PS Time Tracker";
+            {
+                int summary = 0;
+
+                foreach (var item in list)
+                {
+                    if (item.IsSelected)
+                        summary += item.TrackedSeconds;
+                }
+
+                var count = list.Count;
+
+                ItemsInfo = $"Files: {count} | {TimeFormatter.GetTimeStringFromSecods(summary)}";
+                selectedItemsCount = count;
+            }
         }
 
         private void RemoveSelectedItems()

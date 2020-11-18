@@ -1,0 +1,92 @@
+﻿<Window x:Class="PSTimeTracker.Views.ConfigView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PSTimeTracker.Views"
+        mc:Ignorable="d"
+        Title="ConfigView" Height="350" Width="300">
+    <Grid x:Name="MainContainer"
+          Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="GeneralContainer">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="General"
+                       FontSize="18"/>
+            
+            <StackPanel Grid.Row="1"
+                        Margin="0 6">
+                
+                <StackPanel Name="ActiveWindow"
+                            Orientation="Vertical">
+                    <TextBlock Text="Ignore window state (active / not active)"
+                               Margin="2 0"/>
+                    
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 3">
+                        <CheckBox VerticalAlignment="Center"
+                                   IsChecked="{Binding Config.IgnoreWindowState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text=""/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Name="CheckAFK"
+                            Orientation="Vertical">
+                    <TextBlock Text="Ignore AFK Timer"
+                               Margin="2 0"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0 3">
+                        <CheckBox VerticalAlignment="Center"
+                                   IsChecked="{Binding Config.IgnoreAFKTimer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text=""/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+
+
+
+
+        
+        
+        
+        
+        
+        
+
+        <Grid x:Name="BottomContainer"
+              Grid.Row="2"
+              VerticalAlignment="Bottom">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--<Button x:Name="SaveButton"
+                    Content="Save"
+                    Width="126"
+                    Height="30"/>-->
+
+            <Button x:Name="CloseButton"
+                    Grid.Column="1"
+                    Content="Close"
+                    Command="{Binding CloseCommand}"
+                    Width="126"
+                    Height="30"/>
+
+        </Grid>
+
+    </Grid>
+</Window>

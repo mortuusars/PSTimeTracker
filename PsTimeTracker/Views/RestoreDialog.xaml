@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PSTimeTracker"
              mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="210">
+             d:DesignHeight="80" d:DesignWidth="280">
 
 
 
@@ -15,8 +15,12 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Restore previous record?" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   FontFamily="{StaticResource RobotoLight}" FontSize="18"/>
+        <TextBlock Text="Restore previous record?" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   FontFamily="{StaticResource MontserratRegular}" 
+                   Foreground="{StaticResource MainForegroundBrush}"
+                   FontSize="18"/>
 
         <Grid Grid.Row="1" >
 
@@ -25,10 +29,22 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Margin="0 4 4 0" Content="Yes" Background="#60ffffff"
-                        Command="{Binding RestoreAndStartCommand}" Click="Button_Click"/>
-            <Button Grid.Column="1" Margin="4 4 0 0" Content="No" Background="#60ffffff"
-                        Command="{Binding StartWithoutRestoringCommand}" Click="Button_Click"/>
+            <Button Grid.Column="0" 
+                    Margin="6 4" 
+                    Content="Yes" 
+                    FontFamily="{StaticResource MontserratRegular}" 
+                    Background="{StaticResource HeaderBackgroundBrush}"
+                    Foreground="{StaticResource MainForegroundBrush}"
+                    Command="{Binding RestoreAndStartCommand}" 
+                    Click="Button_Click"/>
+            <Button Grid.Column="1" 
+                    Margin="6 4" 
+                    Content="No" 
+                    FontFamily="{StaticResource MontserratRegular}" 
+                    Background="{StaticResource HeaderBackgroundBrush}"
+                    Foreground="{StaticResource MainForegroundBrush}"
+                    Command="{Binding StartWithoutRestoringCommand}" 
+                    Click="Button_Click"/>
         </Grid>
 
     </Grid>

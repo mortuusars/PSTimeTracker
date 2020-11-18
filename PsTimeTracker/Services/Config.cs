@@ -8,9 +8,9 @@ namespace PSTimeTracker.Services
         public event PropertyChangedEventHandler PropertyChanged;
         #pragma warning restore 0067
 
-        public bool DisplayErrorMessage { get; set; } = true;
+        public bool IgnoreWindowState { get; set; }
+        public bool IgnoreAFKTimer { get; set; }
         public int NumberOfRecordsToKeep { get; set; } = 6;
-        public bool StopWhenAFK { get; set; } = true;
-        public bool TrackOnlyWhenWindowActive { get; set; } = true;
+        public bool DisplayErrorMessage { get; set; } = true;
     }
 }

@@ -13,7 +13,7 @@ namespace PSTimeTracker.Core
     public class ComTrackingService : ITrackingService
     {
         private const int CODE_NO_ACTIVE_DOCUMENT = -2147352565;
-        private const int CODE_APP_IS_BUSY = -2147417846;        
+        private const int CODE_APP_IS_BUSY = -2147417846;
 
         public event EventHandler<int> SummarySecondsChanged;
 
@@ -46,11 +46,11 @@ namespace PSTimeTracker.Core
 
         public int CheckDelayMS { get; set; } = 1000;
         /// <summary><see langword="true"/> by default. Controls if tracking should stop when user is afk for more than <see cref="AFKTime"/> seconds.</summary>
-        public bool CheckAFK { get; set; }
+        public bool IgnoreAFK { get; set; }
         /// <summary>Maximum allowed AFK Time in seconds. Default is 6 seconds.</summary>
         public int AFKTime { get; set; } = 6;
         /// <summary><see langword="true"/> by default. Controls if Photoshop should be active. Photoshop still needs to be running, obviously. </summary>
-        public bool OnlyCheckActiveProcess { get; set; }
+        public bool IgnoreWindowState { get; set; }
         /// <summary>How much time can pass after PS is not active that will still count. Default is 2 seconds</summary>
         public int MaxTimeSinceLastActive { get; set; } = 2;
 
@@ -83,13 +83,17 @@ namespace PSTimeTracker.Core
 
                 if (_processInfoService.PhotoshopIsRunning)
                 {
-                    if ((CheckAFK && IdleTime.TotalSeconds < AFKTime) || !CheckAFK)
+                    if (IgnoreAFK || (IdleTime.TotalSeconds < AFKTime))
                         Track();
                 }
 
                 //Debug.WriteLine("Tracking done in: " + stopwatch.ElapsedMilliseconds + "ms");
 
-                await Task.Delay(CheckDelayMS - (int)stopwatch.ElapsedMilliseconds);
+                int delay = CheckDelayMS - (int)stopwatch.ElapsedMilliseconds;
+                if (delay < 1)
+                    delay = 1;
+
+                await Task.Delay(delay);
 
                 //Debug.WriteLine("Total (should be 1000ms): " + stopwatch.ElapsedMilliseconds + "ms");
 
@@ -108,7 +112,7 @@ namespace PSTimeTracker.Core
         private void Track()
         {
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
-            if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) return;
+            if (IgnoreWindowState == false && psTimeSinceLastActive > MaxTimeSinceLastActive) return;
 
             if (lastActiveFile != null)
                 lastActiveFile.IsCurrentlyActive = false;

@@ -32,7 +32,8 @@ namespace PSTimeTracker
 
         private ITrackingService _trackingService;
         private RecordManager _recordManager;
-        private MainViewViewModel _mainWindowViewModel;
+
+        private IViewManager _viewManager;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -47,10 +48,8 @@ namespace PSTimeTracker
             _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService());
             SetTrackerSettings();
 
-            _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
-
-            MainWindow = new MainView() { DataContext = _mainWindowViewModel };
-            MainWindow.Show();
+            _viewManager = new ViewManager(recordCollection, _trackingService, _recordManager);
+            _viewManager.ShowMainView();
         }
 
         
@@ -75,8 +74,8 @@ namespace PSTimeTracker
 
         private void SetTrackerSettings()
         {
-            _trackingService.CheckAFK = ConfigManager.Config.StopWhenAFK;
-            _trackingService.OnlyCheckActiveProcess = ConfigManager.Config.TrackOnlyWhenWindowActive;
+            _trackingService.IgnoreAFK = ConfigManager.Config.IgnoreAFKTimer;
+            _trackingService.IgnoreWindowState = ConfigManager.Config.IgnoreWindowState;
         }
 
         private static void SetupSettings()

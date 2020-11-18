@@ -130,7 +130,7 @@
 
         <!--#region Header Buttons -->
 
-        <sys:Double x:Key="HeaderButtonsDefaultOpacity">0.45</sys:Double>
+        <sys:Double x:Key="HeaderButtonsDefaultOpacity">0.25</sys:Double>
         <sys:Double x:Key="HeaderButtonsHoverOpacity">0.9</sys:Double>
 
         <Storyboard x:Key="ButtonMouseOverAnimation">
@@ -371,7 +371,7 @@
                            FontFamily="{StaticResource MontserratRegular}"
                            FontSize="16" 
                            Foreground="{StaticResource HeaderForegroundBrush}"
-                           Text="{Binding SelectedItemsInfo}" d:Text="Info or title"/>
+                           Text="{Binding ItemsInfo}" d:Text="Info or title"/>
 
                 <Image Style="{StaticResource Menu}"
                            Margin="4 0 0 0">
@@ -418,7 +418,8 @@
 
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
-                        <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}"/>
+                        <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" 
+                                               CommandParameter="{Binding ElementName=MainListView, Path=SelectedItems}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
 
@@ -434,6 +435,7 @@
                 <local:RestoreDialog/>
             </Grid>
 
+            <!--#region Resize Borders -->
 
             <Border x:Name="LeftResizeBorder"
                     Grid.RowSpan="2"
@@ -464,20 +466,21 @@
                     MouseLeave="ResizeBorder_MouseLeave"
                     MouseMove="BottomResizeBorder_MouseMove"/>
 
-
+            <!--#endregion-->
 
         </Grid>
 
         <!--#region Menu -->
         <Grid x:Name="MenuContrainer"
-                  HorizontalAlignment="Left"
-                  VerticalAlignment="Top"
-                  Width="Auto"
-                  Height="Auto"
-                  Margin="18"
-                  Visibility="{Binding MenuIsOpen, Converter={StaticResource BoolToVisibilityConverter}}" 
-                  d:Visibility="Hidden"
-                  Background="{x:Null}">
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Width="Auto"
+              Height="Auto"
+              Margin="18"
+              Visibility="{Binding IsMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}" 
+              d:Visibility="Hidden"
+              Background="{x:Null}"
+              DataContext="{Binding MenuViewModel}">
 
             <Border x:Name="MenuBorder" 
                         BorderBrush="{StaticResource MainBorderBrush}"
@@ -519,7 +522,8 @@
                     <Button x:Name="MenuConfigButton"
                                 Grid.Row="2"
                                 Content="Config..."
-                                Style="{StaticResource MenuButton}" />
+                                Style="{StaticResource MenuButton}"
+                                Command="{Binding OpenConfigCommand}"/>
 
                     <Button x:Name="MenuAboutButton"
                                 Grid.Row="3"
