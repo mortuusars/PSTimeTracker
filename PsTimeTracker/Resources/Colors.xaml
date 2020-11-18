@@ -11,7 +11,7 @@
     <Color x:Key="HeaderBorder">#a2a2a2</Color>
     <SolidColorBrush x:Key="HeaderBorderBrush" Color="{StaticResource HeaderBorder}"/>
 
-    <Color x:Key="HeaderBackground">#f6f6f6</Color>
+    <Color x:Key="HeaderBackground">#f9f9f9</Color>
     <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="{StaticResource HeaderBackground}"/>
 
     <Color x:Key="HeaderForeground">#5d5d5d</Color>
@@ -26,13 +26,13 @@
     <Color x:Key="ListItemBG">#e5e5e5</Color>
     <SolidColorBrush x:Key="ListItemBGBrush" Color="{StaticResource ListItemBG}"/>
 
-    <Color x:Key="ListItemBGActive">#ffffff</Color>
+    <Color x:Key="ListItemBGActive">#7abcf5</Color>
     <SolidColorBrush x:Key="ListItemBGActiveBrush" Color="{StaticResource ListItemBGActive}"/>
 
-    <Color x:Key="ListItemBGMouseOver">#daebff</Color>
+    <Color x:Key="ListItemBGMouseOver">#c5dfff</Color>
     <SolidColorBrush x:Key="ListItemBGMouseOverBrush" Color="{StaticResource ListItemBGMouseOver}"/>
 
-    <Color x:Key="ListItemBGSelected">#a4c9f6</Color>
+    <Color x:Key="ListItemBGSelected">#87aded</Color>
     <SolidColorBrush x:Key="ListItemBGSelectedBrush" Color="{StaticResource ListItemBGSelected}"/>
 
 
