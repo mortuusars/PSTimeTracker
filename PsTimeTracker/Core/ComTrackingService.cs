@@ -78,13 +78,22 @@ namespace PSTimeTracker.Core
             isRunning = true;
             while (isRunning)
             {
+                var stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
+
                 if (_processInfoService.PhotoshopIsRunning)
                 {
                     if ((CheckAFK && IdleTime.TotalSeconds < AFKTime) || !CheckAFK)
                         Track();
                 }
 
-                await Task.Delay(1000);
+                //Debug.WriteLine("Tracking done in: " + stopwatch.ElapsedMilliseconds + "ms");
+
+                await Task.Delay(CheckDelayMS - (int)stopwatch.ElapsedMilliseconds);
+
+                //Debug.WriteLine("Total (should be 1000ms): " + stopwatch.ElapsedMilliseconds + "ms");
+
+                stopwatch.Stop();
             }
         }
 
@@ -99,7 +108,6 @@ namespace PSTimeTracker.Core
         private void Track()
         {
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
-            Debug.WriteLine(psTimeSinceLastActive);
             if (OnlyCheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive) return;
 
             if (lastActiveFile != null)
@@ -109,7 +117,7 @@ namespace PSTimeTracker.Core
             string fileName = GetFileNameInTime(100);
 
             if (fileName == null) return;
-            else if (fileName == string.Empty)
+            else if (fileName.Length == 0)
             {
                 if (lastActiveFile == null) return;
                 else currentlyActiveFile = lastActiveFile;
