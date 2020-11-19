@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\ps_timer_tracker_size.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
-    <Version>1.1</Version>
+    <Version>1.2.2</Version>
     <Authors>Evgeny Daubel</Authors>
     <StartupObject>PSTimeTracker.App</StartupObject>
   </PropertyGroup>

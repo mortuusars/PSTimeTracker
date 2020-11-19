@@ -16,6 +16,8 @@ namespace PSTimeTracker.Services
         public ConfigManager()
         {
             Load();
+            Save();
+
             Config.PropertyChanged += Config_OnPropertyChanged;
         }
 
@@ -53,16 +55,5 @@ namespace PSTimeTracker.Services
                 App.DisplayErrorMessage("Error saving config file: " + ex.Message);
             }
         }
-    }
-
-    public class Config : INotifyPropertyChanged
-    {
-        #pragma warning disable 0067
-        public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore 0067
-
-        public int NumberOfRecordsToKeep { get; set; } = 6;
-        public bool StopWhenAFK { get; set; } = true;
-        public bool TrackOnlyWhenWindowActive { get; set; } = true;
     }
 }

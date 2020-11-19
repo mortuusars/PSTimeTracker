@@ -73,9 +73,6 @@ namespace PSTimeTracker
                     e.Handled = true;
                 }
             };
-
-            //this.MouseLeftButtonUp += (s, e) => isDragging = false;
-            //this.MouseLeave += (s, e) => isDragging = false;
         }
 
         #region Events

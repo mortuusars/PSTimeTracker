@@ -32,7 +32,8 @@ namespace PSTimeTracker
 
         private ITrackingService _trackingService;
         private RecordManager _recordManager;
-        private MainViewViewModel _mainWindowViewModel;
+
+        private IViewManager _viewManager;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -45,11 +46,10 @@ namespace PSTimeTracker
 
             _recordManager = new RecordManager(recordCollection);
             _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService());
+            SetTrackerSettings();
 
-            _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
-
-            MainWindow = new MainView() { DataContext = _mainWindowViewModel };
-            MainWindow.Show();
+            _viewManager = new ViewManager(recordCollection, _trackingService, _recordManager);
+            _viewManager.ShowMainView();
         }
 
         
@@ -69,8 +69,13 @@ namespace PSTimeTracker
 
         private void OnConfigChanged(object sender, EventArgs e)
         {
-            _trackingService.CheckAFK = ConfigManager.Config.StopWhenAFK;
-            _trackingService.OnlyCheckActiveProcess = ConfigManager.Config.TrackOnlyWhenWindowActive;
+            SetTrackerSettings();
+        }
+
+        private void SetTrackerSettings()
+        {
+            _trackingService.IgnoreAFK = ConfigManager.Config.IgnoreAFKTimer;
+            _trackingService.IgnoreWindowState = ConfigManager.Config.IgnoreWindowState;
         }
 
         private static void SetupSettings()
@@ -84,7 +89,13 @@ namespace PSTimeTracker
         // Create crash-report and shutdown application on unhandled exception.
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            new CrashReportManager().ReportCrash(e.Exception.ToString());
+            var crashMessage = $"HResult: {e.Exception.HResult}\nError: {e.Exception}\n Inner: {e.Exception.InnerException}";
+
+            new CrashReportManager().ReportCrash(crashMessage);
+
+            if (ConfigManager.Config.DisplayErrorMessage)
+                DisplayErrorMessage(crashMessage);
+
             this.Shutdown();
         }
     }

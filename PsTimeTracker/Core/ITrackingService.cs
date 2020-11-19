@@ -5,8 +5,8 @@ namespace PSTimeTracker.Core
     public interface ITrackingService
     {
         int AFKTime { get; set; }
-        bool OnlyCheckActiveProcess { get; set; }
-        bool CheckAFK { get; set; }
+        bool IgnoreWindowState { get; set; }
+        bool IgnoreAFK { get; set; }
         int MaxTimeSinceLastActive { get; set; }
 
         event EventHandler<int> SummarySecondsChanged;
