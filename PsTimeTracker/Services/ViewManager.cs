@@ -6,13 +6,14 @@ using PSTimeTracker.Core;
 using PSTimeTracker.Models;
 using PSTimeTracker.ViewModels;
 using PSTimeTracker.Views;
+using FileIO;
 
 namespace PSTimeTracker.Services
 {
     internal class ViewManager : IViewManager
     {
 
-        private readonly ObservableCollection<PsFile> _psFilesList;
+        private ObservableCollection<PsFile> _psFilesList;
         private readonly ITrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
@@ -26,21 +27,66 @@ namespace PSTimeTracker.Services
             _recordManager = recordManager;
         }
 
+        #region MainView
+
+        private const string MAIN_WINDOW_STATE_FILENAME = "mainWindowState.";
+        private readonly string MAIN_WINDOW_STATE_FILEPATH = App.APP_FOLDER_PATH + MAIN_WINDOW_STATE_FILENAME;
+
         public void ShowMainView()
         {
             MenuViewModel menuViewModel = new MenuViewModel(this);
-            MainViewViewModel mainWindowViewModel = new MainViewViewModel(_psFilesList, _trackingService, _recordManager, menuViewModel);
+            MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _psFilesList, this, _trackingService, _recordManager, menuViewModel);
 
             _mainView = new MainView() { DataContext = mainWindowViewModel };
+
+            var state = LoadMainViewState();
+            SetMainViewFromState(state);
+
             _mainView.Show();
+        }
+
+        public void MinimizeMainView()
+        {
+            _mainView.WindowState = System.Windows.WindowState.Minimized;
         }
 
         public void CloseMainView()
         {
+            SaveMainViewState();
             _mainView.Close();
-            //TODO Handle saving state of mainview
         }
 
+        private void SaveMainViewState()
+        {
+            MainViewState mainViewState = new MainViewState()
+            {
+                Left = _mainView.Left,
+                Top = _mainView.Top,
+                Width = _mainView.ActualWidth,
+                Height = _mainView.ActualHeight,
+                AlwaysOnTop = _mainView.Topmost,
+            };
+
+            JsonManager.SerializeAndWrite(mainViewState, MAIN_WINDOW_STATE_FILEPATH);
+        }
+
+        private MainViewState LoadMainViewState()
+        {
+            var mainViewState = JsonManager.ReadAndDeserialize<MainViewState>(MAIN_WINDOW_STATE_FILEPATH);
+            return mainViewState ?? new MainViewState();
+        }
+
+        private void SetMainViewFromState(MainViewState state)
+        {
+            _mainView.Left = state.Left;
+            _mainView.Top = state.Top;
+            _mainView.Width = state.Width;
+            //_mainView.Height = state.Height;
+            _mainView.AlwaysOnTop = state.AlwaysOnTop;
+            //_mainView.currentSorting = state.SortingOrder;
+        }
+
+        #endregion
 
         public void ShowConfigView()
         {

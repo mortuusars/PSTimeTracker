@@ -45,6 +45,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\Mortuus.IO\FileIO\FileIO.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Fonts\Montserrat-Light.ttf" />
     <Resource Include="Resources\Fonts\Montserrat-Medium.ttf" />
     <Resource Include="Resources\Fonts\Montserrat-Regular.ttf" />

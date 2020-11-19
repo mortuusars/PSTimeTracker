@@ -22,7 +22,7 @@ namespace PSTimeTracker
         public MenuViewModel MenuViewModel { get; }
 
         public int SummarySeconds { get; private set; }
-        public ObservableCollection<PsFile> PsFilesList { get; }
+        public ObservableCollection<PsFile> PsFilesList { get; set; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
         public bool MenuIsOpen { get; private set; }
@@ -34,23 +34,31 @@ namespace PSTimeTracker
         public ICommand RemoveItemsCommand { get; }
         public ICommand ClearCommand { get; }
 
+        public ICommand SortListCommand { get; }
+
         public ICommand MenuCommand { get; }
+
+        public ICommand MinimizeWindowCommand { get; }
+        public ICommand CloseWindowCommand { get; }
 
         #endregion
 
+        bool sorted;
+
         private int selectedItemsCount;
 
+        private readonly IViewManager _viewManager;
         private readonly ITrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
 
-        public MainViewViewModel(ObservableCollection<PsFile> psFilesList, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
+        public MainViewViewModel(ref ObservableCollection<PsFile> psFilesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
         {
             PsFilesList = psFilesList;
-            //PsFilesList.CollectionChanged += (s, e) => OnCollectionChanged();
 
             MenuViewModel = menuViewModel;
 
+            _viewManager = viewManager;
             _trackingService = trackingService;
             _trackingService.SummarySecondsChanged += (_, seconds) => UpdateInfo(seconds);
 
@@ -65,16 +73,35 @@ namespace PSTimeTracker
             RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
             ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
 
+            SortListCommand = new RelayCommand(_ => SortList());
+
             MenuCommand = new RelayCommand(_ => MenuViewModel.IsMenuOpen = !MenuViewModel.IsMenuOpen);
 
-            #endregion
+            MinimizeWindowCommand = new RelayCommand(_ => _viewManager.MinimizeMainView());
+            CloseWindowCommand = new RelayCommand(_ => _viewManager.CloseMainView());
 
-            //SetFilesCountString();
+            #endregion
 
             if (_recordManager.IsRestoringAvailable)
                 CanRestorePreviousList = true;
             else
                 StartTracking();
+        }
+
+        private void SortList()
+        {
+            if (!sorted)
+            {
+                PsFilesList = new ObservableCollection<PsFile>(PsFilesList.OrderBy(file => file.FileName));
+                sorted = true;
+            }
+            else
+            {
+                PsFilesList = new ObservableCollection<PsFile>(PsFilesList.OrderByDescending(file => file.FileName));
+                sorted = false;
+            }
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PsFilesList)));
         }
 
         private void UpdateInfo(int seconds)

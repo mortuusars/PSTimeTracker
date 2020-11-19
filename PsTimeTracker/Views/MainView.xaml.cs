@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using PSTimeTracker.Core;
+using PSTimeTracker.Models;
 
 namespace PSTimeTracker
 {
@@ -19,9 +21,6 @@ namespace PSTimeTracker
     public partial class MainView : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        private const string MAIN_WINDOW_STATE_FILENAME = "mainWindowState.";
-        private readonly string MAIN_WINDOW_STATE_FILEPATH = App.APP_FOLDER_PATH + MAIN_WINDOW_STATE_FILENAME;
 
         public bool AlwaysOnTop
         {
@@ -43,11 +42,11 @@ namespace PSTimeTracker
 
         #region Dragging
 
-        double previousMouseY = double.NaN;
+        private double previousMouseY = double.NaN;
 
         private bool _isDragging;
 
-        public bool isDragging
+        public bool IsDragging
         {
             get { return _isDragging; }
             set {
@@ -76,22 +75,6 @@ namespace PSTimeTracker
         }
 
         #region Events
-
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            base.OnSourceInitialized(e);
-
-            SetWindowFromState();
-
-            //MainItemsControl.Items.IsLiveSorting = true;
-            //SortList(currentSorting);
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            SaveMainWindowState();
-            base.OnClosing(e);
-        }
 
         private void HeaderContainer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -126,26 +109,14 @@ namespace PSTimeTracker
             SetAutoHeight();
         }
 
-        private void SideResizeBorder_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.SizeWE;
-        }
+        private void SideResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeWE;
 
         // Bottom
         private void BottomResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //Debug.WriteLine("BottomResizeBorderMouseDown");
-            //var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
-            //SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Bottom, IntPtr.Zero);
-            // IsHeightResized = true;
-            //CentralContainer.Height = MainContainer.ActualWidth - 30;
-
             MainListView.MaxHeight = this.Height;
-
-            isDragging = true;
-
+            IsDragging = true;
             previousMouseY = e.GetPosition(MainListView).Y;
-
             DragResizeBottom();
         }
 
@@ -156,7 +127,7 @@ namespace PSTimeTracker
 
         private void DragResizeBottom()
         {
-            if (isDragging)
+            if (IsDragging)
             {
                 Mouse.Capture(BottomResizeBorder);
 
@@ -174,26 +145,16 @@ namespace PSTimeTracker
                 previousMouseY = currentMouseY;
 
                 if (Mouse.LeftButton == MouseButtonState.Released)
-                    isDragging = false;
+                    IsDragging = false;
 
             }
         }
 
-
         private void BottomResizeBorder_MouseRightButtonDown(object sender, MouseButtonEventArgs e) => SetAutoHeight();
 
-        private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.SizeNS;
-        }
+        private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeNS;
 
-        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Arrow;
-            //IsHeightResized = false;
-        }
-
-        #endregion
+        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.Arrow;
 
         private void SetAutoHeight()
         {
@@ -201,73 +162,43 @@ namespace PSTimeTracker
             this.MainListView.Height = double.NaN;
         }
 
+        #endregion
 
-        #region Buttons
 
-        private void Close_LeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            this.Close();
-        }
+        #region Sorting
 
-        private void Minimize_LeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            this.WindowState = WindowState.Minimized;
-        }
 
-        /*
         private void SortList(SortingTypes sortBy)
         {
-            MainItemsControl.Items.SortDescriptions.Clear();
+            MainListView.Items.SortDescriptions.Clear();
 
             // TODO: Sorting in viewmodel
             switch (sortBy)
             {
                 case SortingTypes.NameABC:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Ascending));
+                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Ascending));
                     break;
                 case SortingTypes.NameZYX:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Descending));
+                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Descending));
                     break;
                 case SortingTypes.TimeShorter:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Ascending));
+                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Ascending));
                     break;
                 case SortingTypes.TimeLonger:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Descending));
+                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Descending));
                     break;
                 case SortingTypes.FirstOpened:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Ascending));
+                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Ascending));
                     break;
                 case SortingTypes.LastOpened:
-                    MainItemsControl.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Descending));
+                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Descending));
                     break;
             }
 
-            SortingPopup.Text = sortBy.ToString();
+            //SortingPopup.Text = sortBy.ToString();
             currentSorting = sortBy;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSortingString)));
-        }
-
-        private void AlwaysOnTop_Click(object sender, RoutedEventArgs e)
-        {
-            AlwaysOnTop = !AlwaysOnTop;
-        }
-
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        private void Header_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
         }
 
         private void Sort_Click(object sender, RoutedEventArgs e)
@@ -300,57 +231,13 @@ namespace PSTimeTracker
 
             SortList(sortBy);
         }
-        */
 
         #endregion
 
 
         #region State
 
-        private MainViewState LoadMainWindowState()
-        {
-            try
-            {
-                string jsonString = File.ReadAllText(MAIN_WINDOW_STATE_FILEPATH);
-                return JsonSerializer.Deserialize<MainViewState>(jsonString);
-            }
-            catch (Exception)
-            {
-                return new MainViewState();
-            }
-        }
-
-        private void SetWindowFromState()
-        {
-            MainViewState windowState = LoadMainWindowState();
-            this.Left = windowState.Left;
-            this.Top = windowState.Top;
-            this.Width = windowState.Width;
-            //this.Height = windowState.Height;
-            AlwaysOnTop = windowState.AlwaysOnTop;
-            currentSorting = windowState.SortingOrder;
-        }
-
-        public void SaveMainWindowState()
-        {
-            try
-            {
-                string jsonString = JsonSerializer.Serialize(new MainViewState()
-                {
-                    Left = this.Left,
-                    Top = this.Top,
-                    Width = this.ActualWidth,
-                    Height = this.ActualHeight,
-                    AlwaysOnTop = this.Topmost,
-                    SortingOrder = this.currentSorting
-                }, new JsonSerializerOptions() { WriteIndented = true });
-                File.WriteAllText(MAIN_WINDOW_STATE_FILEPATH, jsonString);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Cannot save window state: " + ex.Message, "PSTimerTracker", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+        
 
 
 

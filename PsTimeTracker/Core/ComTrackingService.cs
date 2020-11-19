@@ -60,12 +60,12 @@ namespace PSTimeTracker.Core
 
         private PsFile lastActiveFile;
 
-        private readonly ObservableCollection<PsFile> _psFilesList;
+        private ObservableCollection<PsFile> _psFilesList;
         private readonly ProcessInfoService _processInfoService;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="psFilesList">Collection to write to.</param>
-        public ComTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService)
+        public ComTrackingService(ref ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService)
         {
             _psFilesList = psFilesList;
             _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();
@@ -98,6 +98,9 @@ namespace PSTimeTracker.Core
                 //Debug.WriteLine("Total (should be 1000ms): " + stopwatch.ElapsedMilliseconds + "ms");
 
                 stopwatch.Stop();
+
+                var list = _psFilesList;
+
             }
         }
 
@@ -155,6 +158,10 @@ namespace PSTimeTracker.Core
             try
             {
                 return new ApplicationClass().ActiveDocument.Name;
+            }
+            catch (Exception ex) when (ex.InnerException == null)
+            {
+                return "";
             }
             catch (Exception ex) when (ex.InnerException.HResult == CODE_APP_IS_BUSY)
             {

@@ -18,7 +18,7 @@ namespace PSTimeTracker.Services
         public bool SaveToLastLoadedFile { get; set; }
 
         /// <summary>True if records are present and we can restore them.</summary>
-        public bool IsRestoringAvailable { get; private set; }
+        public bool IsRestoringAvailable { get; }
 
         /// <summary>How many records(files) will be kept. 1 - 200. Default: 6 </summary>
         public int NumberOfRecordsToKeep

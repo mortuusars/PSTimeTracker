@@ -45,7 +45,7 @@ namespace PSTimeTracker
             _configManager.ConfigChanged += OnConfigChanged;
 
             _recordManager = new RecordManager(recordCollection);
-            _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService());
+            _trackingService = new ComTrackingService(ref recordCollection, new ProcessInfoService());
             SetTrackerSettings();
 
             _viewManager = new ViewManager(recordCollection, _trackingService, _recordManager);
