@@ -28,24 +28,31 @@ namespace PSTimeTracker
         public static readonly string APP_RECORDS_FOLDER_PATH = $"{APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
         public static readonly string APP_CRASHES_FOLDER_PATH = $"{APP_FOLDER_PATH}{CRASHES_FOLDER_NAME}/";
 
-        TrackingService _trackingService;
-        RecordManager _recordManager;
-        MainViewViewModel _mainWindowViewModel;
+        private ConfigManager _configManager;
+
+        private ITrackingService _trackingService;
+        private RecordManager _recordManager;
+
+        private IViewManager _viewManager;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            SetupSettings(); // Load config, and other things.
+            SetupSettings();
 
             ObservableCollection<PsFile> recordCollection = new ObservableCollection<PsFile>();
 
+            _configManager = new ConfigManager();
+            _configManager.ConfigChanged += OnConfigChanged;
+
             _recordManager = new RecordManager(recordCollection);
-            _trackingService = new TrackingService(recordCollection, new ProcessInfoService(), ConfigManager.Config);
+            _trackingService = new ComTrackingService(recordCollection, new ProcessInfoService());
+            SetTrackerSettings();
 
-            _mainWindowViewModel = new MainViewViewModel(recordCollection, _trackingService, _recordManager);
-
-            MainWindow = new MainView() { DataContext = _mainWindowViewModel };
-            MainWindow.Show();
+            _viewManager = new ViewManager(recordCollection, _trackingService, _recordManager);
+            _viewManager.ShowMainView();
         }
+
+        
 
         public static void DisplayErrorMessage(string message)
         {
@@ -60,12 +67,20 @@ namespace PSTimeTracker
 
 
 
+        private void OnConfigChanged(object sender, EventArgs e)
+        {
+            SetTrackerSettings();
+        }
+
+        private void SetTrackerSettings()
+        {
+            _trackingService.IgnoreAFK = ConfigManager.Config.IgnoreAFKTimer;
+            _trackingService.IgnoreWindowState = ConfigManager.Config.IgnoreWindowState;
+        }
+
         private static void SetupSettings()
         {
             Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
-
-            ConfigManager.Load();
-            ConfigManager.Config.PropertyChanged += (s, e) => ConfigManager.Save();
             
             // Increase tooltip delay
             ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
@@ -74,7 +89,13 @@ namespace PSTimeTracker
         // Create crash-report and shutdown application on unhandled exception.
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            new CrashReportManager().ReportCrash(e.Exception.ToString());
+            var crashMessage = $"HResult: {e.Exception.HResult}\nError: {e.Exception}\n Inner: {e.Exception.InnerException}";
+
+            new CrashReportManager().ReportCrash(crashMessage);
+
+            if (ConfigManager.Config.DisplayErrorMessage)
+                DisplayErrorMessage(crashMessage);
+
             this.Shutdown();
         }
     }

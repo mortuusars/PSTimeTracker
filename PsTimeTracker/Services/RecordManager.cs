@@ -118,7 +118,7 @@ namespace PSTimeTracker.Services
                 App.DisplayErrorMessage("Cannot restore previous records: " + ex.Message);
             }
 
-            return newList;
+            return CleanListProperties(newList);
         }
 
         #endregion
@@ -145,15 +145,24 @@ namespace PSTimeTracker.Services
         /// <summary> Deletes oldest records. Stops when number of records is under allowed amount.</summary>
         private void RemoveExcessRecordFiles(FileInfo[] files)
         {
-            Debug.WriteLine("Entered removeexcess method");
             while (files.Length > NumberOfRecordsToKeep)
             {
                 var file = files.FirstOrDefault();
                 file?.Delete();
                 // Refresh files list
                 files = GetOrderedRecordFiles();
-
             }
+        }
+
+        private ObservableCollection<PsFile> CleanListProperties(ObservableCollection<PsFile> listToClean)
+        {
+            foreach (var item in listToClean)
+            {
+                item.IsSelected = false;
+                item.IsCurrentlyActive = false;
+            }
+
+            return listToClean;
         }
 
         #endregion

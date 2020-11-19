@@ -14,5 +14,6 @@ namespace PSTimeTracker.Models
         public DateTimeOffset FirstActiveTime { get; set; }
         public DateTimeOffset LastActiveTime { get; set; }
         public bool IsCurrentlyActive { get; set; }
+        public bool IsSelected { get; set; }
     }
 }

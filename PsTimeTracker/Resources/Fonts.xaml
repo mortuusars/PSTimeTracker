@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:PSTimeTracker.Fonts">
+
+    <FontFamily x:Key="Roboto">/Resources/Fonts/#Roboto</FontFamily>
+    <FontFamily x:Key="RobotoThin">/Resources/Fonts/#Roboto Thin</FontFamily>
+    <FontFamily x:Key="RobotoLight">/Resources/Fonts/#Roboto Light</FontFamily>
+    <FontFamily x:Key="RobotoRegular">/Resources/Fonts/#Roboto Regular</FontFamily>
+    <FontFamily x:Key="RobotoMedium">/Resources/Fonts/#Roboto Medium</FontFamily>
+
+    <FontFamily x:Key="MontserratLight">/Resources/Fonts/#Montserrat Light</FontFamily>
+    <FontFamily x:Key="MontserratRegular">/Resources/Fonts/#Montserrat Regular</FontFamily>
+    <FontFamily x:Key="MontserratMedium">/Resources/Fonts/#Montserrat Medium</FontFamily>
+    <FontFamily x:Key="MontserratSemiBold">/Resources/Fonts/#Montserrat SemiBold</FontFamily>
+
+</ResourceDictionary>

@@ -10,7 +10,7 @@ using PSTimeTracker.Services;
 
 namespace PSTimeTracker.Core
 {
-    public class TrackingService
+    public class TitleTrackingService : ITrackingService
     {
         public event EventHandler<int> SummarySecondsChanged;
 
@@ -42,11 +42,11 @@ namespace PSTimeTracker.Core
         #endregion
 
         /// <summary><see langword="true"/> by default. Controls if tracking should stop when user is afk for more than <see cref="AFKTime"/> seconds.</summary>
-        public bool CheckAFK { get; set; }
+        public bool IgnoreAFK { get; set; }
         /// <summary>Maximum allowed AFK Time in seconds. Default is 6 seconds.</summary>
         public int AFKTime { get; set; } = 6;
         /// <summary><see langword="true"/> by default. Controls if Photoshop should be active. Photoshop still needs to be running, obviously. </summary>
-        public bool CheckActiveProcess { get; set; }
+        public bool IgnoreWindowState { get; set; }
         /// <summary>How much time can pass after PS is not active that will still count. Default is 2 seconds</summary>
         public int MaxTimeSinceLastActive { get; set; } = 2;
 
@@ -60,7 +60,7 @@ namespace PSTimeTracker.Core
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="psFilesList">Collection to write to.</param>
-        public TrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
+        public TitleTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
         {
             _psFilesList = psFilesList;
             _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();
@@ -74,10 +74,10 @@ namespace PSTimeTracker.Core
 
         private void LoadConfigSettings()
         {
-            CheckAFK = _config.CheckAFK;
-            CheckActiveProcess = _config.OnlyActiveWindow;
+            IgnoreAFK = _config.IgnoreAFKTimer;
+            IgnoreWindowState = _config.IgnoreWindowState;
 
-            Debug.WriteLine("CheckActiveProcess is: " + CheckActiveProcess);
+            Debug.WriteLine("CheckActiveProcess is: " + IgnoreWindowState);
         }
 
         public async void StartTracking()
@@ -85,7 +85,7 @@ namespace PSTimeTracker.Core
             isRunning = true;
             while (isRunning)
             {
-                if ( (CheckAFK && IdleTime.TotalSeconds < AFKTime) || !CheckAFK)
+                if ((IgnoreAFK && IdleTime.TotalSeconds < AFKTime) || !IgnoreAFK)
                     Track();
 
                 await Task.Delay(1000);
@@ -109,7 +109,7 @@ namespace PSTimeTracker.Core
             {
                 psTimeSinceLastActive++;
                 // If should check for active and time is larger than allowed.
-                if (CheckActiveProcess && psTimeSinceLastActive > MaxTimeSinceLastActive)
+                if (IgnoreWindowState && psTimeSinceLastActive > MaxTimeSinceLastActive)
                     return;
                 else
                 {
@@ -180,6 +180,6 @@ namespace PSTimeTracker.Core
             SummarySecondsChanged?.Invoke(this, summarySeconds);
         }
 
-        
+
     }
 }
