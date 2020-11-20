@@ -60,15 +60,15 @@ namespace PSTimeTracker.Core
 
         private PsFile lastActiveFile;
 
-        private ObservableCollection<PsFile> _psFilesList;
+        private ObservableCollection<PsFile> _FilesList;
         private readonly ProcessInfoService _processInfoService;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
-        /// <param name="psFilesList">Collection to write to.</param>
-        public ComTrackingService(ref ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService)
+        /// <param name="FilesList">Collection to write to.</param>
+        public ComTrackingService(ref ObservableCollection<PsFile> FilesList, ProcessInfoService processInfoService)
         {
-            _psFilesList = psFilesList;
-            _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();
+            _FilesList = FilesList;
+            _FilesList.CollectionChanged += (s, e) => CountSummarySeconds();
 
             _processInfoService = processInfoService;
         }
@@ -99,7 +99,7 @@ namespace PSTimeTracker.Core
 
                 stopwatch.Stop();
 
-                var list = _psFilesList;
+                var list = _FilesList;
 
             }
         }
@@ -186,12 +186,12 @@ namespace PSTimeTracker.Core
             // Find current filename in list, if it was opened before
             // Add filename to list if it's new
 
-            PsFile currentlyOpenedFile = _psFilesList.FirstOrDefault(f => f.FileName == fileName);
+            PsFile currentlyOpenedFile = _FilesList.FirstOrDefault(f => f.FileName == fileName);
 
             if (currentlyOpenedFile == null)
             {
                 currentlyOpenedFile = new PsFile() { FileName = fileName, FirstActiveTime = DateTimeOffset.Now };
-                _psFilesList.Add(currentlyOpenedFile);
+                _FilesList.Add(currentlyOpenedFile);
             }
 
             return currentlyOpenedFile;
@@ -201,7 +201,7 @@ namespace PSTimeTracker.Core
         {
             int newCount = 0;
 
-            foreach (var file in _psFilesList)
+            foreach (var file in _FilesList)
             {
                 newCount += file.TrackedSeconds;
             }

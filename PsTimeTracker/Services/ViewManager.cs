@@ -13,16 +13,16 @@ namespace PSTimeTracker.Services
     internal class ViewManager : IViewManager
     {
 
-        private ObservableCollection<PsFile> _psFilesList;
+        private ObservableCollection<PsFile> _FilesList;
         private readonly ITrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
         private MainView _mainView;
         private ConfigView _configView;
 
-        public ViewManager(ObservableCollection<PsFile> psFilesList, ITrackingService trackingService, RecordManager recordManager)
+        public ViewManager(ObservableCollection<PsFile> FilesList, ITrackingService trackingService, RecordManager recordManager)
         {
-            _psFilesList = psFilesList;
+            _FilesList = FilesList;
             _trackingService = trackingService;
             _recordManager = recordManager;
         }
@@ -35,7 +35,7 @@ namespace PSTimeTracker.Services
         public void ShowMainView()
         {
             MenuViewModel menuViewModel = new MenuViewModel(this);
-            MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _psFilesList, this, _trackingService, _recordManager, menuViewModel);
+            MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _FilesList, this, _trackingService, _recordManager, menuViewModel);
 
             _mainView = new MainView() { DataContext = mainWindowViewModel };
 

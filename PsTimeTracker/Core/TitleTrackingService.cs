@@ -54,16 +54,16 @@ namespace PSTimeTracker.Core
         private int summarySeconds;
         private int psTimeSinceLastActive;
 
-        readonly ObservableCollection<PsFile> _psFilesList;
+        readonly ObservableCollection<PsFile> _filesList;
         readonly ProcessInfoService _processInfoService;
         readonly Config _config;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
-        /// <param name="psFilesList">Collection to write to.</param>
-        public TitleTrackingService(ObservableCollection<PsFile> psFilesList, ProcessInfoService processInfoService, Config config)
+        /// <param name="filesList">Collection to write to.</param>
+        public TitleTrackingService(ObservableCollection<PsFile> filesList, ProcessInfoService processInfoService, Config config)
         {
-            _psFilesList = psFilesList;
-            _psFilesList.CollectionChanged += (s, e) => CountSummarySeconds();
+            _filesList = filesList;
+            _filesList.CollectionChanged += (s, e) => CountSummarySeconds();
 
             _processInfoService = processInfoService;
             _config = config;
@@ -145,12 +145,12 @@ namespace PSTimeTracker.Core
             // Find current filename in list, if it was opened before
             // Add filename to list if it's new
 
-            PsFile currentlyOpenedFile = _psFilesList.FirstOrDefault(f => f.FileName == fileName);
+            PsFile currentlyOpenedFile = _filesList.FirstOrDefault(f => f.FileName == fileName);
 
             if (currentlyOpenedFile == null)
             {
                 currentlyOpenedFile = new PsFile() { FileName = fileName, FirstActiveTime = DateTimeOffset.Now };
-                _psFilesList.Add(currentlyOpenedFile);
+                _filesList.Add(currentlyOpenedFile);
             }
 
             return currentlyOpenedFile;
@@ -170,7 +170,7 @@ namespace PSTimeTracker.Core
         {
             int newCount = 0;
 
-            foreach (var file in _psFilesList)
+            foreach (var file in _filesList)
             {
                 newCount += file.TrackedSeconds;
                 file.IsCurrentlyActive = false;

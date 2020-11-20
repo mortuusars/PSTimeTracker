@@ -39,16 +39,16 @@ namespace PSTimeTracker
         {
             SetupSettings();
 
-            ObservableCollection<PsFile> recordCollection = new ObservableCollection<PsFile>();
+            ObservableCollection<PsFile> filesList = new ObservableCollection<PsFile>();
 
             _configManager = new ConfigManager();
             _configManager.ConfigChanged += OnConfigChanged;
 
-            _recordManager = new RecordManager(recordCollection);
-            _trackingService = new ComTrackingService(ref recordCollection, new ProcessInfoService());
+            _recordManager = new RecordManager(filesList);
+            _trackingService = new ComTrackingService(ref filesList, new ProcessInfoService());
             SetTrackerSettings();
 
-            _viewManager = new ViewManager(recordCollection, _trackingService, _recordManager);
+            _viewManager = new ViewManager(filesList, _trackingService, _recordManager);
             _viewManager.ShowMainView();
         }
 

@@ -17,13 +17,13 @@
     <Color x:Key="HeaderForeground">#5d5d5d</Color>
     <SolidColorBrush x:Key="HeaderForegroundBrush" Color="{StaticResource HeaderForeground}"/>
 
-    <Color x:Key="MainForeground">#555555</Color>
+    <Color x:Key="MainForeground">#777777</Color>
     <SolidColorBrush x:Key="MainForegroundBrush" Color="{StaticResource MainForeground}"/>
 
     
     
 
-    <Color x:Key="ListItemBG">#e5e5e5</Color>
+    <Color x:Key="ListItemBG">#eeeeee</Color>
     <SolidColorBrush x:Key="ListItemBGBrush" Color="{StaticResource ListItemBG}"/>
 
     <Color x:Key="ListItemBGActive">#b1dbff</Color>

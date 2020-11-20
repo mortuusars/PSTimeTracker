@@ -21,8 +21,8 @@ namespace PSTimeTracker
 
         public MenuViewModel MenuViewModel { get; }
 
+        public ObservableCollection<PsFile> FilesList { get; set; }
         public int SummarySeconds { get; private set; }
-        public ObservableCollection<PsFile> PsFilesList { get; set; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
         public bool MenuIsOpen { get; private set; }
@@ -52,9 +52,9 @@ namespace PSTimeTracker
         private readonly RecordManager _recordManager;
 
 
-        public MainViewViewModel(ref ObservableCollection<PsFile> psFilesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
+        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
         {
-            PsFilesList = psFilesList;
+            FilesList = filesList;
 
             MenuViewModel = menuViewModel;
 
@@ -71,7 +71,7 @@ namespace PSTimeTracker
 
             SelectionChangedCommand = new RelayCommand(items => RefreshSelectedItemsInfo(items));
             RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
-            ClearCommand = new RelayCommand(_ => PsFilesList.Clear());
+            ClearCommand = new RelayCommand(_ => FilesList.Clear());
 
             SortListCommand = new RelayCommand(_ => SortList());
 
@@ -92,16 +92,16 @@ namespace PSTimeTracker
         {
             if (!sorted)
             {
-                PsFilesList = new ObservableCollection<PsFile>(PsFilesList.OrderBy(file => file.FileName));
+                FilesList = new ObservableCollection<PsFile>(FilesList.OrderBy(file => file.FileName));
                 sorted = true;
             }
             else
             {
-                PsFilesList = new ObservableCollection<PsFile>(PsFilesList.OrderByDescending(file => file.FileName));
+                FilesList = new ObservableCollection<PsFile>(FilesList.OrderByDescending(file => file.FileName));
                 sorted = false;
             }
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PsFilesList)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilesList)));
         }
 
         private void UpdateInfo(int seconds)
@@ -113,16 +113,16 @@ namespace PSTimeTracker
         //private void OnCollectionChanged()
         //{
         //    //SetFilesCountString();
-        //    ListIsEmpty = PsFilesList.Count < 1;
+        //    ListIsEmpty = FilesList.Count < 1;
         //}
 
         private void Restore()
         {
-            PsFilesList.Clear();
+            FilesList.Clear();
 
             foreach (var file in _recordManager.LoadLastRecord())
             {
-                PsFilesList.Add(file);
+                FilesList.Add(file);
             }
 
             _recordManager.SaveToLastLoadedFile = true;
@@ -163,10 +163,10 @@ namespace PSTimeTracker
 
         private void RemoveSelectedItems()
         {
-            for (int i = PsFilesList.Count - 1; i >= 0; i--)
+            for (int i = FilesList.Count - 1; i >= 0; i--)
             {
-                if (PsFilesList[i].IsSelected)
-                    PsFilesList.RemoveAt(i);
+                if (FilesList[i].IsSelected)
+                    FilesList.RemoveAt(i);
             }
         }
     }

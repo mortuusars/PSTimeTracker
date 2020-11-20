@@ -182,7 +182,7 @@
             <Setter Property="Visibility" Value="Visible"/>
 
             <Style.Triggers>
-                <DataTrigger Binding="{Binding PsFilesList.Count}" Value="0">
+                <DataTrigger Binding="{Binding FilesList.Count}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -216,7 +216,7 @@
             <Setter Property="Visibility" Value="Visible"/>
 
             <Style.Triggers>
-                <DataTrigger Binding="{Binding PsFilesList.Count}" Value="0">
+                <DataTrigger Binding="{Binding FilesList.Count}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -420,7 +420,7 @@
                       Height="Auto"
                       MaxHeight="600"
                       Padding="5 4"
-                      ItemsSource="{Binding PsFilesList}" d:ItemsSource="{Binding Files}"
+                      ItemsSource="{Binding FilesList}" d:ItemsSource="{Binding Files}"
                       VerticalAlignment="Top"                          
                       HorizontalContentAlignment="Stretch"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
