@@ -9,6 +9,6 @@ namespace PSTimeTracker
         public double Width { get; set; }
         public double Height { get; set; }
         public bool AlwaysOnTop { get; set; }
-        public SortingTypes SortingOrder { get; set; }
+        public Sorting SortingOrder { get; set; }
     }
 }

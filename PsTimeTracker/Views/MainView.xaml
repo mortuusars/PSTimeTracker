@@ -7,7 +7,8 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:test="clr-namespace:PSTimeTracker.Testing"
         mc:Ignorable="d"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         Title="Photoshop Time Tracker"  
         Name="mainWindow"
         Width="300" MinWidth="300"
@@ -25,6 +26,13 @@
 
     <Window.Resources>
 
+
+        <!--<CollectionViewSource x:Key="FilesListCollectionView" Source="{Binding FilesList}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="{Binding SortBy}"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>-->
+        
         <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="3" Direction="-90" Opacity="0.3"/>
 
         <sys:Double x:Key="ResizeBorderThickness">9</sys:Double>
@@ -226,7 +234,7 @@
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ListItemBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Margin" Value="2 3"/>
+            <Setter Property="Margin" Value="2 2.5"/>
 
             <Style.Triggers>
 
@@ -350,7 +358,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
 
                 <Rectangle Name="MainHeaderDivider"
@@ -385,6 +393,13 @@
                             Grid.Column="2"
                             Orientation="Horizontal" 
                             HorizontalAlignment="Right">
+                    
+                    <Image Style="{StaticResource Minimize}"
+                           Margin="5 0 8 0" >
+                        <Image.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding SortListCommand}"/>
+                        </Image.InputBindings>
+                    </Image>
 
                     <Image Style="{StaticResource Minimize}"
                            Margin="0 0 5 0">
@@ -399,12 +414,7 @@
                         </Image.InputBindings>
                     </Image>
 
-                    <Image Style="{StaticResource Minimize}"
-                           Margin="5 0 8 0" >
-                        <Image.InputBindings>
-                            <MouseBinding Gesture="LeftClick" Command="{Binding SortListCommand}"/>
-                        </Image.InputBindings>
-                    </Image>
+                    
 
                 </StackPanel>
 
@@ -418,9 +428,9 @@
             <ListView Name="MainListView"
                       Grid.Row="1"
                       Height="Auto"
-                      MaxHeight="600"
+                      MaxHeight="620"
                       Padding="5 4"
-                      ItemsSource="{Binding FilesList}" d:ItemsSource="{Binding Files}"
+                      ItemsSource="{Binding FilesCollectionView}" d:ItemsSource="{Binding Files}"
                       VerticalAlignment="Top"                          
                       HorizontalContentAlignment="Stretch"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"

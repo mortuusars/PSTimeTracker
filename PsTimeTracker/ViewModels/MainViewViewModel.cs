@@ -8,6 +8,7 @@ using PSTimeTracker.Models;
 using System.Collections.Generic;
 using PSTimeTracker.ViewModels;
 using System.Linq;
+using System.Windows.Data;
 
 namespace PSTimeTracker
 {
@@ -21,12 +22,15 @@ namespace PSTimeTracker
 
         public MenuViewModel MenuViewModel { get; }
 
+        public ICollectionView FilesCollectionView { get; }
         public ObservableCollection<PsFile> FilesList { get; set; }
         public int SummarySeconds { get; private set; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
         public bool MenuIsOpen { get; private set; }
         public string ItemsInfo { get; set; } = "PS Time Tracker";
+
+        public Sorting CurrentSorting { get; set; }
 
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
@@ -43,8 +47,6 @@ namespace PSTimeTracker
 
         #endregion
 
-        bool sorted;
-
         private int selectedItemsCount;
 
         private readonly IViewManager _viewManager;
@@ -55,6 +57,7 @@ namespace PSTimeTracker
         public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
         {
             FilesList = filesList;
+            FilesCollectionView = CollectionViewSource.GetDefaultView(FilesList);
 
             MenuViewModel = menuViewModel;
 
@@ -90,18 +93,41 @@ namespace PSTimeTracker
 
         private void SortList()
         {
-            if (!sorted)
-            {
-                FilesList = new ObservableCollection<PsFile>(FilesList.OrderBy(file => file.FileName));
-                sorted = true;
-            }
+            Sorting sortBy;
+            if (CurrentSorting >= Enum.GetValues(typeof(Sorting)).Cast<Sorting>().Max())
+                sortBy = (Sorting)0;
             else
             {
-                FilesList = new ObservableCollection<PsFile>(FilesList.OrderByDescending(file => file.FileName));
-                sorted = false;
+                sortBy = CurrentSorting + 1;
             }
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FilesList)));
+            CurrentSorting = sortBy;
+
+            FilesCollectionView.SortDescriptions.Clear();
+
+            switch (CurrentSorting)
+            {
+                case Sorting.FirstAdded:
+                    FilesCollectionView.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Ascending));
+                    break;
+                case Sorting.LastAdded:
+                    FilesCollectionView.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Descending));
+                    break;
+                case Sorting.NameAZ:
+                    FilesCollectionView.SortDescriptions.Add(new SortDescription("FileName", ListSortDirection.Ascending));
+                    break;
+                case Sorting.NameZA:
+                    FilesCollectionView.SortDescriptions.Add(new SortDescription("FileName", ListSortDirection.Descending));
+                    break;
+                case Sorting.TimeShorter:
+                    FilesCollectionView.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Ascending));
+                    break;
+                case Sorting.TimeLonger:
+                    FilesCollectionView.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Descending));
+                    break;
+            }
+
+            FilesCollectionView.Refresh();
         }
 
         private void UpdateInfo(int seconds)
@@ -109,12 +135,6 @@ namespace PSTimeTracker
             if (selectedItemsCount == 0)
                 ItemsInfo = TimeFormatter.GetTimeStringFromSecods(seconds);
         }
-
-        //private void OnCollectionChanged()
-        //{
-        //    //SetFilesCountString();
-        //    ListIsEmpty = FilesList.Count < 1;
-        //}
 
         private void Restore()
         {

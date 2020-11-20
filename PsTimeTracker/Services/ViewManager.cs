@@ -82,8 +82,6 @@ namespace PSTimeTracker.Services
             _mainView.Top = state.Top;
             _mainView.Width = state.Width;
             //_mainView.Height = state.Height;
-            _mainView.AlwaysOnTop = state.AlwaysOnTop;
-            //_mainView.currentSorting = state.SortingOrder;
         }
 
         #endregion

@@ -21,24 +21,8 @@ namespace PSTimeTracker
     public partial class MainView : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public bool AlwaysOnTop
-        {
-            get { return alwaysOnTop; }
-            set {
-                alwaysOnTop = value;
-                this.Topmost = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlwaysOnTop)));
-            }
-        }
-
-        public bool IsHeightResized { get; set; }
-
-        public string CurrentSortingString { get => $"Sorted by: {currentSorting}"; }
-
-        private bool alwaysOnTop;
-        private SortingTypes currentSorting;
-
+        
+        public double MaxListHeight { get; set; }
 
         #region Dragging
 
@@ -72,6 +56,8 @@ namespace PSTimeTracker
                     e.Handled = true;
                 }
             };
+
+            MaxListHeight = MainListView.MaxHeight;
         }
 
         #region Events
@@ -158,95 +144,10 @@ namespace PSTimeTracker
 
         private void SetAutoHeight()
         {
-            this.MainListView.MaxHeight = 600;
+            this.MainListView.MaxHeight = MaxListHeight;
             this.MainListView.Height = double.NaN;
         }
 
         #endregion
-
-
-        #region Sorting
-
-
-        private void SortList(SortingTypes sortBy)
-        {
-            MainListView.Items.SortDescriptions.Clear();
-
-            // TODO: Sorting in viewmodel
-            switch (sortBy)
-            {
-                case SortingTypes.NameABC:
-                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Ascending));
-                    break;
-                case SortingTypes.NameZYX:
-                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FileName), ListSortDirection.Descending));
-                    break;
-                case SortingTypes.TimeShorter:
-                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Ascending));
-                    break;
-                case SortingTypes.TimeLonger:
-                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.TrackedSeconds), ListSortDirection.Descending));
-                    break;
-                case SortingTypes.FirstOpened:
-                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Ascending));
-                    break;
-                case SortingTypes.LastOpened:
-                    MainListView.Items.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Descending));
-                    break;
-            }
-
-            //SortingPopup.Text = sortBy.ToString();
-            currentSorting = sortBy;
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSortingString)));
-        }
-
-        private void Sort_Click(object sender, RoutedEventArgs e)
-        {
-
-            SortingTypes sortBy;
-
-            if (currentSorting >= Enum.GetValues(typeof(SortingTypes)).Cast<SortingTypes>().Max())
-                sortBy = (SortingTypes)0;
-            else
-            {
-                sortBy = currentSorting + 1;
-            }
-
-            currentSorting = sortBy;
-
-            SortList(sortBy);
-        }
-
-        private void Sort_RightClick(object sender, MouseButtonEventArgs e)
-        {
-            SortingTypes sortBy;
-
-            if (currentSorting <= Enum.GetValues(typeof(SortingTypes)).Cast<SortingTypes>().Min())
-                sortBy = Enum.GetValues(typeof(SortingTypes)).Cast<SortingTypes>().Max();
-            else
-            {
-                sortBy = currentSorting - 1;
-            }
-
-            SortList(sortBy);
-        }
-
-        #endregion
-
-
-        #region State
-
-        
-
-
-
-
-
-
-
-        #endregion
-
-        
     }
 }
