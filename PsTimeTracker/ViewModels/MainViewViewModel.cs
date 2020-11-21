@@ -20,17 +20,19 @@ namespace PSTimeTracker
 
         #region Properties
 
-        public MenuViewModel MenuViewModel { get; }
+        public bool AlwaysOnTop { get; set; }
 
         public ICollectionView FilesCollectionView { get; }
         public ObservableCollection<PsFile> FilesList { get; set; }
         public int SummarySeconds { get; private set; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
-        public bool MenuIsOpen { get; private set; }
+        public bool IsMenuOpen { get; private set; }
         public string ItemsInfo { get; set; } = "PS Time Tracker";
 
         public Sorting CurrentSorting { get; set; }
+
+        public ICommand PinCommand { get; }
 
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
@@ -41,6 +43,9 @@ namespace PSTimeTracker
         public ICommand SortListCommand { get; }
 
         public ICommand MenuCommand { get; }
+        public ICommand OpenPreviousCommand { get; }
+        public ICommand OpenConfigCommand { get; }
+        public ICommand OpenAboutCommand { get; }
 
         public ICommand MinimizeWindowCommand { get; }
         public ICommand CloseWindowCommand { get; }
@@ -54,12 +59,10 @@ namespace PSTimeTracker
         private readonly RecordManager _recordManager;
 
 
-        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager, MenuViewModel menuViewModel)
+        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager)
         {
             FilesList = filesList;
             FilesCollectionView = CollectionViewSource.GetDefaultView(FilesList);
-
-            MenuViewModel = menuViewModel;
 
             _viewManager = viewManager;
             _trackingService = trackingService;
@@ -68,6 +71,8 @@ namespace PSTimeTracker
             _recordManager = recordManager;
 
             #region Commands
+
+            PinCommand  = new RelayCommand(_ => Pin());
 
             RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking(); });
             StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
@@ -78,7 +83,8 @@ namespace PSTimeTracker
 
             SortListCommand = new RelayCommand(_ => SortList());
 
-            MenuCommand = new RelayCommand(_ => MenuViewModel.IsMenuOpen = !MenuViewModel.IsMenuOpen);
+            MenuCommand = new RelayCommand(_ => IsMenuOpen = !IsMenuOpen);
+            OpenConfigCommand = new RelayCommand(_ => OnOpenConfigCommand());
 
             MinimizeWindowCommand = new RelayCommand(_ => _viewManager.MinimizeMainView());
             CloseWindowCommand = new RelayCommand(_ => _viewManager.CloseMainView());
@@ -89,6 +95,17 @@ namespace PSTimeTracker
                 CanRestorePreviousList = true;
             else
                 StartTracking();
+        }
+
+        private void OnOpenConfigCommand()
+        {
+            IsMenuOpen = false;
+            _viewManager.ShowConfigView();
+        }
+
+        private void Pin()
+        {
+            AlwaysOnTop = !AlwaysOnTop;
         }
 
         private void SortList()

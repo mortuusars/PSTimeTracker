@@ -21,22 +21,26 @@
     <SolidColorBrush x:Key="MainForegroundBrush" Color="{StaticResource MainForeground}"/>
 
     
-    
+    <!-- Items -->
 
     <Color x:Key="ListItemBG">#eeeeee</Color>
     <SolidColorBrush x:Key="ListItemBGBrush" Color="{StaticResource ListItemBG}"/>
 
-    <Color x:Key="ListItemBGActive">#b1dbff</Color>
+    <Color x:Key="ListItemBGActive">#c0d8f0</Color>
     <SolidColorBrush x:Key="ListItemBGActiveBrush" Color="{StaticResource ListItemBGActive}"/>
 
-    <Color x:Key="ListItemBGMouseOver">#c5dfff</Color>
-    <SolidColorBrush x:Key="ListItemBGMouseOverBrush" Color="{StaticResource ListItemBGMouseOver}"/>
+    <Color x:Key="ListItemBorderMouseOver">#222222</Color>
+    <SolidColorBrush x:Key="ListItemBorderMouseOverBrush" Color="{StaticResource ListItemBorderMouseOver}"/>
 
-    <Color x:Key="ListItemBGSelected">#87aded</Color>
+
+    <Color x:Key="ListItemBGSelected">#90c0f0</Color>
     <SolidColorBrush x:Key="ListItemBGSelectedBrush" Color="{StaticResource ListItemBGSelected}"/>
 
+    <Color x:Key="ListItemFGSelected">#444444</Color>
+    <SolidColorBrush x:Key="ListItemFGSelectedBrush" Color="{StaticResource ListItemFGSelected}"/>
 
-    <Color x:Key="ListItemBorder">#666666</Color>
+
+    <Color x:Key="ListItemBorder">#777777</Color>
     <SolidColorBrush x:Key="ListItemBorderBrush" Color="{StaticResource ListItemBorder}"/>
 
 

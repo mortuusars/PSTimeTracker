@@ -23,6 +23,7 @@
     <None Remove="Resources\Images\close_24.png" />
     <None Remove="Resources\Images\menu_24.png" />
     <None Remove="Resources\Images\minimize_24.png" />
+    <None Remove="Resources\Images\pin_24.png" />
     <None Remove="Resources\Images\ps_timer_tracker_size.ico" />
   </ItemGroup>
 
@@ -60,6 +61,7 @@
     <Resource Include="Resources\Images\close_24.png" />
     <Resource Include="Resources\Images\menu_24.png" />
     <Resource Include="Resources\Images\minimize_24.png" />
+    <Resource Include="Resources\Images\pin_24.png" />
     <Resource Include="Resources\Images\ps_timer_tracker_size.ico" />
   </ItemGroup>
 

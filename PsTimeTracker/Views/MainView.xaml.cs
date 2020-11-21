@@ -18,10 +18,9 @@ namespace PSTimeTracker
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainView : Window, INotifyPropertyChanged
+    public partial class MainView : Window
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        
+
         public double MaxListHeight { get; set; }
 
         #region Dragging
@@ -51,6 +50,17 @@ namespace PSTimeTracker
             this.KeyDown += (s, e) =>
             {
                 if (e.Key == Key.Escape)
+                {
+                    MainListView.SelectedItem = null;
+                    e.Handled = true;
+                }
+            };
+
+            MainListView.MouseLeftButtonUp += (s, e) =>
+            {
+                var sender = s as ListView;
+
+                if (sender.SelectedItems.Count > 1)
                 {
                     MainListView.SelectedItem = null;
                     e.Handled = true;

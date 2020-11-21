@@ -34,8 +34,7 @@ namespace PSTimeTracker.Services
 
         public void ShowMainView()
         {
-            MenuViewModel menuViewModel = new MenuViewModel(this);
-            MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _FilesList, this, _trackingService, _recordManager, menuViewModel);
+            MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _FilesList, this, _trackingService, _recordManager);
 
             _mainView = new MainView() { DataContext = mainWindowViewModel };
 
