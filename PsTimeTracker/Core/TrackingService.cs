@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PSTimeTracker.Models;
-using PSTimeTracker.Services;
-using Photoshop;
 
 namespace PSTimeTracker.Core
 {
-    public class ComTrackingService : ITrackingService
+    public class TrackingService
     {
-        private const int CODE_NO_ACTIVE_DOCUMENT = -2147352565;
-        private const int CODE_APP_IS_BUSY = -2147417846;
-
         public event EventHandler<int> SummarySecondsChanged;
 
         #region Last Input Time
@@ -54,6 +48,8 @@ namespace PSTimeTracker.Core
         /// <summary>How much time can pass after PS is not active that will still count. Default is 2 seconds</summary>
         public int MaxTimeSinceLastActive { get; set; } = 2;
 
+        public ITracker Tracker { get; set; }
+
         private bool isRunning;
         private int summarySeconds;
         private int psTimeSinceLastActive;
@@ -65,12 +61,13 @@ namespace PSTimeTracker.Core
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="FilesList">Collection to write to.</param>
-        public ComTrackingService(ref ObservableCollection<PsFile> FilesList, ProcessInfoService processInfoService)
+        public TrackingService(ref ObservableCollection<PsFile> FilesList, ProcessInfoService processInfoService, ITracker tracker)
         {
             _FilesList = FilesList;
             _FilesList.CollectionChanged += (s, e) => CountSummarySeconds();
 
             _processInfoService = processInfoService;
+            Tracker = tracker;
         }
 
         public async void StartTracking()
@@ -98,9 +95,6 @@ namespace PSTimeTracker.Core
                 //Debug.WriteLine("Total (should be 1000ms): " + stopwatch.ElapsedMilliseconds + "ms");
 
                 stopwatch.Stop();
-
-                var list = _FilesList;
-
             }
         }
 
@@ -123,11 +117,14 @@ namespace PSTimeTracker.Core
             PsFile currentlyActiveFile;
             string fileName = GetFileNameInTime(100);
 
-            if (fileName == null) return;
+            if (fileName == null)
+                return;
             else if (fileName.Length == 0)
             {
-                if (lastActiveFile == null) return;
-                else currentlyActiveFile = lastActiveFile;
+                if (lastActiveFile == null)
+                    return;
+                else
+                    currentlyActiveFile = lastActiveFile;
             }
             else
                 currentlyActiveFile = GetOrCreateCurrentlyOpenedFile(fileName);
@@ -141,36 +138,11 @@ namespace PSTimeTracker.Core
 
         private string GetFileNameInTime(int milliseconds)
         {
-            var task = Task.Run(() => GetFileName());
+            var task = Task.Run(() => Tracker.GetFileName());
             if (task.Wait(milliseconds))
                 return task.Result;
             else
                 return "";
-        }
-
-        /// <summary>Gets currently active document name.</summary>
-        /// <returns>
-        /// <br>Empty string if PS is busy.</br>
-        /// <br><see langword="null"/> if no documents open.</br>
-        /// </returns>
-        private string GetFileName()
-        {
-            try
-            {
-                return new ApplicationClass().ActiveDocument.Name;
-            }
-            catch (Exception ex) when (ex.InnerException == null)
-            {
-                return "";
-            }
-            catch (Exception ex) when (ex.InnerException.HResult == CODE_APP_IS_BUSY)
-            {
-                return "";
-            }
-            catch (Exception ex) when (ex.InnerException.HResult == CODE_NO_ACTIVE_DOCUMENT)
-            {
-                return null;
-            }
         }
 
         private void ChangeFileRecord(PsFile currentlyOpenedFile)

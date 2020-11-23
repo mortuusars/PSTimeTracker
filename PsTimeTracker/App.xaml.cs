@@ -30,7 +30,8 @@ namespace PSTimeTracker
 
         private ConfigManager _configManager;
 
-        private ITrackingService _trackingService;
+        private ITracker _tracker;
+        private TrackingService _trackingService;
         private RecordManager _recordManager;
 
         private IViewManager _viewManager;
@@ -45,7 +46,8 @@ namespace PSTimeTracker
             _configManager.ConfigChanged += OnConfigChanged;
 
             _recordManager = new RecordManager(filesList);
-            _trackingService = new ComTrackingService(ref filesList, new ProcessInfoService());
+            _tracker = new ComTracker();
+            _trackingService = new TrackingService(ref filesList, new ProcessInfoService(), _tracker);
             SetTrackerSettings();
 
             _viewManager = new ViewManager(filesList, _trackingService, _recordManager);

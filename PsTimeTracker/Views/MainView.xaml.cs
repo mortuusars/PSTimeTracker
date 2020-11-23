@@ -1,17 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using PSTimeTracker.Core;
-using PSTimeTracker.Models;
 
 namespace PSTimeTracker
 {
@@ -56,16 +48,7 @@ namespace PSTimeTracker
                 }
             };
 
-            MainListView.MouseLeftButtonUp += (s, e) =>
-            {
-                var sender = s as ListView;
-
-                if (sender.SelectedItems.Count > 1)
-                {
-                    MainListView.SelectedItem = null;
-                    e.Handled = true;
-                }
-            };
+            //MainListView.LostFocus += (s, e) => MainListView.SelectedItems.Clear();
 
             MaxListHeight = MainListView.MaxHeight;
         }

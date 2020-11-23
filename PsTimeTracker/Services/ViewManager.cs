@@ -14,13 +14,13 @@ namespace PSTimeTracker.Services
     {
 
         private ObservableCollection<PsFile> _FilesList;
-        private readonly ITrackingService _trackingService;
+        private readonly TrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
         private MainView _mainView;
         private ConfigView _configView;
 
-        public ViewManager(ObservableCollection<PsFile> FilesList, ITrackingService trackingService, RecordManager recordManager)
+        public ViewManager(ObservableCollection<PsFile> FilesList, TrackingService trackingService, RecordManager recordManager)
         {
             _FilesList = FilesList;
             _trackingService = trackingService;

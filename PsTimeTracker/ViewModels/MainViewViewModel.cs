@@ -55,11 +55,11 @@ namespace PSTimeTracker
         private int selectedItemsCount;
 
         private readonly IViewManager _viewManager;
-        private readonly ITrackingService _trackingService;
+        private readonly TrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
 
-        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, ITrackingService trackingService, RecordManager recordManager)
+        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, TrackingService trackingService, RecordManager recordManager)
         {
             FilesList = filesList;
             FilesCollectionView = CollectionViewSource.GetDefaultView(FilesList);
@@ -112,7 +112,7 @@ namespace PSTimeTracker
         {
             Sorting sortBy;
             if (CurrentSorting >= Enum.GetValues(typeof(Sorting)).Cast<Sorting>().Max())
-                sortBy = (Sorting)0;
+                sortBy = 0;
             else
             {
                 sortBy = CurrentSorting + 1;

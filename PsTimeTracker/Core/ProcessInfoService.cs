@@ -54,7 +54,6 @@ namespace PSTimeTracker.Core
         }
 
         /// <summary>Returns <see langword="null"/> if not running.</summary>
-        /// <returns></returns>
         private Process GetPhotoshopProcess()
         {
             return Process.GetProcessesByName(PS_NAME).FirstOrDefault();
