@@ -27,7 +27,7 @@ namespace PSTimeTracker
         public int SummarySeconds { get; private set; }
         public bool ListIsEmpty { get; set; } = true;
         public bool CanRestorePreviousList { get; private set; }
-        public bool IsMenuOpen { get; private set; }
+        public bool IsMenuOpen { get; set; }
         public string ItemsInfo { get; set; } = "PS Time Tracker";
 
         public Sorting CurrentSorting
@@ -47,6 +47,7 @@ namespace PSTimeTracker
         public ICommand SortListCommand { get; }
 
         public ICommand MenuCommand { get; }
+        public ICommand CloseMenuCommand { get; set; }
         public ICommand OpenPreviousCommand { get; }
         public ICommand OpenConfigCommand { get; }
         public ICommand OpenAboutCommand { get; }
@@ -88,6 +89,7 @@ namespace PSTimeTracker
             SortListCommand = new RelayCommand(_ => SortList(Sorting.LastAdded));
 
             MenuCommand = new RelayCommand(_ => IsMenuOpen = !IsMenuOpen);
+            CloseMenuCommand = new RelayCommand(_ => IsMenuOpen = false);
             OpenConfigCommand = new RelayCommand(_ => OnOpenConfigCommand());
 
             MinimizeWindowCommand = new RelayCommand(_ => _viewManager.MinimizeMainView());

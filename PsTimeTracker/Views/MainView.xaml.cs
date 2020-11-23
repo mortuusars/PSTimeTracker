@@ -48,6 +48,12 @@ namespace PSTimeTracker
                 }
             };
 
+            this.MouseLeftButtonDown += (s, e) =>
+            {
+                if (MenuContrainer.IsMouseOver == false)
+                    MenuContrainer.Visibility = Visibility.Hidden;
+            };
+
             //MainListView.LostFocus += (s, e) => MainListView.SelectedItems.Clear();
 
             MaxListHeight = MainListView.MaxHeight;
@@ -142,5 +148,7 @@ namespace PSTimeTracker
         }
 
         #endregion
+
+        
     }
 }

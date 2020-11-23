@@ -433,7 +433,7 @@
                            Foreground="{StaticResource MainForegroundBrush}"
                            Text="{Binding ItemsInfo}" d:Text="Info or title"/>
 
-                <Image Style="{StaticResource Menu}"
+                <Image Name="HeaderMenuButton" Style="{StaticResource Menu}"
                            Margin="4 0 0 0">
                     <Image.InputBindings>
                         <MouseBinding Gesture="LeftClick" Command="{Binding MenuCommand}"/>
@@ -552,17 +552,16 @@
               Width="Auto"
               Height="Auto"
               Margin="18"
-              Visibility="{Binding IsMenuOpen, Converter={StaticResource BoolToVisibilityConverter}}" 
+              Visibility="{Binding IsMenuOpen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}" 
               d:Visibility="Visible"
               Background="{x:Null}">
 
             <Border x:Name="MenuBorder" 
-                        BorderBrush="{StaticResource MainBorderBrush}"
-                        BorderThickness="1"
-                        Background="{StaticResource MainGradient}">
+                    BorderBrush="{StaticResource MainBorderBrush}"
+                    BorderThickness="1"
+                    Background="{StaticResource MainGradient}">
 
-                <Grid x:Name="MenuLayoutGrid"
-                            Background="{x:Null}">
+                <Grid x:Name="MenuLayoutGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="auto"/>
