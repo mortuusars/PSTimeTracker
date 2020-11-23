@@ -52,7 +52,7 @@ namespace PSTimeTracker.Core
 
         private bool isRunning;
         private int summarySeconds;
-        private int psTimeSinceLastActive;
+        private int psTimeSinceLastActive = 9999;
 
         private PsFile lastActiveFile;
 
