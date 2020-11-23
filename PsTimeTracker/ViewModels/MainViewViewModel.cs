@@ -30,9 +30,13 @@ namespace PSTimeTracker
         public bool IsMenuOpen { get; private set; }
         public string ItemsInfo { get; set; } = "PS Time Tracker";
 
-        public Sorting CurrentSorting { get; set; }
+        public Sorting CurrentSorting
+        {
+            get { return currentSorting; }
+            set { currentSorting = value; SortList(CurrentSorting); }
+        }
 
-        public ICommand PinCommand { get; }
+        public ICommand AlwaysOnTopCommand { get; }
 
         public ICommand RestoreAndStartCommand { get; }
         public ICommand StartWithoutRestoringCommand { get; }
@@ -57,7 +61,7 @@ namespace PSTimeTracker
         private readonly IViewManager _viewManager;
         private readonly TrackingService _trackingService;
         private readonly RecordManager _recordManager;
-
+        private Sorting currentSorting;
 
         public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, TrackingService trackingService, RecordManager recordManager)
         {
@@ -72,7 +76,7 @@ namespace PSTimeTracker
 
             #region Commands
 
-            PinCommand  = new RelayCommand(_ => Pin());
+            AlwaysOnTopCommand  = new RelayCommand(_ => SetAlwaysOnTop());
 
             RestoreAndStartCommand = new RelayCommand(_ => { Restore(); StartTracking(); });
             StartWithoutRestoringCommand = new RelayCommand(_ => StartTracking());
@@ -81,7 +85,7 @@ namespace PSTimeTracker
             RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
             ClearCommand = new RelayCommand(_ => FilesList.Clear());
 
-            SortListCommand = new RelayCommand(_ => SortList());
+            SortListCommand = new RelayCommand(_ => SortList(Sorting.LastAdded));
 
             MenuCommand = new RelayCommand(_ => IsMenuOpen = !IsMenuOpen);
             OpenConfigCommand = new RelayCommand(_ => OnOpenConfigCommand());
@@ -103,26 +107,16 @@ namespace PSTimeTracker
             _viewManager.ShowConfigView();
         }
 
-        private void Pin()
+        private void SetAlwaysOnTop()
         {
             AlwaysOnTop = !AlwaysOnTop;
+            ConfigManager.Config.AlwaysOnTop = AlwaysOnTop;
         }
 
-        private void SortList()
+        private void SortList(Sorting sortBy)
         {
-            Sorting sortBy;
-            if (CurrentSorting >= Enum.GetValues(typeof(Sorting)).Cast<Sorting>().Max())
-                sortBy = 0;
-            else
-            {
-                sortBy = CurrentSorting + 1;
-            }
-
-            CurrentSorting = sortBy;
-
             FilesCollectionView.SortDescriptions.Clear();
-
-            switch (CurrentSorting)
+            switch (sortBy)
             {
                 case Sorting.FirstAdded:
                     FilesCollectionView.SortDescriptions.Add(new SortDescription(nameof(PsFile.FirstActiveTime), ListSortDirection.Ascending));
@@ -144,7 +138,9 @@ namespace PSTimeTracker
                     break;
             }
 
+            CurrentSorting = sortBy;
             FilesCollectionView.Refresh();
+            ConfigManager.Config.SortBy = CurrentSorting;
         }
 
         private void UpdateInfo(int seconds)

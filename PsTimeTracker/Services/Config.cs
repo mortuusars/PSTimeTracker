@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using PSTimeTracker.Core;
 
 namespace PSTimeTracker.Services
 {
@@ -8,6 +9,8 @@ namespace PSTimeTracker.Services
         public event PropertyChangedEventHandler PropertyChanged;
         #pragma warning restore 0067
 
+        public bool AlwaysOnTop { get; set; }
+        public Sorting SortBy { get; set; }
         public bool IgnoreWindowState { get; set; }
         public bool IgnoreAFKTimer { get; set; }
         public int NumberOfRecordsToKeep { get; set; } = 6;

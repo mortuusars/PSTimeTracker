@@ -35,6 +35,8 @@ namespace PSTimeTracker.Services
         public void ShowMainView()
         {
             MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _FilesList, this, _trackingService, _recordManager);
+            mainWindowViewModel.AlwaysOnTop = ConfigManager.Config.AlwaysOnTop;
+            mainWindowViewModel.CurrentSorting = ConfigManager.Config.SortBy;
 
             _mainView = new MainView() { DataContext = mainWindowViewModel };
 
@@ -61,9 +63,7 @@ namespace PSTimeTracker.Services
             {
                 Left = _mainView.Left,
                 Top = _mainView.Top,
-                Width = _mainView.ActualWidth,
-                Height = _mainView.ActualHeight,
-                AlwaysOnTop = _mainView.Topmost,
+                Width = _mainView.ActualWidth
             };
 
             JsonManager.SerializeAndWrite(mainViewState, MAIN_WINDOW_STATE_FILEPATH);
@@ -80,7 +80,6 @@ namespace PSTimeTracker.Services
             _mainView.Left = state.Left;
             _mainView.Top = state.Top;
             _mainView.Width = state.Width;
-            //_mainView.Height = state.Height;
         }
 
         #endregion

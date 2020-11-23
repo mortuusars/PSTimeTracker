@@ -8,7 +8,7 @@ namespace PSTimeTracker.Services
     public class ConfigManager
     {
         private const string CFG_FILENAME = "config.json";
-        private readonly string CFG_FILE_PATH = App.APP_FOLDER_PATH + CFG_FILENAME;
+        private readonly string CFG_FILE_PATH = Environment.CurrentDirectory + "/" + CFG_FILENAME;
 
         public event EventHandler ConfigChanged;
         public static Config Config;
