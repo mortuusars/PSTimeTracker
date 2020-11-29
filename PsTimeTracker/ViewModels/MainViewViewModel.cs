@@ -86,7 +86,7 @@ namespace PSTimeTracker
             RemoveItemsCommand = new RelayCommand(_ => RemoveSelectedItems());
             ClearCommand = new RelayCommand(_ => FilesList.Clear());
 
-            SortListCommand = new RelayCommand(_ => SortList(Sorting.LastAdded));
+            SortListCommand = new RelayCommand(parameter => SortList((Sorting)parameter));
 
             MenuCommand = new RelayCommand(_ => IsMenuOpen = !IsMenuOpen);
             CloseMenuCommand = new RelayCommand(_ => IsMenuOpen = false);
@@ -143,6 +143,8 @@ namespace PSTimeTracker
             CurrentSorting = sortBy;
             FilesCollectionView.Refresh();
             ConfigManager.Config.SortBy = CurrentSorting;
+
+            IsMenuOpen = false;
         }
 
         private void UpdateInfo(int seconds)

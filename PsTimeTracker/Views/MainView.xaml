@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSTimeTracker" 
+        xmlns:core="clr-namespace:PSTimeTracker.Core"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:test="clr-namespace:PSTimeTracker.Testing"
         mc:Ignorable="d"
@@ -27,7 +28,13 @@
     </Window.InputBindings>
 
     <Window.Resources>
-        
+
+        <ObjectDataProvider x:Key="SortingContextMenuData" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="core:Sorting"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
         <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="3" Direction="-90" Opacity="0.3"/>
 
         <sys:Double x:Key="ResizeBorderThickness">9</sys:Double>
@@ -252,9 +259,9 @@
                     <Setter Property="Foreground" Value="{StaticResource ListItemFGSelectedBrush}"/>
                 </DataTrigger>
 
-                
-                
-                
+
+
+
             </Style.Triggers>
         </Style>
 
@@ -270,7 +277,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+
         <!-- Item Border -->
 
         <Style x:Key="ItemBorderStyle" TargetType="{x:Type Border}">
@@ -331,7 +338,7 @@
         </Style>
 
         <!-- Item Template -->
-        
+
         <DataTemplate x:Key="ItemTemplate">
             <Border Style="{StaticResource ItemBorderStyle}">
 
@@ -356,7 +363,7 @@
                 </Grid>
             </Border>
         </DataTemplate>
-        
+
         <!--#endregion-->
 
 
@@ -445,7 +452,7 @@
                             Grid.Column="2"
                             Orientation="Horizontal" 
                             HorizontalAlignment="Right">
-                    
+
                     <Image Style="{StaticResource Minimize}"
                            Margin="5 0 8 0" >
                         <Image.InputBindings>
@@ -466,7 +473,7 @@
                         </Image.InputBindings>
                     </Image>
 
-                    
+
 
                 </StackPanel>
 
@@ -565,8 +572,6 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
                     <Grid x:Name="MenuHeaderGrid"
@@ -595,22 +600,50 @@
                                        Fill="{StaticResource HeaderBorderBrush}"/>
                     </Grid>
 
-                    <Button x:Name="MenuOpenPreviousButton"
+                    <StackPanel Name="MenuButtonsPanel"
+                                Orientation="Vertical"
+                                Grid.Row="1">
+
+                        <Button x:Name="MenuOpenPreviousButton"
                                 Grid.Row="1"
                                 Content="Open previous..."
                                 Style="{StaticResource MenuButton}" />
 
-                    <Button x:Name="MenuConfigButton"
+                        <Button x:Name="MenuSortingButton"
+                                Grid.Row="1"
+                                Content="Sorting             >"
+                                Style="{StaticResource MenuButton}" 
+                                Click="MenuSortingButton_Click_1">
+                            <Button.ContextMenu>
+                                <ContextMenu ItemsSource="{Binding Source={StaticResource SortingContextMenuData}}">
+                                    <ContextMenu.ItemContainerStyle>
+                                        <Style TargetType="{x:Type MenuItem}">
+                                            <Setter Property="Command" Value="{Binding Path=DataContext.SortListCommand, 
+                                                RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
+                                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                                        </Style>
+                                    </ContextMenu.ItemContainerStyle>
+                                    <!--<ContextMenu.Resources>
+                                        <DataTemplate x:Key="sortContextDataTemplate">
+                                            <TextBlock Text="{Binding}"/>
+                                        </DataTemplate>
+                                    </ContextMenu.Resources>-->
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+
+                        <Button x:Name="MenuConfigButton"
                                 Grid.Row="2"
-                                Content="Config..."
+                                Content="Settings..."
                                 Style="{StaticResource MenuButton}"
                                 Command="{Binding OpenConfigCommand}"/>
 
-                    <Button x:Name="MenuAboutButton"
+                        <Button x:Name="MenuAboutButton"
                                 Grid.Row="3"
                                 Content="About"
                                 Style="{StaticResource MenuButton}" />
 
+                    </StackPanel>
                 </Grid>
 
             </Border>

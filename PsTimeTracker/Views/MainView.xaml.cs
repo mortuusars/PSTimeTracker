@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -147,8 +148,17 @@ namespace PSTimeTracker
             this.MainListView.Height = double.NaN;
         }
 
+
+
         #endregion
 
-        
+        private void MenuSortingButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            ContextMenu contextMenu = btn.ContextMenu;
+            contextMenu.PlacementTarget = btn;
+            contextMenu.IsOpen = true;
+            e.Handled = true;
+        }
     }
 }
