@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\Mortuus.IO\FileIO\FileIO.csproj" />
+    <ProjectReference Include="..\..\..\Libs\Mortuus.IO\FileIO\FileIO.csproj" />
   </ItemGroup>
 
   <ItemGroup>
