@@ -18,6 +18,7 @@ namespace PSTimeTracker.Core
             if (title == null)
                 return null;
 
+            // Match the first part of PS window name up to a @ sign.
             return Regex.Match(title, @".*\s@").Value.Replace(" @", "");
         }
     }

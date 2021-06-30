@@ -9,17 +9,13 @@ using System.Collections.Generic;
 using PSTimeTracker.ViewModels;
 using System.Linq;
 using System.Windows.Data;
+using PropertyChanged;
 
 namespace PSTimeTracker
 {
-    public class MainViewViewModel : INotifyPropertyChanged
+    [AddINotifyPropertyChangedInterface]
+    public class MainViewViewModel
     {
-#pragma warning disable 0067
-        public event PropertyChangedEventHandler PropertyChanged;
-#pragma warning restore 0067
-
-        #region Properties
-
         public bool AlwaysOnTop { get; set; }
 
         public ICollectionView FilesCollectionView { get; }
@@ -55,7 +51,6 @@ namespace PSTimeTracker
         public ICommand MinimizeWindowCommand { get; }
         public ICommand CloseWindowCommand { get; }
 
-        #endregion
 
         private int selectedItemsCount;
 
