@@ -7,10 +7,12 @@ using PSTimeTracker.Models;
 using PSTimeTracker.ViewModels;
 using PSTimeTracker.Views;
 using FileIO;
+using System.Linq;
+using System.Windows;
 
 namespace PSTimeTracker.Services
 {
-    internal class ViewManager : IViewManager
+    public class ViewManager
     {
 
         private ObservableCollection<PsFile> _FilesList;
@@ -19,6 +21,7 @@ namespace PSTimeTracker.Services
 
         private MainView _mainView;
         private ConfigView _configView;
+        private AboutView _aboutView;
 
         public ViewManager(ObservableCollection<PsFile> FilesList, TrackingService trackingService, RecordManager recordManager)
         {
@@ -27,7 +30,7 @@ namespace PSTimeTracker.Services
             _recordManager = recordManager;
         }
 
-        #region MainView
+        #region Main View
 
         private const string MAIN_WINDOW_STATE_FILENAME = "mainWindowState.";
         private readonly string MAIN_WINDOW_STATE_FILEPATH = App.APP_FOLDER_PATH + MAIN_WINDOW_STATE_FILENAME;
@@ -54,7 +57,7 @@ namespace PSTimeTracker.Services
         public void CloseMainView()
         {
             SaveMainViewState();
-            _mainView.Close();
+            _mainView?.Close();
         }
 
         private void SaveMainViewState()
@@ -84,6 +87,8 @@ namespace PSTimeTracker.Services
 
         #endregion
 
+        #region Config View
+
         public void ShowConfigView()
         {
             ConfigViewModel configViewModel = new ConfigViewModel(this);
@@ -93,7 +98,32 @@ namespace PSTimeTracker.Services
 
         public void CloseConfigView()
         {
-            _configView.Close();
+            _configView?.Close();
         }
+
+        #endregion
+
+        #region About View
+
+        public void ShowAboutView()
+        {
+            var alreadyOpenedWindow = App.Current.Windows.OfType<AboutView>().FirstOrDefault();
+            if (alreadyOpenedWindow != null)
+                alreadyOpenedWindow.Activate();
+            else
+            {
+                AboutViewModel aboutViewModel = new AboutViewModel();
+                _aboutView = new AboutView() { DataContext = aboutViewModel };
+                _aboutView.Owner = _mainView;
+                _aboutView.Show();
+            }
+        }
+
+        public void CloseAboutView()
+        {
+            _aboutView?.Close();
+        }
+
+        #endregion
     }
 }

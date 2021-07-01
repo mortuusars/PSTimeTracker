@@ -17,6 +17,8 @@ namespace PSTimeTracker
     {
         public const string APP_NAME = "PSTimeTracker";
 
+        public static Version Version { get; private set; } = new Version("1.2.0");
+
         private const string RECORDS_FOLDER_NAME = "records";
         private const string CRASHES_FOLDER_NAME = "crash-reports";
         private const int TOOLTIP_DELAY = 500;
@@ -34,7 +36,7 @@ namespace PSTimeTracker
         private TrackingService _trackingService;
         private RecordManager _recordManager;
 
-        private IViewManager _viewManager;
+        private ViewManager _viewManager;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {

@@ -1,7 +1,7 @@
 ﻿<Application x:Class="PSTimeTracker.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:PSTimeTracker"
+             xmlns:local="clr-namespace:PSTimeTracker" xmlns:sys="clr-namespace:System;assembly=netstandard"
              Startup="Application_Startup"
              DispatcherUnhandledException="Application_DispatcherUnhandledException" >
     
@@ -43,7 +43,61 @@
                     </Trigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
+            
+            <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="3" Direction="-90" Opacity="0.3"/>
 
+            <Style x:Key="TextBlockDefault" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource MontserratLight}"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Foreground" Value="{StaticResource HeaderForegroundBrush}"/>
+            </Style>
+
+
+            <!--#region Header Buttons -->
+
+            <sys:Double x:Key="HeaderButtonDefaultOpacity">0.25</sys:Double>
+            <sys:Double x:Key="HeaderButtonHoverOpacity">0.9</sys:Double>
+
+            <Storyboard x:Key="ButtonMouseOverAnimation">
+                <DoubleAnimation Duration="0:0:0.08" 
+                             Storyboard.TargetProperty="Opacity"
+                             To="{StaticResource HeaderButtonHoverOpacity}" />
+            </Storyboard>
+
+            <Storyboard x:Key="ButtonMouseLeaveAnimation">
+                <DoubleAnimation Duration="0:0:0.35" 
+                             Storyboard.TargetProperty="Opacity"
+                             To="{StaticResource HeaderButtonDefaultOpacity}"
+                             FillBehavior="Stop"/>
+            </Storyboard>
+
+            <Style x:Key="HeaderImageButton" TargetType="Image">
+                <Setter Property="Width" Value="12"/>
+                <Setter Property="Height" Value="12"/>
+                <Setter Property="Opacity" Value="{StaticResource HeaderButtonDefaultOpacity}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource ButtonMouseOverAnimation}"/>
+                        </Trigger.EnterActions>
+
+                        <Trigger.ExitActions>
+                            <BeginStoryboard Storyboard="{StaticResource ButtonMouseLeaveAnimation}"/>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="Minimize" TargetType="Image" BasedOn="{StaticResource HeaderImageButton}">
+                <Setter Property="Source" Value="/Resources/Images/minimize_24.png"/>
+            </Style>
+
+            <Style x:Key="Close" TargetType="Image" BasedOn="{StaticResource HeaderImageButton}">
+                <Setter Property="Source" Value="/Resources/Images/close_24.png"/>
+            </Style>
+
+            <!--#endregion-->
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

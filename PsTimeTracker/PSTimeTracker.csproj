@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\Images\ps_timer_tracker_size.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
-    <Version>1.2.2</Version>
+    <Version>1.2</Version>
     <Authors>Evgeny Daubel</Authors>
     <StartupObject>PSTimeTracker.App</StartupObject>
   </PropertyGroup>

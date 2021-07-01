@@ -10,9 +10,9 @@ namespace PSTimeTracker.ViewModels
         public ICommand SaveConfigCommand { get; }
         public ICommand CloseCommand { get; }
 
-        private readonly IViewManager _viewManager;
+        private readonly ViewManager _viewManager;
 
-        public ConfigViewModel(IViewManager viewManager)
+        public ConfigViewModel(ViewManager viewManager)
         {
             _viewManager = viewManager;
 

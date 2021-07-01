@@ -33,9 +33,7 @@
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="core:Sorting"/>
             </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-        <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="3" Direction="-90" Opacity="0.3"/>
+        </ObjectDataProvider>        
 
         <sys:Double x:Key="ResizeBorderThickness">9</sys:Double>
 
@@ -131,48 +129,7 @@
 
         <!--#endregion-->
 
-        <!-- Gradient -->
-        <LinearGradientBrush x:Key="MainGradient" StartPoint="0.5, 0" EndPoint="0.5, 400" 
-                             MappingMode="Absolute" ColorInterpolationMode="ScRgbLinearInterpolation">
-            <GradientStop Color="{StaticResource GradientTop}" Offset="0"/>
-            <GradientStop Color="{StaticResource GradientBottom}" Offset="1"/>
-        </LinearGradientBrush>
-
-        <!--#region Header Buttons -->
-
-        <sys:Double x:Key="HeaderButtonsDefaultOpacity">0.25</sys:Double>
-        <sys:Double x:Key="HeaderButtonsHoverOpacity">0.9</sys:Double>
-
-        <Storyboard x:Key="ButtonMouseOverAnimation">
-            <DoubleAnimation Duration="0:0:0.08" 
-                             Storyboard.TargetProperty="Opacity"
-                             To="{StaticResource HeaderButtonsHoverOpacity}" />
-        </Storyboard>
-
-        <Storyboard x:Key="ButtonMouseLeaveAnimation">
-            <DoubleAnimation Duration="0:0:0.35" 
-                             Storyboard.TargetProperty="Opacity"
-                             To="{StaticResource HeaderButtonsDefaultOpacity}"
-                             FillBehavior="Stop"/>
-        </Storyboard>
-
-        <Style x:Key="HeaderImageButton" TargetType="Image">
-            <Setter Property="Width" Value="12"/>
-            <Setter Property="Height" Value="12"/>
-            <Setter Property="Opacity" Value="{StaticResource HeaderButtonsDefaultOpacity}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Trigger.EnterActions>
-                        <BeginStoryboard Storyboard="{StaticResource ButtonMouseOverAnimation}"/>
-                    </Trigger.EnterActions>
-
-                    <Trigger.ExitActions>
-                        <BeginStoryboard Storyboard="{StaticResource ButtonMouseLeaveAnimation}"/>
-                    </Trigger.ExitActions>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
+        
         <Style x:Key="Menu" TargetType="Image" BasedOn="{StaticResource HeaderImageButton}">
             <Setter Property="Source" Value="/Resources/Images/menu_24.png"/>
             <Setter Property="Width" Value="16"/>
@@ -200,7 +157,7 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="0:0:0"
-                                                 To="{StaticResource HeaderButtonsDefaultOpacity}"
+                                                 To="{StaticResource HeaderButtonDefaultOpacity}"
                                                  Storyboard.TargetProperty="Opacity"/>
 
                             </Storyboard>
@@ -208,14 +165,6 @@
                     </DataTrigger.ExitActions>
                 </DataTrigger>
             </Style.Triggers>
-        </Style>
-
-        <Style x:Key="Minimize" TargetType="Image" BasedOn="{StaticResource HeaderImageButton}">
-            <Setter Property="Source" Value="/Resources/Images/minimize_24.png"/>
-        </Style>
-
-        <Style x:Key="Close" TargetType="Image" BasedOn="{StaticResource HeaderImageButton}">
-            <Setter Property="Source" Value="/Resources/Images/close_24.png"/>
         </Style>
 
         <!--#endregion-->
@@ -268,9 +217,13 @@
         <Style x:Key="ListViewContainer" TargetType="{x:Type ListView}">
             <Setter Property="Background" Value="{StaticResource MainGradient}"/>
             <Setter Property="BorderBrush" Value="{x:Null}"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>            
             <Setter Property="Visibility" Value="Visible"/>
-
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="0 0 2.5 2.5"/>
+                </Style>
+            </Style.Resources>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding FilesList.Count}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -283,7 +236,7 @@
         <Style x:Key="ItemBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ListItemBorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1.3"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="1.5"/>
             <Setter Property="Margin" Value="2 2.5"/>
             <Setter Property="Padding" Value="0"/>
@@ -292,7 +245,7 @@
 
                 <DataTrigger Binding="{Binding IsCurrentlyActive}" Value="True">
                     <Setter Property="Background" Value="{StaticResource ListItemBGActiveBrush}"/>
-                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="BorderThickness" Value="1.5"/>
                     <Setter Property="Padding" Value="0 1.5"/>
                 </DataTrigger>
 
@@ -375,7 +328,7 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="{StaticResource MainForegroundBrush}"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="5 0"/>
+            <Setter Property="Padding" Value="6 0 10 0"/>
             <Setter Property="FontFamily" Value="{StaticResource MontserratRegular}"/>
             <Setter Property="FontSize" Value="16"/>
 
@@ -403,7 +356,7 @@
                 Margin="-1.2"
                 Grid.RowSpan="2"
                 BorderBrush="{StaticResource MainBorderBrush}"
-                    CornerRadius="1.5"
+                CornerRadius="3"
                 BorderThickness="1.2"/>
 
 
@@ -411,7 +364,6 @@
 
             <Grid Name="HeaderContainer" 
                   Grid.Row="0"
-                  Background="{StaticResource HeaderBackgroundBrush}"
                   MouseLeftButtonDown="HeaderContainer_MouseLeftButtonDown">
 
                 <Grid.ColumnDefinitions>
@@ -419,6 +371,9 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
+
+                <Border Grid.ColumnSpan="3" Background="{StaticResource HeaderBackgroundBrush}"
+                        CornerRadius="2.5 2.5 0 0"/>
 
                 <Rectangle Name="MainHeaderDivider"
                            Grid.ColumnSpan="3"
@@ -552,7 +507,7 @@
               Height="Auto"
               Margin="18"
               Visibility="{Binding IsMenuOpen, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibilityConverter}}" 
-              d:Visibility="Visible"
+              d:Visibility="Collapsed"
               Background="{x:Null}">
 
             <Border x:Name="MenuBorder" 
@@ -596,14 +551,14 @@
                                 Orientation="Vertical"
                                 Grid.Row="1">
 
-                        <Button x:Name="MenuOpenPreviousButton"
+                        <!--<Button x:Name="MenuOpenPreviousButton"
                                 Grid.Row="1"
                                 Content="Open previous..."
-                                Style="{StaticResource MenuButton}" />
+                                Style="{StaticResource MenuButton}" />-->
 
                         <Button x:Name="MenuSortingButton"
                                 Grid.Row="1"
-                                Content="Sorting             >"
+                                Content="Sorting"
                                 Style="{StaticResource MenuButton}" 
                                 Click="MenuSortingButton_Click_1">
                             <Button.ContextMenu>
@@ -626,14 +581,15 @@
 
                         <Button x:Name="MenuConfigButton"
                                 Grid.Row="2"
-                                Content="Settings..."
+                                Content="Settings"
                                 Style="{StaticResource MenuButton}"
                                 Command="{Binding OpenConfigCommand}"/>
 
                         <Button x:Name="MenuAboutButton"
                                 Grid.Row="3"
                                 Content="About"
-                                Style="{StaticResource MenuButton}" />
+                                Style="{StaticResource MenuButton}"
+                                Command="{Binding OpenAboutCommand}"/>
 
                     </StackPanel>
                 </Grid>

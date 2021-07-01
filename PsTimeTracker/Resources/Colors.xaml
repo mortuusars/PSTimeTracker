@@ -3,7 +3,7 @@
 
 
     <Color x:Key="GradientTop">#e9e9e9</Color>
-    <Color x:Key="GradientBottom">#c7c7c7</Color>
+    <Color x:Key="GradientBottom">#d6d6d6</Color>
 
 
     <Color x:Key="MainBorder">#777777</Color>
@@ -43,6 +43,11 @@
     <Color x:Key="ListItemBorder">#777777</Color>
     <SolidColorBrush x:Key="ListItemBorderBrush" Color="{StaticResource ListItemBorder}"/>
 
-
+    <!-- Gradient -->
+    <LinearGradientBrush x:Key="MainGradient" StartPoint="0.5, 0" EndPoint="0.5, 400" 
+                             MappingMode="Absolute" ColorInterpolationMode="ScRgbLinearInterpolation">
+        <GradientStop Color="{StaticResource GradientTop}" Offset="0"/>
+        <GradientStop Color="{StaticResource GradientBottom}" Offset="1"/>
+    </LinearGradientBrush>
 
 </ResourceDictionary>

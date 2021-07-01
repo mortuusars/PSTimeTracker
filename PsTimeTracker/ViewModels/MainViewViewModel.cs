@@ -54,12 +54,12 @@ namespace PSTimeTracker
 
         private int selectedItemsCount;
 
-        private readonly IViewManager _viewManager;
+        private readonly ViewManager _viewManager;
         private readonly TrackingService _trackingService;
         private readonly RecordManager _recordManager;
         private Sorting currentSorting;
 
-        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, IViewManager viewManager, TrackingService trackingService, RecordManager recordManager)
+        public MainViewViewModel(ref ObservableCollection<PsFile> filesList, ViewManager viewManager, TrackingService trackingService, RecordManager recordManager)
         {
             FilesList = filesList;
             FilesCollectionView = CollectionViewSource.GetDefaultView(FilesList);
@@ -86,6 +86,7 @@ namespace PSTimeTracker
             MenuCommand = new RelayCommand(_ => IsMenuOpen = !IsMenuOpen);
             CloseMenuCommand = new RelayCommand(_ => IsMenuOpen = false);
             OpenConfigCommand = new RelayCommand(_ => OnOpenConfigCommand());
+            OpenAboutCommand = new RelayCommand(_ => OnOpenAboutCommand());
 
             MinimizeWindowCommand = new RelayCommand(_ => _viewManager.MinimizeMainView());
             CloseWindowCommand = new RelayCommand(_ => _viewManager.CloseMainView());
@@ -96,6 +97,12 @@ namespace PSTimeTracker
                 CanRestorePreviousList = true;
             else
                 StartTracking();
+        }
+
+        private void OnOpenAboutCommand()
+        {
+            IsMenuOpen = false;
+            _viewManager.ShowAboutView();
         }
 
         private void OnOpenConfigCommand()
