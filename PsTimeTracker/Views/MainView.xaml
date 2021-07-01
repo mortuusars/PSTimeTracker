@@ -336,7 +336,39 @@
 
         <!--#endregion-->
 
+        <Style x:Key="Context" TargetType="{x:Type ContextMenu}">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border BorderThickness="1" CornerRadius="3" BorderBrush="{StaticResource MainBorderBrush}" x:Name="Border" 
+                                Background="{StaticResource HeaderBackgroundBrush}">
+                            <StackPanel ClipToBounds="True" Orientation="Vertical" IsItemsHost="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     <Grid x:Name="MainContainer">
 
@@ -534,8 +566,9 @@
                         </Image>
 
                         <Image Style="{StaticResource Pin}"
-                                   HorizontalAlignment="Right"
-                                   Margin="0 0 6 0">
+                               HorizontalAlignment="Right"
+                               Margin="0 0 6 0"
+                               ToolTip="Always on top">
                             <Image.InputBindings>
                                 <MouseBinding Gesture="LeftClick" Command="{Binding AlwaysOnTopCommand}"/>
                             </Image.InputBindings>
@@ -562,19 +595,17 @@
                                 Style="{StaticResource MenuButton}" 
                                 Click="MenuSortingButton_Click_1">
                             <Button.ContextMenu>
-                                <ContextMenu ItemsSource="{Binding Source={StaticResource SortingContextMenuData}}">
+                                <ContextMenu ItemsSource="{Binding Source={StaticResource SortingContextMenuData}}"
+                                             Style="{StaticResource Context}">
                                     <ContextMenu.ItemContainerStyle>
                                         <Style TargetType="{x:Type MenuItem}">
+                                            <Setter Property="Foreground" Value="{StaticResource MainForegroundBrush}"/>
+                                            <Setter Property="Margin" Value="2"/>
                                             <Setter Property="Command" Value="{Binding Path=DataContext.SortListCommand, 
                                                 RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"/>
                                             <Setter Property="CommandParameter" Value="{Binding}"/>
                                         </Style>
                                     </ContextMenu.ItemContainerStyle>
-                                    <!--<ContextMenu.Resources>
-                                        <DataTemplate x:Key="sortContextDataTemplate">
-                                            <TextBlock Text="{Binding}"/>
-                                        </DataTemplate>
-                                    </ContextMenu.Resources>-->
                                 </ContextMenu>
                             </Button.ContextMenu>
                         </Button>
@@ -597,21 +628,5 @@
             </Border>
 
         </Grid>
-
-        <!--#endregion-->
-
-        <!--<TextBlock Text="{Binding SelectedItemsInfo}"
-                   FontFamily="{StaticResource MontserratRegular}"
-                   Foreground="{StaticResource HeaderForegroundBrush}"
-                   FontSize="20"
-                   VerticalAlignment="Bottom"
-                   HorizontalAlignment="Center"
-                   d:Text="123123"/>-->
-
-
     </Grid>
-
-
-
-
 </Window>

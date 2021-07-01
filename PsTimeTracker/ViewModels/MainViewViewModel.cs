@@ -195,7 +195,11 @@ namespace PSTimeTracker
 
                 var count = list.Count;
 
-                ItemsInfo = $"Files: {count} | {TimeFormatter.GetTimeStringFromSecods(summary)}";
+                if (count > 1)
+                    ItemsInfo = $"{count} files | {TimeFormatter.GetTimeStringFromSecods(summary)}";
+                else
+                    ItemsInfo = $"{count} file | {TimeFormatter.GetTimeStringFromSecods(summary)}";
+
                 selectedItemsCount = count;
             }
         }

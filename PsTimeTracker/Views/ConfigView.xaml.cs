@@ -21,5 +21,15 @@ namespace PSTimeTracker.Views
         {
             InitializeComponent();
         }
+
+        private void Close_LeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Header_LeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
     }
 }

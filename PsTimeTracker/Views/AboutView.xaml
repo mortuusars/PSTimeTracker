@@ -5,15 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSTimeTracker.Views"
         mc:Ignorable="d"
-        Title="AboutView" Height="160" Width="420" WindowStartupLocation="CenterOwner"
+        Title="AboutView" Height="170" Width="450" WindowStartupLocation="CenterOwner"
         Background="{x:Null}" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True">
-
-    <Window.Resources>
-        <Style x:Key="TextBlockSmaller" TargetType="TextBlock" BasedOn="{StaticResource TextBlockDefault}">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontFamily" Value="{StaticResource MontserratRegular}"/>
-        </Style>
-    </Window.Resources>
 
     <Border Name="MainBorder"
             Background="{StaticResource MainGradient}" Margin="20" CornerRadius="4"

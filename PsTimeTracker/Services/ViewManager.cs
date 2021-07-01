@@ -93,7 +93,9 @@ namespace PSTimeTracker.Services
         {
             ConfigViewModel configViewModel = new ConfigViewModel(this);
             _configView = new ConfigView() { DataContext = configViewModel };
+            _configView.Owner = _mainView;
             _configView.Show();
+            _configView.Top -= 400;
         }
 
         public void CloseConfigView()
@@ -116,6 +118,7 @@ namespace PSTimeTracker.Services
                 _aboutView = new AboutView() { DataContext = aboutViewModel };
                 _aboutView.Owner = _mainView;
                 _aboutView.Show();
+                _aboutView.Top -= 400;
             }
         }
 
