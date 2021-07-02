@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PSTimeTracker": {
+      "commandName": "Project",
+      "commandLineArgs": "-debug"
+    }
+  }
+}
