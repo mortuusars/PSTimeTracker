@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSTimeTracker.Views"
         mc:Ignorable="d"
-        Title="ConfigView" Height="140" Width="300"
+        Title="ConfigView" Height="200" Width="300"
         WindowStyle="None" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" 
         Background="{x:Null}" AllowsTransparency="True">
 
@@ -53,6 +53,23 @@
                                               UpdateSourceTrigger=PropertyChanged}"
                                   Margin="0 2" VerticalAlignment="Top"/>
                         <TextBlock Text="Keep tracking when Photoshop is not active" HorizontalAlignment="Left" 
+                                   Width="225" TextWrapping="Wrap" Margin="5 0 0 0" 
+                                   Style="{StaticResource TextBlockSmaller}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                        <StackPanel.ToolTip>
+                            <TextBlock Style="{StaticResource TextBlockSmaller}" MaxWidth="300" TextWrapping="WrapWithOverflow" Text="Photoshop title will be used for tracking. This method has limitations. Should only be used if default method is not working."/>
+                        </StackPanel.ToolTip>
+                        <CheckBox IsChecked="{Binding Config.UseLegacyTrackingMethod, Mode=TwoWay,
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="0 2" VerticalAlignment="Top">
+                            <CheckBox.InputBindings>
+                                <MouseBinding Gesture="LeftClick" Command="{Binding SwitchTrackingMethodCommand}"/>
+                            </CheckBox.InputBindings>
+                        </CheckBox>
+                        <TextBlock Text="Use legacy tracking method (Requires app restart)" 
+                                   HorizontalAlignment="Left" 
                                    Width="225" TextWrapping="Wrap" Margin="5 0 0 0" 
                                    Style="{StaticResource TextBlockSmaller}"/>
                     </StackPanel>

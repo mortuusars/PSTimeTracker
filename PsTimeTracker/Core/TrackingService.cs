@@ -115,19 +115,23 @@ namespace PSTimeTracker.Core
                 lastActiveFile.IsCurrentlyActive = false;
 
             PsFile currentlyActiveFile;
-            string fileName = GetFileNameInTime(100);
+            var callResult = GetFileNameInTime(100);
 
-            if (fileName == null)
+            if (callResult.PSResponse == PSResponse.NoActiveDocument) // Stop counting if no documents open.
+            {
                 return;
-            else if (fileName.Length == 0)
+            }
+            else if (callResult.PSResponse == PSResponse.Busy || callResult.PSResponse == PSResponse.Failed) // Keep counting on last known file if PS not responding
             {
                 if (lastActiveFile == null)
                     return;
                 else
-                    currentlyActiveFile = lastActiveFile;
+                    currentlyActiveFile = lastActiveFile; 
             }
             else
-                currentlyActiveFile = GetOrCreateCurrentlyOpenedFile(fileName);
+            {
+                currentlyActiveFile = GetOrCreateCurrentlyOpenedFile(callResult.Filename);
+            }
 
             ChangeFileRecord(currentlyActiveFile);
 
@@ -136,13 +140,13 @@ namespace PSTimeTracker.Core
             CountSummarySeconds();
         }
 
-        private string GetFileNameInTime(int milliseconds)
+        private PSCallResult GetFileNameInTime(int milliseconds)
         {
             var task = Task.Run(() => Tracker.GetFileName());
             if (task.Wait(milliseconds))
                 return task.Result;
             else
-                return "";
+                return new PSCallResult(PSResponse.Failed, string.Empty);
         }
 
         private void ChangeFileRecord(PsFile currentlyOpenedFile)

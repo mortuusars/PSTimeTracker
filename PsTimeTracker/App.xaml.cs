@@ -7,6 +7,8 @@ using System.Windows.Threading;
 using PSTimeTracker.Services;
 using PSTimeTracker.Core;
 using PSTimeTracker.Models;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PSTimeTracker
 {
@@ -32,6 +34,8 @@ namespace PSTimeTracker
 
         private ConfigManager _configManager;
 
+        private ProcessInfoService _processInfoService;
+
         private ITracker _tracker;
         private TrackingService _trackingService;
         private RecordManager _recordManager;
@@ -47,16 +51,25 @@ namespace PSTimeTracker
             _configManager = new ConfigManager();
             _configManager.ConfigChanged += OnConfigChanged;
 
+            _processInfoService = new ProcessInfoService();
+
             _recordManager = new RecordManager(filesList);
-            _tracker = new MultipleComTracker();
-            _trackingService = new TrackingService(ref filesList, new ProcessInfoService(), _tracker);
+            ChooseAndCreateTrackingMethod();
+            _trackingService = new TrackingService(ref filesList, _processInfoService, _tracker);
             SetTrackerSettings();
 
             _viewManager = new ViewManager(filesList, _trackingService, _recordManager);
             _viewManager.ShowMainView();
         }
 
-        
+        private void ChooseAndCreateTrackingMethod()
+        {
+            if (ConfigManager.Config.UseLegacyTrackingMethod)
+                _tracker = new TitleTracker(_processInfoService);
+            else
+                _tracker = new ComTracker();
+        }
+
 
         public static void DisplayErrorMessage(string message)
         {
@@ -85,7 +98,7 @@ namespace PSTimeTracker
         private static void SetupSettings()
         {
             Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
-            
+
             // Increase tooltip delay
             ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
         }

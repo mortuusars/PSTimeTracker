@@ -91,11 +91,17 @@ namespace PSTimeTracker.Services
 
         public void ShowConfigView()
         {
-            ConfigViewModel configViewModel = new ConfigViewModel(this);
-            _configView = new ConfigView() { DataContext = configViewModel };
-            _configView.Owner = _mainView;
-            _configView.Show();
-            _configView.Top -= 400;
+            var alreadyOpenedWindow = App.Current.Windows.OfType<ConfigView>().FirstOrDefault();
+            if (alreadyOpenedWindow != null)
+                alreadyOpenedWindow.Activate();
+            else
+            {
+                ConfigViewModel configViewModel = new ConfigViewModel();
+                _configView = new ConfigView() { DataContext = configViewModel };
+                _configView.Owner = _mainView;
+                _configView.Show();
+                _configView.Top -= 400;
+            }
         }
 
         public void CloseConfigView()

@@ -15,5 +15,6 @@ namespace PSTimeTracker.Services
         public bool IgnoreAFKTimer { get; set; }
         public int NumberOfRecordsToKeep { get; set; } = 6;
         public bool DisplayErrorMessage { get; set; } = true;
+        public bool UseLegacyTrackingMethod { get; set; } = false;
     }
 }

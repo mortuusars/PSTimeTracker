@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PSTimeTracker.Core
 {
@@ -11,15 +12,28 @@ namespace PSTimeTracker.Core
             _processInfoService = processInfoService;
         }
 
-        public string GetFileName()
+        public PSCallResult GetFileName()
         {
             string title = _processInfoService.GetPhotoshopWindowTitle();
+            //Log("Title: " + title);
 
             if (title == null)
-                return null;
+                return new PSCallResult(PSResponse.NoActiveDocument, string.Empty);
+
 
             // Match the first part of PS window name up to a @ sign.
-            return Regex.Match(title, @".*\s@").Value.Replace(" @", "");
+            string filename = Regex.Match(title, @".*\s@").Value.Replace(" @", "");
+
+            if (title == string.Empty)
+                return new PSCallResult(PSResponse.Failed, string.Empty);
+
+            //Log("FileName: " + title);
+            return new PSCallResult(PSResponse.Success, filename);
+        }
+
+        private void Log(string message)
+        {
+            File.AppendAllText("log.txt", "\n" + message);
         }
     }
 }
