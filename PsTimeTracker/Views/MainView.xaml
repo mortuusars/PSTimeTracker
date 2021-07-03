@@ -296,6 +296,10 @@
             <Border Style="{StaticResource ItemBorderStyle}">
                 <Grid Background="{x:Null}" Margin="2 1 2 2" >
 
+                    <Grid.ToolTip>
+                        <TextBlock Text="{Binding FileName}" MaxWidth="500" TextWrapping="Wrap" Style="{StaticResource TextBlockDefault}" FontFamily="{StaticResource RobotoLight}"/>
+                    </Grid.ToolTip>
+                    
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition x:Name="TimeColumn" Width="auto"/>
@@ -329,7 +333,6 @@
 
 
         <!--#region Menu Style -->
-
         <Style x:Key="MenuButton" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
             <Setter Property="Height" Value="28"/>
@@ -341,7 +344,6 @@
             <Setter Property="FontSize" Value="16"/>
 
         </Style>
-
         <!--#endregion-->
 
         <Style x:Key="Context" TargetType="{x:Type ContextMenu}">
