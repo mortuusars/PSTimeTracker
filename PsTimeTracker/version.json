@@ -1,0 +1,4 @@
+{
+  "version": "1.2.1",
+  "description": "Added tooltip to filename\n\nFixed Photoshop starting itself\nFixed space between filename and time.\nFixed mouse stucking after resize."
+}
