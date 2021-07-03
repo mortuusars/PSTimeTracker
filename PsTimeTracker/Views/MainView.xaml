@@ -529,6 +529,7 @@
                     Style="{StaticResource BottomResizeBorder}"
                     VerticalAlignment="Bottom"
                     MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"
+                    MouseLeftButtonUp="BottomResizeBorder_MouseLeftButtonUp"
                     MouseRightButtonUp="BottomResizeBorder_MouseRightButtonUp"
                     MouseEnter="BottomResizeBorder_MouseEnter"
                     MouseLeave="ResizeBorder_MouseLeave"

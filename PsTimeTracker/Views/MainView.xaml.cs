@@ -107,6 +107,11 @@ namespace PSTimeTracker
             DragResizeBottom(e);
         }
 
+        private void BottomResizeBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            IsDragging = false;
+        }
+
         private void BottomResizeBorder_MouseMove(object sender, MouseEventArgs e)
         {
             DragResizeBottom(e);
@@ -146,15 +151,17 @@ namespace PSTimeTracker
 
         private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeNS;
 
-        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.Arrow;
+        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+            IsDragging = false;
+        }
 
         private void SetAutoHeight()
         {
             this.MainListView.MaxHeight = MaxListHeight;
             this.MainListView.Height = double.NaN;
         }
-
-
 
         #endregion
 
