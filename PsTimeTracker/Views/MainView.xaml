@@ -3,15 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PSTimeTracker" 
-        xmlns:core="clr-namespace:PSTimeTracker.Core"
+        xmlns:local="clr-namespace:PSTimeTracker"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:test="clr-namespace:PSTimeTracker.Testing"
+        xmlns:tracking="clr-namespace:PSTimeTracker.PsTracking"
         mc:Ignorable="d"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
         Title="Photoshop Time Tracker"  
         Name="mainWindow"
-        Width="300" MinWidth="300"
+        Width="300" MinWidth="300" MaxWidth="1200"
         Height="1080" MinHeight="200"
         Topmost="{Binding AlwaysOnTop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         WindowStyle="None" 
@@ -31,7 +31,7 @@
 
         <ObjectDataProvider x:Key="SortingContextMenuData" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="core:Sorting"/>
+                <x:Type TypeName="tracking:Sorting"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>        
 
@@ -294,24 +294,36 @@
 
         <DataTemplate x:Key="ItemTemplate">
             <Border Style="{StaticResource ItemBorderStyle}">
-
                 <Grid Background="{x:Null}" Margin="2 1 2 2" >
 
+                    <Grid.ToolTip>
+                        <TextBlock Text="{Binding FileName}" MaxWidth="500" TextWrapping="Wrap" Style="{StaticResource TextBlockDefault}" FontFamily="{StaticResource RobotoLight}"/>
+                    </Grid.ToolTip>
+                    
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition x:Name="TimeColumn" Width="auto"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Column="0"
                            Text="{Binding FileName}" 
-                           HorizontalAlignment="Left"
-                           
-                           Style="{StaticResource TextBlockStyle}"/>
+                           HorizontalAlignment="Left"                           
+                           Style="{StaticResource TextBlockStyle}">
+                        <TextBlock.OpacityMask>
+                            <!-- Fade on the right side. Sets position of mask based on width of the main element.-->
+                            <LinearGradientBrush MappingMode="Absolute" 
+                                                 StartPoint="{Binding ElementName=MainListView, Path=ActualWidth, Converter={StaticResource OpacityPositionConverter}}" 
+                                                 EndPoint="{Binding ElementName=MainListView, Path=ActualWidth, Converter={StaticResource OpacityPositionConverter}, ConverterParameter=transparent}">
+                                <GradientStop Color="Transparent" Offset="1"/>
+                                <GradientStop Color="Black" Offset="0"/>
+                            </LinearGradientBrush>
+                        </TextBlock.OpacityMask>
+                    </TextBlock>
 
-                    <TextBlock Grid.Column="1"
-                           HorizontalAlignment="Right"
-                           Text="{Binding TrackedSeconds, Converter={StaticResource SecondsToTimeConverter}}"
-                           Style="{StaticResource TextBlockStyle}"/>
+                    <TextBlock Grid.Column="1" x:Name="TimeText"
+                               HorizontalAlignment="Right"
+                               Text="{Binding TrackedSeconds, Converter={StaticResource SecondsToTimeConverter}}"
+                               Style="{StaticResource TextBlockStyle}"/>
 
                 </Grid>
             </Border>
@@ -321,7 +333,6 @@
 
 
         <!--#region Menu Style -->
-
         <Style x:Key="MenuButton" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
             <Setter Property="Height" Value="28"/>
@@ -333,7 +344,6 @@
             <Setter Property="FontSize" Value="16"/>
 
         </Style>
-
         <!--#endregion-->
 
         <Style x:Key="Context" TargetType="{x:Type ContextMenu}">
@@ -461,7 +471,6 @@
 
             <!--#endregion-->
 
-
             <!-- List -->
             <ListView Name="MainListView"
                       Grid.Row="1"
@@ -522,7 +531,8 @@
                     Style="{StaticResource BottomResizeBorder}"
                     VerticalAlignment="Bottom"
                     MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"
-                    MouseRightButtonDown="BottomResizeBorder_MouseRightButtonDown"
+                    MouseLeftButtonUp="BottomResizeBorder_MouseLeftButtonUp"
+                    MouseRightButtonUp="BottomResizeBorder_MouseRightButtonUp"
                     MouseEnter="BottomResizeBorder_MouseEnter"
                     MouseLeave="ResizeBorder_MouseLeave"
                     MouseMove="BottomResizeBorder_MouseMove"/>
@@ -627,6 +637,7 @@
 
             </Border>
 
-        </Grid>
+        </Grid>        
+        <!--#endregion-->
     </Grid>
 </Window>

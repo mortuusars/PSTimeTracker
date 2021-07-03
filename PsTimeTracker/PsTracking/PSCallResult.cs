@@ -1,4 +1,4 @@
-﻿namespace PSTimeTracker.Core
+﻿namespace PSTimeTracker.PsTracking
 {
     public record PSCallResult
     {

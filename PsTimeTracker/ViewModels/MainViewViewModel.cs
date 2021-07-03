@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using PSTimeTracker.Services;
 using PSTimeTracker.Core;
 using PSTimeTracker.Models;
-using System.Collections.Generic;
-using PSTimeTracker.ViewModels;
 using System.Linq;
 using System.Windows.Data;
 using PropertyChanged;
+using PSTimeTracker.PsTracking;
+using PSTimeTracker.Configuration;
 
 namespace PSTimeTracker
 {

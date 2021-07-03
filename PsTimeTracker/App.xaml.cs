@@ -5,10 +5,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using PSTimeTracker.Services;
-using PSTimeTracker.Core;
 using PSTimeTracker.Models;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
+using PSTimeTracker.PsTracking;
+using PSTimeTracker.Configuration;
+using PSTimeTracker.Views;
+using PSTimeTracker.ViewModels;
+using PSTimeTracker.Update;
 
 namespace PSTimeTracker
 {
@@ -19,7 +21,7 @@ namespace PSTimeTracker
     {
         public const string APP_NAME = "PSTimeTracker";
 
-        public static Version Version { get; private set; } = new Version("1.2.0");
+        public static Version Version { get; private set; } = new Version("1.2.1");
 
         private const string RECORDS_FOLDER_NAME = "records";
         private const string CRASHES_FOLDER_NAME = "crash-reports";
@@ -42,14 +44,52 @@ namespace PSTimeTracker
 
         private ViewManager _viewManager;
 
+        public static void DisplayErrorMessage(string message)
+        {
+            MessageBox.Show(message, APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            SetupSettings();
+            Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
+            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
 
+            CreateObjectInstances();
+
+            if (ConfigManager.Config.CheckForUpdates)
+                CheckUpdates();
+
+            _viewManager.ShowMainView();
+        }
+
+        private async void CheckUpdates()
+        {
+            var update = await new Update.UpdateChecker().CheckAsync();
+            if (update.updateAvailable)
+            {
+                ShowUpdateView(update.versionInfo);
+            }
+        }
+
+        private void ShowUpdateView(VersionInfo versionInfo)
+        {
+            UpdateView updateView = new UpdateView()
+            {
+                DataContext = new UpdateViewModel()
+                {
+                    VersionText = $"Version: {versionInfo.Version}",
+                    Description = versionInfo.Description
+                }
+            };
+            updateView.Show();
+        }
+
+        private void CreateObjectInstances()
+        {
             ObservableCollection<PsFile> filesList = new ObservableCollection<PsFile>();
 
             _configManager = new ConfigManager();
-            _configManager.ConfigChanged += OnConfigChanged;
+            _configManager.ConfigChanged += (s, e) => SetTrackerSettings();
 
             _processInfoService = new ProcessInfoService();
 
@@ -59,7 +99,6 @@ namespace PSTimeTracker
             SetTrackerSettings();
 
             _viewManager = new ViewManager(filesList, _trackingService, _recordManager);
-            _viewManager.ShowMainView();
         }
 
         private void ChooseAndCreateTrackingMethod()
@@ -67,26 +106,7 @@ namespace PSTimeTracker
             if (ConfigManager.Config.UseLegacyTrackingMethod)
                 _tracker = new TitleTracker(_processInfoService);
             else
-                _tracker = new ComTracker();
-        }
-
-
-        public static void DisplayErrorMessage(string message)
-        {
-            MessageBox.Show(message, APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            new CrashReportManager().CleanUpFolder();
-            base.OnExit(e);
-        }
-
-
-
-        private void OnConfigChanged(object sender, EventArgs e)
-        {
-            SetTrackerSettings();
+                _tracker = new ComTracker(_processInfoService);
         }
 
         private void SetTrackerSettings()
@@ -94,14 +114,7 @@ namespace PSTimeTracker
             _trackingService.IgnoreAFK = ConfigManager.Config.IgnoreAFKTimer;
             _trackingService.IgnoreWindowState = ConfigManager.Config.IgnoreWindowState;
         }
-
-        private static void SetupSettings()
-        {
-            Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
-
-            // Increase tooltip delay
-            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
-        }
+        
 
         // Create crash-report and shutdown application on unhandled exception.
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -114,6 +127,12 @@ namespace PSTimeTracker
                 DisplayErrorMessage(crashMessage);
 
             this.Shutdown();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            new CrashReportManager().CleanUpFolder();
+            base.OnExit(e);
         }
     }
 }

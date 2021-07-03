@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using PSTimeTracker.Core;
+using PSTimeTracker.PsTracking;
 
-namespace PSTimeTracker.Services
+namespace PSTimeTracker.Configuration
 {
     public class Config : INotifyPropertyChanged
     {
@@ -16,5 +16,6 @@ namespace PSTimeTracker.Services
         public int NumberOfRecordsToKeep { get; set; } = 6;
         public bool DisplayErrorMessage { get; set; } = true;
         public bool UseLegacyTrackingMethod { get; set; } = false;
+        public bool CheckForUpdates { get; set; } = true;
     }
 }

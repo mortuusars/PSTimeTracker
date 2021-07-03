@@ -16,7 +16,7 @@
             <local:SecondsToTimeConverter x:Key="SecondsToTimeConverter"/>
             <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
             <local:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
-
+            <local:OpacityPositionConverter x:Key="OpacityPositionConverter"/>
 
 
 

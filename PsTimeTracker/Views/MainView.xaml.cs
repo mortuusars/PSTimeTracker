@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -86,13 +87,13 @@ namespace PSTimeTracker
         {
             var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Left, IntPtr.Zero);
-            SetAutoHeight();
+            //SetAutoHeight();
         }
         private void RightResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Right, IntPtr.Zero);
-            SetAutoHeight();
+            //SetAutoHeight();
         }
 
         private void SideResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeWE;
@@ -103,16 +104,24 @@ namespace PSTimeTracker
             MainListView.MaxHeight = this.Height;
             IsDragging = true;
             previousMouseY = e.GetPosition(MainListView).Y;
-            DragResizeBottom();
+            DragResizeBottom(e);
+        }
+
+        private void BottomResizeBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            IsDragging = false;
         }
 
         private void BottomResizeBorder_MouseMove(object sender, MouseEventArgs e)
         {
-            DragResizeBottom();
+            DragResizeBottom(e);
         }
 
-        private void DragResizeBottom()
+        private void DragResizeBottom(MouseEventArgs e)
         {
+            if (e.LeftButton == MouseButtonState.Released)
+                return;
+
             if (IsDragging)
             {
                 Mouse.Capture(BottomResizeBorder);
@@ -132,23 +141,27 @@ namespace PSTimeTracker
 
                 if (Mouse.LeftButton == MouseButtonState.Released)
                     IsDragging = false;
-
             }
         }
 
-        private void BottomResizeBorder_MouseRightButtonDown(object sender, MouseButtonEventArgs e) => SetAutoHeight();
+        private void BottomResizeBorder_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            SetAutoHeight();
+        }
 
         private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeNS;
 
-        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.Arrow;
+        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+            IsDragging = false;
+        }
 
         private void SetAutoHeight()
         {
             this.MainListView.MaxHeight = MaxListHeight;
             this.MainListView.Height = double.NaN;
         }
-
-
 
         #endregion
 
