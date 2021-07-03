@@ -54,4 +54,10 @@
     <Resource Include="Resources\Images\ps_timer_tracker_size.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="version.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

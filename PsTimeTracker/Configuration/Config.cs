@@ -16,5 +16,6 @@ namespace PSTimeTracker.Configuration
         public int NumberOfRecordsToKeep { get; set; } = 6;
         public bool DisplayErrorMessage { get; set; } = true;
         public bool UseLegacyTrackingMethod { get; set; } = false;
+        public bool CheckForUpdates { get; set; } = true;
     }
 }
