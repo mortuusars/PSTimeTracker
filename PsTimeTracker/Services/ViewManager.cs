@@ -55,6 +55,7 @@ namespace PSTimeTracker.Services
         {
             SaveMainViewState();
             _mainView?.Close();
+            App.Current.Shutdown();
         }
 
         private void SaveMainViewState()
@@ -97,7 +98,7 @@ namespace PSTimeTracker.Services
                 _configView = new ConfigView() { DataContext = configViewModel };
                 _configView.Owner = _mainView;
                 _configView.Show();
-                _configView.Top -= 400;
+                _configView.Top -= 200;
             }
         }
 

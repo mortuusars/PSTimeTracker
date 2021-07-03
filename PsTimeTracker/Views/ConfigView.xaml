@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSTimeTracker.Views"
         mc:Ignorable="d"
-        Title="ConfigView" Height="200" Width="300"
+        Title="ConfigView" Height="600" Width="300"
         WindowStyle="None" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" 
         Background="{x:Null}" AllowsTransparency="True">
 
-    <Border Name="MainBorder"
+    <Border Name="MainBorder" VerticalAlignment="Top"
             Background="{StaticResource MainGradient}" Margin="20" CornerRadius="4"
             BorderThickness="1.8"
             BorderBrush="{StaticResource MainBorderBrush}"
@@ -39,7 +39,7 @@
             </Grid>
             <!--#endregion-->
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1" Margin="2 0">
                 <StackPanel Margin="5">
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                         <CheckBox IsChecked="{Binding Config.IgnoreAFKTimer, Mode=TwoWay, 
@@ -57,7 +57,7 @@
                                    Style="{StaticResource TextBlockSmaller}"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                    <StackPanel Orientation="Horizontal">
                         <StackPanel.ToolTip>
                             <TextBlock Style="{StaticResource TextBlockSmaller}" MaxWidth="300" TextWrapping="WrapWithOverflow" Text="Photoshop title will be used for tracking. This method has limitations. Should only be used if default method is not working."/>
                         </StackPanel.ToolTip>
@@ -71,6 +71,22 @@
                         <TextBlock Text="Use legacy tracking method (Requires app restart)" 
                                    HorizontalAlignment="Left" 
                                    Width="225" TextWrapping="Wrap" Margin="5 0 0 0" 
+                                   Style="{StaticResource TextBlockSmaller}"/>
+                    </StackPanel>
+
+                    <Rectangle Height="1" VerticalAlignment="Top" Margin="30 20 30 8"
+                                   Fill="{StaticResource HeaderBorderBrush}"/>
+                    
+                    <StackPanel Orientation="Horizontal">
+                        
+                        
+                        <CheckBox IsChecked="{Binding Config.CheckForUpdates, Mode=TwoWay,
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                  VerticalAlignment="Top">
+                        </CheckBox>
+                        <TextBlock Text="Check for updates" 
+                                   HorizontalAlignment="Left" 
+                                   Width="225" TextWrapping="Wrap" Margin="5 0 0 2" 
                                    Style="{StaticResource TextBlockSmaller}"/>
                     </StackPanel>
                 </StackPanel>
