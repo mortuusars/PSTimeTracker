@@ -106,6 +106,19 @@ namespace PSTimeTracker.PsTracking
             isRunning = false;
         }
 
+        public void CountSummarySeconds()
+        {
+            int newCount = 0;
+
+            foreach (var file in _FilesList)
+            {
+                newCount += file.TrackedSeconds;
+            }
+
+            summarySeconds = newCount;
+            SummarySecondsChanged?.Invoke(this, summarySeconds);
+        }
+
         private void Track()
         {
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
@@ -142,6 +155,9 @@ namespace PSTimeTracker.PsTracking
 
         private PSCallResult GetFileNameInTime(int milliseconds)
         {
+            if (!_processInfoService.PhotoshopIsRunning)
+                return new PSCallResult(PSResponse.NoActiveDocument, string.Empty);
+
             var task = Task.Run(() => Tracker.GetFileName());
             if (task.Wait(milliseconds))
                 return task.Result;
@@ -171,19 +187,6 @@ namespace PSTimeTracker.PsTracking
             }
 
             return currentlyOpenedFile;
-        }
-
-        public void CountSummarySeconds()
-        {
-            int newCount = 0;
-
-            foreach (var file in _FilesList)
-            {
-                newCount += file.TrackedSeconds;
-            }
-
-            summarySeconds = newCount;
-            SummarySecondsChanged?.Invoke(this, summarySeconds);
         }
     }
 }

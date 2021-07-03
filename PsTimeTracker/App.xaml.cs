@@ -66,7 +66,7 @@ namespace PSTimeTracker
             if (ConfigManager.Config.UseLegacyTrackingMethod)
                 _tracker = new TitleTracker(_processInfoService);
             else
-                _tracker = new ComTracker();
+                _tracker = new ComTracker(_processInfoService);
         }
 
 

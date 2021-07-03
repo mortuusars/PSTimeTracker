@@ -10,8 +10,14 @@ namespace PSTimeTracker.PsTracking
         private const int CODE_CALL_FAILED = -2146233088;
 
         private dynamic _psCOMInterface;
-
+        private ProcessInfoService _processInfoService;
         private int _failedCalls = 0;
+
+
+        public ComTracker(ProcessInfoService processInfoService)
+        {
+            _processInfoService = processInfoService;
+        }
 
         /// <summary>Gets currently active document name by calling PS COM Interface.</summary>
         /// <returns>
@@ -23,38 +29,29 @@ namespace PSTimeTracker.PsTracking
             if (_psCOMInterface == null)
                 CreatePhotoshopCOMInstance();
 
-            //Log("Trying to get filename");
-
             try
             {
+                string filename = _psCOMInterface.ActiveDocument.Name;
                 _failedCalls = 0;
-
-                //Log($"doc name: {_psCOMInterface.ActiveDocument.Name}");
-                return new PSCallResult(PSResponse.Success, _psCOMInterface.ActiveDocument.Name);
+                return new PSCallResult(PSResponse.Success, filename);
             }
             catch (Exception ex) when (ex.HResult == CODE_APP_IS_BUSY)
             {
-                //Log("busy");
                 return new PSCallResult(PSResponse.Busy, string.Empty);
             }
             catch (Exception ex) when (ex.HResult == CODE_NO_ACTIVE_DOCUMENT)
             {
-                //Log("no active");
                 return new PSCallResult(PSResponse.NoActiveDocument, string.Empty);
             }
             catch (Exception ex) when (ex.HResult == CODE_CALL_FAILED)
             {
-                //Log("call failed");
                 return new PSCallResult(PSResponse.Failed, string.Empty);
             }
             catch (Exception )
             {
-                //Log("Something else: ");
-                //Log(ex.Message);
-
                 _failedCalls++;
                 if (_failedCalls > 10)
-                    return null;
+                    return new PSCallResult(PSResponse.NoActiveDocument, string.Empty);
 
                 CreatePhotoshopCOMInstance();
 
@@ -64,6 +61,9 @@ namespace PSTimeTracker.PsTracking
 
         private void CreatePhotoshopCOMInstance()
         {
+            if (_processInfoService.PhotoshopIsRunning == false)
+                return;
+
             try
             {
                 _psCOMInterface = Activator.CreateInstance(Type.GetTypeFromProgID("Photoshop.Application"));
@@ -72,11 +72,6 @@ namespace PSTimeTracker.PsTracking
             {
 
             }
-        }
-
-        private void Log(string message)
-        {
-            File.AppendAllText("log.txt", "\n" + message);
         }
     }
 }
