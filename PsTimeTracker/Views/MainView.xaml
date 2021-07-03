@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PSTimeTracker" 
-        xmlns:core="clr-namespace:PSTimeTracker.Core"
+        xmlns:local="clr-namespace:PSTimeTracker"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:test="clr-namespace:PSTimeTracker.Testing"
+        xmlns:tracking="clr-namespace:PSTimeTracker.PsTracking"
         mc:Ignorable="d"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
         Title="Photoshop Time Tracker"  
@@ -31,7 +31,7 @@
 
         <ObjectDataProvider x:Key="SortingContextMenuData" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="core:Sorting"/>
+                <x:Type TypeName="tracking:Sorting"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>        
 

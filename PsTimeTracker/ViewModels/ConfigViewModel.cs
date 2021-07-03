@@ -1,6 +1,5 @@
-﻿using System;
-using System.Windows.Input;
-using PSTimeTracker.Services;
+﻿using System.Windows.Input;
+using PSTimeTracker.Configuration;
 
 namespace PSTimeTracker.ViewModels
 {

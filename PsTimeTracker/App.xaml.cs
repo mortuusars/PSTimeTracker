@@ -5,10 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using PSTimeTracker.Services;
-using PSTimeTracker.Core;
 using PSTimeTracker.Models;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
+using PSTimeTracker.PsTracking;
+using PSTimeTracker.Configuration;
 
 namespace PSTimeTracker
 {

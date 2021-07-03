@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
 
-namespace PSTimeTracker.Services
+namespace PSTimeTracker.Configuration
 {
     public class ConfigManager
     {

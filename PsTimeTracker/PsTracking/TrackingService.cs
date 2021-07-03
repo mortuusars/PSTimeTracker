@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PSTimeTracker.Models;
 
-namespace PSTimeTracker.Core
+namespace PSTimeTracker.PsTracking
 {
     public class TrackingService
     {

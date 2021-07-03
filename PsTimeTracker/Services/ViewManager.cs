@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using PSTimeTracker.Core;
+﻿using System.Collections.ObjectModel;
 using PSTimeTracker.Models;
 using PSTimeTracker.ViewModels;
 using PSTimeTracker.Views;
+using PSTimeTracker.PsTracking;
+using PSTimeTracker.Configuration;
 using FileIO;
 using System.Linq;
-using System.Windows;
 
 namespace PSTimeTracker.Services
 {

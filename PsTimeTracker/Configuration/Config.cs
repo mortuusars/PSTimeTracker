@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
-using PSTimeTracker.Core;
+using PSTimeTracker.PsTracking;
 
-namespace PSTimeTracker.Services
+namespace PSTimeTracker.Configuration
 {
     public class Config : INotifyPropertyChanged
     {

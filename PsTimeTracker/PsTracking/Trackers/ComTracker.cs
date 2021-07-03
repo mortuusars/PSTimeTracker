@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace PSTimeTracker.Core
+namespace PSTimeTracker.PsTracking
 {
     public class ComTracker : ITracker
     {
@@ -47,7 +47,7 @@ namespace PSTimeTracker.Core
                 //Log("call failed");
                 return new PSCallResult(PSResponse.Failed, string.Empty);
             }
-            catch (Exception ex )
+            catch (Exception )
             {
                 //Log("Something else: ");
                 //Log(ex.Message);
@@ -64,16 +64,14 @@ namespace PSTimeTracker.Core
 
         private void CreatePhotoshopCOMInstance()
         {
-            //Log("Creating instance");
             try
             {
                 _psCOMInterface = Activator.CreateInstance(Type.GetTypeFromProgID("Photoshop.Application"));
             }
-            catch (Exception ex)
+            catch
             {
-                //Log(ex.Message);
+
             }
-            //Log("Created PS COM Instance");
         }
 
         private void Log(string message)
