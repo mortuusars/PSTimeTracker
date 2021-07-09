@@ -26,7 +26,7 @@ namespace PSTimeTracker.Update
             }
             catch (Exception)
             {
-                return new VersionInfo();
+                return new VersionInfo() { Description = string.Empty, Version = "0.0.0" };
             }
         }
 
