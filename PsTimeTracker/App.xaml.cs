@@ -21,7 +21,7 @@ namespace PSTimeTracker
     {
         public const string APP_NAME = "PSTimeTracker";
 
-        public static Version Version { get; private set; } = new Version("1.2.1");
+        public static Version Version { get; private set; } = new Version("1.2.2");
 
         private const string RECORDS_FOLDER_NAME = "records";
         private const string CRASHES_FOLDER_NAME = "crash-reports";
