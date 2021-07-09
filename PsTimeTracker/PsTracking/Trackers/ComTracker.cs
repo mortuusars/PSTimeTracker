@@ -47,10 +47,10 @@ namespace PSTimeTracker.PsTracking
             {
                 return new PSCallResult(PSResponse.Failed, string.Empty);
             }
-            catch (Exception )
+            catch (Exception)
             {
                 _failedCalls++;
-                if (_failedCalls > 10)
+                if (_failedCalls > 5)
                     return new PSCallResult(PSResponse.NoActiveDocument, string.Empty);
 
                 CreatePhotoshopCOMInstance();
@@ -61,11 +61,11 @@ namespace PSTimeTracker.PsTracking
 
         private void CreatePhotoshopCOMInstance()
         {
-            if (_processInfoService.PhotoshopIsRunning == false)
-                return;
-
             try
             {
+                if (_processInfoService.PhotoshopIsRunning == false)
+                    return;
+
                 _psCOMInterface = Activator.CreateInstance(Type.GetTypeFromProgID("Photoshop.Application"));
             }
             catch

@@ -56,9 +56,9 @@ namespace PSTimeTracker
                     MenuContrainer.Visibility = Visibility.Hidden;
             };
 
-            //MainListView.LostFocus += (s, e) => MainListView.SelectedItems.Clear();
-
             MaxListHeight = MainListView.MaxHeight;
+
+            this.Deactivated += MainView_Deactivated;
         }
 
         #region Events
@@ -67,6 +67,11 @@ namespace PSTimeTracker
         {
             this.DragMove();
             this.MainListView.SelectedItem = null;
+        }
+
+        private void MainView_Deactivated(object sender, EventArgs e)
+        {
+            this.MenuContrainer.Visibility = Visibility.Collapsed;
         }
 
         #endregion
