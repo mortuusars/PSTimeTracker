@@ -9,6 +9,7 @@
     <Version>1.2.2</Version>
     <Authors>Evgeny Daubel</Authors>
     <StartupObject>PSTimeTracker.App</StartupObject>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libs\Mortuus.IO\FileIO\FileIO.csproj" />
+    <ProjectReference Include="D:\Google Drive\Programming\Libs\Mortuus.IO\FileIO\FileIO.csproj" />
   </ItemGroup>
 
   <ItemGroup>

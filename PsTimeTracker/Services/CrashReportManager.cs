@@ -8,6 +8,9 @@ namespace PSTimeTracker.Services
 {
     public class CrashReportManager
     {
+        private const string CRASHES_FOLDER_NAME = "crash-reports";
+        private static readonly string APP_CRASHES_FOLDER_PATH = $"{App.APP_FOLDER_PATH}{CRASHES_FOLDER_NAME}/";
+
         FileInfo[] reportFiles;
 
         /// <summary>
@@ -16,11 +19,11 @@ namespace PSTimeTracker.Services
         /// <param name="crashMessage">Crash message that will be written.</param>
         public void ReportCrash(string crashMessage)
         {
-            string crashReportFileName = $"{App.APP_CRASHES_FOLDER_PATH}crash-{DateTimeOffset.Now:yyyy-mm-dd_HH-mm-ss}.txt";
+            string crashReportFileName = $"{APP_CRASHES_FOLDER_PATH}crash-{DateTimeOffset.Now:yyyy-mm-dd_HH-mm-ss}.txt";
 
             try
             {
-                Directory.CreateDirectory(App.APP_CRASHES_FOLDER_PATH);
+                Directory.CreateDirectory(APP_CRASHES_FOLDER_PATH);
                 File.WriteAllText(crashReportFileName, crashMessage);
             }
             catch (Exception ex)
@@ -51,7 +54,7 @@ namespace PSTimeTracker.Services
 
         private void GetSortedDirectoryFiles()
         {
-            reportFiles = new DirectoryInfo(App.APP_CRASHES_FOLDER_PATH).GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
+            reportFiles = new DirectoryInfo(APP_CRASHES_FOLDER_PATH).GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
         }
     }
 }

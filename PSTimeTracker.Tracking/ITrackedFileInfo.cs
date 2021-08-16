@@ -1,16 +1,13 @@
 ﻿using System;
-using PropertyChanged;
 
-namespace PSTimeTracker.Models
+namespace PSTimeTracker.Tracking
 {
-    [AddINotifyPropertyChangedInterface]
-    public class PsFile
+    public interface ITrackedFileInfo
     {
-        public string? FileName { get; set; }
+        public string FileName { get; }
         public int TrackedSeconds { get; set; }
         public DateTimeOffset FirstActiveTime { get; set; }
         public DateTimeOffset LastActiveTime { get; set; }
         public bool IsCurrentlyActive { get; set; }
-        public bool IsSelected { get; set; }
     }
 }

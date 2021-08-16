@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using PSTimeTracker.Core;
 using PSTimeTracker.Models;
 
 namespace PSTimeTracker.Services
 {
     public class RecordManager
     {
-        #region Properties
+        private const string RECORDS_FOLDER_NAME = "records";
+        private static readonly string APP_RECORDS_FOLDER_PATH = $"{App.APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
+
 
         /// <summary>If set to true, list will be written to the file that was restored.</summary>
         public bool SaveToLastLoadedFile { get; set; }
@@ -34,9 +34,7 @@ namespace PSTimeTracker.Services
         private int numberOfRecordsToKeep = 6;
 
         /// <summary>Delay in milliseconds between savings to file.</summary>
-        public int WriteInterval { get; set; } = 3000;
-
-        #endregion
+        public int WriteInterval { get; set; } = 10000;
 
         private readonly ObservableCollection<PsFile> _collectionToSave;
 
@@ -49,14 +47,12 @@ namespace PSTimeTracker.Services
         {
             _collectionToSave = collectionToSave;
 
-            Directory.CreateDirectory(App.APP_RECORDS_FOLDER_PATH);
+            Directory.CreateDirectory(APP_RECORDS_FOLDER_PATH);
 
             FileInfo[] files = GetOrderedRecordFiles();
             if (files.Length > 0) IsRestoringAvailable = true;
-            RemoveExcessRecordFiles(files);
+            RemoveOldestRecordsIfAboveLimit(files);
         }
-
-        #region Public Methods
 
         /// <summary>Repeatedly saving to file with a <see cref="WriteInterval"/>.</summary>
         public async void StartSaving()
@@ -71,10 +67,7 @@ namespace PSTimeTracker.Services
         }
 
         /// <summary>Stops repeated saving of a record collection.</summary>
-        public void StopSaving()
-        {
-            shouldSave = false;
-        }
+        public void StopSaving() => shouldSave = false;
 
         /// <summary>Writes collection to json file.</summary>
         public void Save()
@@ -89,7 +82,7 @@ namespace PSTimeTracker.Services
                 if (SaveToLastLoadedFile && string.IsNullOrWhiteSpace(lastRestoredFileName) == false)
                     File.WriteAllText(lastRestoredFileName, jsonContents);
                 else
-                    File.WriteAllText(App.APP_RECORDS_FOLDER_PATH + "/" + App.SESSION_ID + ".json", jsonContents);
+                    File.WriteAllText(APP_RECORDS_FOLDER_PATH + "/" + App.SESSION_ID + ".json", jsonContents);
             }
             catch (Exception ex)
             {
@@ -121,10 +114,6 @@ namespace PSTimeTracker.Services
             return CleanListProperties(newList);
         }
 
-        #endregion
-
-        #region Private Methods
-
         /// <summary>Gets array of record files from a folder. Orders it by last written time - oldest first.</summary>
         private FileInfo[] GetOrderedRecordFiles()
         {
@@ -132,7 +121,7 @@ namespace PSTimeTracker.Services
 
             try
             {
-                recordFiles = new DirectoryInfo(App.APP_RECORDS_FOLDER_PATH).GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
+                recordFiles = new DirectoryInfo(APP_RECORDS_FOLDER_PATH).GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
             }
             catch (Exception ex)
             {
@@ -142,8 +131,7 @@ namespace PSTimeTracker.Services
             return recordFiles;
         }
 
-        /// <summary> Deletes oldest records. Stops when number of records is under allowed amount.</summary>
-        private void RemoveExcessRecordFiles(FileInfo[] files)
+        private void RemoveOldestRecordsIfAboveLimit(FileInfo[] files)
         {
             while (files.Length > NumberOfRecordsToKeep)
             {
@@ -164,7 +152,5 @@ namespace PSTimeTracker.Services
 
             return listToClean;
         }
-
-        #endregion
     }
 }

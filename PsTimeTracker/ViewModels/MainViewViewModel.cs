@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Input;
 using PSTimeTracker.Services;
-using PSTimeTracker.Core;
 using PSTimeTracker.Models;
 using System.Linq;
 using System.Windows.Data;

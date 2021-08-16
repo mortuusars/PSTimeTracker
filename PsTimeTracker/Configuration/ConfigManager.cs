@@ -10,38 +10,38 @@ namespace PSTimeTracker.Configuration
         private const string CFG_FILENAME = "config.json";
         private readonly string CFG_FILE_PATH = Environment.CurrentDirectory + "/" + CFG_FILENAME;
 
-        public event EventHandler ConfigChanged;
-        public static Config Config;
+        public event EventHandler? ConfigChanged;
+        #pragma warning disable CS8618
+        public static Config Config { get; private set; }
+        #pragma warning restore CS8618
 
         public ConfigManager()
         {
-            Load();
+            Config = Load();
             Save();
 
             Config.PropertyChanged += Config_OnPropertyChanged;
         }
 
-        private void Config_OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void Config_OnPropertyChanged(object? sender, PropertyChangedEventArgs? e)
         {
             ConfigChanged?.Invoke(this, EventArgs.Empty);
             Save();
         }
 
-        /// <summary>Loads config from file to <see cref="Config"/>. Loads default if something went wrong.</summary>
-        public void Load()
+        public Config Load()
         {
             try
             {
                 string configString = File.ReadAllText(CFG_FILE_PATH);
-                Config = JsonSerializer.Deserialize<Config>(configString);
+                return JsonSerializer.Deserialize<Config>(configString);
             }
             catch (Exception)
             {
-                Config = new Config();
+                return new Config();
             }
         }
 
-        /// <summary>Saves config to file.</summary>
         public void Save()
         {
             string jsonString = JsonSerializer.Serialize(Config, new JsonSerializerOptions() { WriteIndented = true });

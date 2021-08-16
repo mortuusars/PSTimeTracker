@@ -7,15 +7,17 @@ namespace PSTimeTracker.Update
 {
     public class UpdateChecker
     {
-        public async Task<(bool updateAvailable, VersionInfo versionInfo)> CheckAsync()
+        public VersionInfo NewVersionInfo { get; private set; }
+
+        public async Task<bool> IsUpdateAvailable()
         {
             string json = await GetFileFromWeb();
-            VersionInfo versionInfo = DeserializeVersionInfo(json);
+            NewVersionInfo = DeserializeVersionInfo(json);
 
-            if (new Version(versionInfo.Version) > App.Version)
-                return (true, versionInfo);
+            if (new Version(NewVersionInfo.Version) > App.Version)
+                return true;
             else
-                return (false, null);
+                return false;
         }
 
         private VersionInfo DeserializeVersionInfo(string json)

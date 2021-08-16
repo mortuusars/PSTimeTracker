@@ -20,22 +20,11 @@ namespace PSTimeTracker
     public partial class App : Application
     {
         public const string APP_NAME = "PSTimeTracker";
-
-        public static Version Version { get; private set; } = new Version("1.2.2");
-
-        private const string RECORDS_FOLDER_NAME = "records";
-        private const string CRASHES_FOLDER_NAME = "crash-reports";
-        private const int TOOLTIP_DELAY = 500;
-
-        public static readonly string SESSION_ID = new Random((int)DateTimeOffset.Now.ToUnixTimeSeconds()).Next().ToString();
-
-        // Paths to Local/APPNAME and nested folders
+        public static Version Version { get; private set; } = new Version("1.2.3");
         public static readonly string APP_FOLDER_PATH = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/{APP_NAME}/";
-        public static readonly string APP_RECORDS_FOLDER_PATH = $"{APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
-        public static readonly string APP_CRASHES_FOLDER_PATH = $"{APP_FOLDER_PATH}{CRASHES_FOLDER_NAME}/";
+        public static readonly string SESSION_ID = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
 
         private ConfigManager _configManager;
-
         private ProcessInfoService _processInfoService;
 
         private ITracker _tracker;
@@ -52,36 +41,22 @@ namespace PSTimeTracker
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
-            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(TOOLTIP_DELAY));
 
             CreateObjectInstances();
 
-            if (ConfigManager.Config.CheckForUpdates)
-                CheckUpdates();
+            CheckForUpdates();
 
             _viewManager.ShowMainView();
         }
 
-        private async void CheckUpdates()
+        private async void CheckForUpdates()
         {
-            var update = await new Update.UpdateChecker().CheckAsync();
-            if (update.updateAvailable)
+            if (ConfigManager.Config.CheckForUpdates)
             {
-                ShowUpdateView(update.versionInfo);
+                var updateChecker = new UpdateChecker();
+                if (await updateChecker.IsUpdateAvailable())
+                    _viewManager.ShowUpdateView(updateChecker.NewVersionInfo);
             }
-        }
-
-        private void ShowUpdateView(VersionInfo versionInfo)
-        {
-            UpdateView updateView = new UpdateView()
-            {
-                DataContext = new UpdateViewModel()
-                {
-                    VersionText = $"Version: {versionInfo.Version}",
-                    Description = versionInfo.Description
-                }
-            };
-            updateView.Show();
         }
 
         private void CreateObjectInstances()
@@ -114,8 +89,9 @@ namespace PSTimeTracker
             _trackingService.IgnoreAFK = ConfigManager.Config.IgnoreAFKTimer;
             _trackingService.IgnoreWindowState = ConfigManager.Config.IgnoreWindowState;
         }
-        
 
+
+        //TODO: Move to crash report class
         // Create crash-report and shutdown application on unhandled exception.
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {

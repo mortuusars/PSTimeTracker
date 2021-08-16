@@ -6,25 +6,42 @@ using PSTimeTracker.PsTracking;
 using PSTimeTracker.Configuration;
 using FileIO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using PSTimeTracker.Update;
 
 namespace PSTimeTracker.Services
 {
     public class ViewManager
     {
-
         private ObservableCollection<PsFile> _FilesList;
         private readonly TrackingService _trackingService;
         private readonly RecordManager _recordManager;
 
-        private MainView _mainView;
-        private ConfigView _configView;
-        private AboutView _aboutView;
+        private MainView? _mainView;
+        private ConfigView? _configView;
+        private AboutView? _aboutView;
 
         public ViewManager(ObservableCollection<PsFile> FilesList, TrackingService trackingService, RecordManager recordManager)
         {
             _FilesList = FilesList;
             _trackingService = trackingService;
             _recordManager = recordManager;
+
+            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(500));
+        }
+
+        public void ShowUpdateView(VersionInfo versionInfo)
+        {
+            UpdateView updateView = new UpdateView()
+            {
+                DataContext = new UpdateViewModel()
+                {
+                    VersionText = $"Version: {versionInfo.Version}",
+                    Description = versionInfo.Description
+                }
+            };
+            updateView.Show();
         }
 
         #region Main View

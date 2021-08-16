@@ -56,15 +56,15 @@ namespace PSTimeTracker.PsTracking
 
         private PsFile lastActiveFile;
 
-        private ObservableCollection<PsFile> _FilesList;
+        private ObservableCollection<PsFile> _filesList;
         private readonly ProcessInfoService _processInfoService;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="FilesList">Collection to write to.</param>
         public TrackingService(ref ObservableCollection<PsFile> FilesList, ProcessInfoService processInfoService, ITracker tracker)
         {
-            _FilesList = FilesList;
-            _FilesList.CollectionChanged += (s, e) => CountSummarySeconds();
+            _filesList = FilesList;
+            _filesList.CollectionChanged += (s, e) => CountSummarySeconds();
 
             _processInfoService = processInfoService;
             Tracker = tracker;
@@ -72,10 +72,11 @@ namespace PSTimeTracker.PsTracking
 
         public async void StartTracking()
         {
+            var stopwatch = new System.Diagnostics.Stopwatch();
+
             isRunning = true;
             while (isRunning)
             {
-                var stopwatch = new System.Diagnostics.Stopwatch();
                 stopwatch.Start();
 
                 if (_processInfoService.PhotoshopIsRunning)
@@ -84,33 +85,24 @@ namespace PSTimeTracker.PsTracking
                         Track();
                 }
 
-                //Debug.WriteLine("Tracking done in: " + stopwatch.ElapsedMilliseconds + "ms");
-
                 int delay = CheckDelayMS - (int)stopwatch.ElapsedMilliseconds;
                 if (delay < 1)
                     delay = 1;
 
                 await Task.Delay(delay);
 
-                //Debug.WriteLine("Total (should be 1000ms): " + stopwatch.ElapsedMilliseconds + "ms");
-
                 stopwatch.Stop();
+                stopwatch.Reset();
             }
         }
 
-        public void StopTracking()
-        {
-            if (!isRunning)
-                return;
-
-            isRunning = false;
-        }
+        public void StopTracking() => isRunning = false;
 
         public void CountSummarySeconds()
         {
             int newCount = 0;
 
-            foreach (var file in _FilesList)
+            foreach (var file in _filesList)
             {
                 newCount += file.TrackedSeconds;
             }
@@ -139,7 +131,7 @@ namespace PSTimeTracker.PsTracking
                 if (lastActiveFile == null)
                     return;
                 else
-                    currentlyActiveFile = lastActiveFile; 
+                    currentlyActiveFile = lastActiveFile;
             }
             else
             {
@@ -153,13 +145,13 @@ namespace PSTimeTracker.PsTracking
             CountSummarySeconds();
         }
 
-        private PSCallResult GetFileNameInTime(int milliseconds)
+        private PSCallResult GetFileNameInTime(int taskTimeout)
         {
             if (!_processInfoService.PhotoshopIsRunning)
                 return new PSCallResult(PSResponse.NoActiveDocument, string.Empty);
 
             var task = Task.Run(() => Tracker.GetFileName());
-            if (task.Wait(milliseconds))
+            if (task.Wait(taskTimeout))
                 return task.Result;
             else
                 return new PSCallResult(PSResponse.Failed, string.Empty);
@@ -178,12 +170,12 @@ namespace PSTimeTracker.PsTracking
             // Find current filename in list, if it was opened before
             // Add filename to list if it's new
 
-            PsFile currentlyOpenedFile = _FilesList.FirstOrDefault(f => f.FileName == fileName);
+            PsFile currentlyOpenedFile = _filesList.FirstOrDefault(f => f.FileName == fileName);
 
             if (currentlyOpenedFile == null)
             {
                 currentlyOpenedFile = new PsFile() { FileName = fileName, FirstActiveTime = DateTimeOffset.Now };
-                _FilesList.Add(currentlyOpenedFile);
+                _filesList.Add(currentlyOpenedFile);
             }
 
             return currentlyOpenedFile;

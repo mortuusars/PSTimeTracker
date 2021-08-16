@@ -1,13 +1,14 @@
-﻿using System.ComponentModel;
-using PSTimeTracker.PsTracking;
+﻿using PSTimeTracker.PsTracking;
+using PropertyChanged;
+using System.ComponentModel;
 
 namespace PSTimeTracker.Configuration
 {
     public class Config : INotifyPropertyChanged
     {
-        #pragma warning disable 0067
-        public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore 0067
+        #pragma warning disable CS0067
+        public event PropertyChangedEventHandler? PropertyChanged;
+        #pragma warning restore CS0067
 
         public bool AlwaysOnTop { get; set; }
         public Sorting SortBy { get; set; }

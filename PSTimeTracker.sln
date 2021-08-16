@@ -1,11 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30503.244
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSTimeTracker", "PsTimeTracker\PSTimeTracker.csproj", "{487CBB05-3E68-48BB-B7A0-EE1174E32C66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileIO", "..\..\Libs\Mortuus.IO\FileIO\FileIO.csproj", "{7B2B3497-E218-4164-8F73-4DB00D8004EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileIO", "D:\Google Drive\Programming\Libs\Mortuus.IO\FileIO\FileIO.csproj", "{A7414E24-F757-4345-9723-B3662058ED16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSTimeTracker.Tracking", "PSTimeTracker.Tracking\PSTimeTracker.Tracking.csproj", "{139B32A8-05D9-44E3-A692-085AB134EDFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CABECFE2-E182-44F2-BF60-061293ECAAFC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +24,14 @@ Global
 		{487CBB05-3E68-48BB-B7A0-EE1174E32C66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{487CBB05-3E68-48BB-B7A0-EE1174E32C66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{487CBB05-3E68-48BB-B7A0-EE1174E32C66}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7B2B3497-E218-4164-8F73-4DB00D8004EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B2B3497-E218-4164-8F73-4DB00D8004EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7B2B3497-E218-4164-8F73-4DB00D8004EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B2B3497-E218-4164-8F73-4DB00D8004EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7414E24-F757-4345-9723-B3662058ED16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7414E24-F757-4345-9723-B3662058ED16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7414E24-F757-4345-9723-B3662058ED16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7414E24-F757-4345-9723-B3662058ED16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{139B32A8-05D9-44E3-A692-085AB134EDFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{139B32A8-05D9-44E3-A692-085AB134EDFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{139B32A8-05D9-44E3-A692-085AB134EDFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{139B32A8-05D9-44E3-A692-085AB134EDFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

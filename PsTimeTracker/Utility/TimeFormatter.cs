@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PSTimeTracker.Core
+namespace PSTimeTracker
 {
     public static class TimeFormatter
     {
