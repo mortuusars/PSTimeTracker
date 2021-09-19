@@ -5,6 +5,10 @@
   
 </div>
 
+<div align="center">
+    <a href="https://github.com/mortuusars/PhotoshopTimeTracker/releases"><img src="media/PSTimeTracker-Logo-400.png" width="400"><a>
+</div>
+
 # Photoshop Time Tracker
 Allows you to track how much time you spend working on files in Photoshop.
 
