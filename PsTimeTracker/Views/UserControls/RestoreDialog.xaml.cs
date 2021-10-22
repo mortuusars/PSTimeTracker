@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace PSTimeTracker
+namespace PSTimeTracker.Views.UserControls
 {
     /// <summary>
     /// Interaction logic for RestoreDialog.xaml
@@ -14,7 +14,7 @@ namespace PSTimeTracker
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            this.Visibility = System.Windows.Visibility.Collapsed;
+            //this.Visibility = System.Windows.Visibility.Collapsed;
         }
     }
 }

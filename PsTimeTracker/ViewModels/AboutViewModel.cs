@@ -8,17 +8,17 @@ namespace PSTimeTracker.ViewModels
 
         public AboutViewModel()
         {
-            SetupVersionText();
+            Version = BuildVersionString();
         }
 
-        private void SetupVersionText()
+        private static string BuildVersionString()
         {
             Version appVersion = App.Version;
 
             if (appVersion.Build == 0)
-                Version = $"Version {appVersion.Major}.{appVersion.Minor}";
+                return $"Version {appVersion.Major}.{appVersion.Minor}";
             else
-                Version = $"Version {appVersion.Major}.{appVersion.Minor}.{appVersion.Build}";
+                return $"Version {appVersion.Major}.{appVersion.Minor}.{appVersion.Build}";
         }
     }
 }

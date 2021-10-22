@@ -8,12 +8,13 @@ namespace PSTimeTracker.Tracking
         PSGetNameResult GetActiveDocumentName();
     }
 
-    public class PhotoshopCOM : IPhotoshop
+    public class PhotoshopCOM
     {
         private const int CODE_NO_ACTIVE_DOCUMENT = -2147352565;
         private const int CODE_APP_IS_BUSY = -2147417846;
         private const int CODE_CALL_FAILED = -2146233088;
         private const int CODE_NOT_RUNNING = -2147023174;
+        private const int CODE_OBJECT_DISCONNECTED = -2147417848;
 
         private dynamic? _photoshop;
 
@@ -43,7 +44,18 @@ namespace PSTimeTracker.Tracking
             }
             catch (Exception ex) when (ex.HResult == CODE_NOT_RUNNING)
             {
-                CreatePhotoshopCOMInstance();
+                _getNameFailedCalls++;
+
+                if (_getNameFailedCalls > 10)
+                {
+                    _getNameFailedCalls = 0;
+                    CreatePhotoshopCOMInstance();
+                }
+
+                return new PSGetNameResult(PSResponse.PSNotRunning, string.Empty);
+            }
+            catch (Exception ex) when (ex.HResult == CODE_OBJECT_DISCONNECTED)
+            {
                 return new PSGetNameResult(PSResponse.PSNotRunning, string.Empty);
             }
             catch (Exception ex)

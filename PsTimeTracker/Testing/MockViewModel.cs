@@ -8,16 +8,12 @@ namespace PSTimeTracker.Testing
 {
     public class MockViewModel
     {
-
-        public ObservableCollection<PsFile> Files { get; set; } = new ObservableCollection<PsFile>()
+        public ObservableCollection<TrackedFile> Files { get; set; } = new ObservableCollection<TrackedFile>()
         {
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 241},
-            new PsFile() { FileName = "DSC9123asdasdasdasdasdasd3aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", TrackedSeconds = 241 },
-            new PsFile() { FileName = "DSC9123asdasdasdasdasdasd3aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", TrackedSeconds = 9999, IsSelected = true },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 999, IsSelected = true },
-            new PsFile() { FileName = "DSC91233", TrackedSeconds = 241, IsCurrentlyActive = true }
+            new TrackedFile() { FileName = "DSC91233", TrackedSeconds = 241},
+            new TrackedFile() { FileName = "DSC9123asdasdasdasdasdasd3aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", TrackedSeconds = 241 },
+            new TrackedFile() { FileName = "DSC9123asdasdasdasdasdasd3aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", TrackedSeconds = 15241 },
+            new TrackedFile() { FileName = "DSC91233", TrackedSeconds = 15241, IsCurrentlyActive = true }
         };
     }
 }

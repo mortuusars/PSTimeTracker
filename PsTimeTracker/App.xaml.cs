@@ -11,6 +11,8 @@ using PSTimeTracker.Configuration;
 using PSTimeTracker.Views;
 using PSTimeTracker.ViewModels;
 using PSTimeTracker.Update;
+using PSTimeTracker.Tracking;
+using System.Linq;
 
 namespace PSTimeTracker
 {
@@ -20,23 +22,19 @@ namespace PSTimeTracker
     public partial class App : Application
     {
         public const string APP_NAME = "PSTimeTracker";
-        public static Version Version { get; private set; } = new Version("1.2.3");
+        public static Version Version { get; private set; } = new Version("1.3");
         public static readonly string APP_FOLDER_PATH = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/{APP_NAME}/";
         public static readonly string SESSION_ID = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
 
         private ConfigManager _configManager;
-        private ProcessInfoService _processInfoService;
 
-        private ITracker _tracker;
-        private TrackingService _trackingService;
+        private PsTracking.ITracker _tracker;
         private RecordManager _recordManager;
+
+        private ITrackingHandler _trackingHandler;
 
         private ViewManager _viewManager;
 
-        public static void DisplayErrorMessage(string message)
-        {
-            MessageBox.Show(message, APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
-        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -44,12 +42,12 @@ namespace PSTimeTracker
 
             CreateObjectInstances();
 
-            CheckForUpdates();
+            CheckForUpdatesAsync();
 
             _viewManager.ShowMainView();
         }
 
-        private async void CheckForUpdates()
+        private async void CheckForUpdatesAsync()
         {
             if (ConfigManager.Config.CheckForUpdates)
             {
@@ -61,54 +59,14 @@ namespace PSTimeTracker
 
         private void CreateObjectInstances()
         {
-            ObservableCollection<PsFile> filesList = new ObservableCollection<PsFile>();
-
             _configManager = new ConfigManager();
-            _configManager.ConfigChanged += (s, e) => SetTrackerSettings();
+            //_configManager.ConfigChanged += (s, e) => SetTrackerSettings();
 
-            _processInfoService = new ProcessInfoService();
-
-            _recordManager = new RecordManager(filesList);
-            ChooseAndCreateTrackingMethod();
-            _trackingService = new TrackingService(ref filesList, _processInfoService, _tracker);
-            SetTrackerSettings();
-
-            _viewManager = new ViewManager(filesList, _trackingService, _recordManager);
-        }
-
-        private void ChooseAndCreateTrackingMethod()
-        {
-            if (ConfigManager.Config.UseLegacyTrackingMethod)
-                _tracker = new TitleTracker(_processInfoService);
-            else
-                _tracker = new ComTracker(_processInfoService);
-        }
-
-        private void SetTrackerSettings()
-        {
-            _trackingService.IgnoreAFK = ConfigManager.Config.IgnoreAFKTimer;
-            _trackingService.IgnoreWindowState = ConfigManager.Config.IgnoreWindowState;
+            _trackingHandler = new TrackingHandler(new Tracker(new TrackerConfiguration()));
+            _viewManager = new ViewManager(_trackingHandler);
         }
 
 
-        //TODO: Move to crash report class
-        // Create crash-report and shutdown application on unhandled exception.
-        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            var crashMessage = $"HResult: {e.Exception.HResult}\nError: {e.Exception}\n Inner: {e.Exception.InnerException}";
-
-            new CrashReportManager().ReportCrash(crashMessage);
-
-            if (ConfigManager.Config.DisplayErrorMessage)
-                DisplayErrorMessage(crashMessage);
-
-            this.Shutdown();
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            new CrashReportManager().CleanUpFolder();
-            base.OnExit(e);
-        }
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) => CrashManager.HandleCrash(e);
     }
 }

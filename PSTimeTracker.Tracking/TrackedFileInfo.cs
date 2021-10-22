@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace PSTimeTracker.Tracking
+﻿namespace PSTimeTracker.Tracking
 {
-    public class TrackedFileInfo
+    public record TrackedFileInfo
     {
-        public string? FileName { get; set; }
-        public int TrackedSeconds { get; set; }
-        public DateTimeOffset CreatedTime { get; set; }
-        public DateTimeOffset LastActiveTime { get; set; }
-        public bool IsCurrentlyActive { get; set; }
+        public string FileName { get; init; }
+
+        public static TrackedFileInfo Empty { get => new TrackedFileInfo(string.Empty); }
+
+        public TrackedFileInfo(string fileName) => FileName = fileName;
     }
 }

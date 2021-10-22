@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PSTimeTracker.Services;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
@@ -52,7 +53,7 @@ namespace PSTimeTracker.Configuration
             }
             catch (Exception ex)
             {
-                App.DisplayErrorMessage("Error saving config file: " + ex.Message);
+                ViewManager.DisplayErrorMessage("Error saving config file: " + ex.Message);
             }
         }
     }

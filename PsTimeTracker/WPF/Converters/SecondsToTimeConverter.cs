@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace PSTimeTracker
+namespace PSTimeTracker.WPF.Converters
 {
     [ValueConversion(typeof(int), typeof(string))]
     public class SecondsToTimeConverter : IValueConverter

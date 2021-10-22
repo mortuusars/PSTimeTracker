@@ -34,8 +34,10 @@
                        Fill="{StaticResource HeaderBorderBrush}"/>
 
 
-                <Image Margin="5 0 8 0" HorizontalAlignment="Right" Style="{StaticResource Close}" MouseLeftButtonDown="Close_LeftButtonDown">
-                </Image>
+                <Image Margin="5 0 8 0" HorizontalAlignment="Right" 
+                       Width="14" Height="14"
+                       MouseLeftButtonDown="Close_LeftButtonDown"
+                       Style="{StaticResource CloseButton}"/>
             </Grid>
             <!--#endregion-->
 

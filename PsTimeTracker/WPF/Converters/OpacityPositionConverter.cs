@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace PSTimeTracker
+namespace PSTimeTracker.WPF.Converters
 {
     public class OpacityPositionConverter : IValueConverter
     {

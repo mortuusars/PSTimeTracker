@@ -1,10 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using PSTimeTracker.Models;
-using PSTimeTracker.ViewModels;
+﻿using PSTimeTracker.ViewModels;
 using PSTimeTracker.Views;
-using PSTimeTracker.PsTracking;
-using PSTimeTracker.Configuration;
-using FileIO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,102 +9,51 @@ namespace PSTimeTracker.Services
 {
     public class ViewManager
     {
-        private ObservableCollection<PsFile> _FilesList;
-        private readonly TrackingService _trackingService;
-        private readonly RecordManager _recordManager;
+        private readonly ITrackingHandler _trackingHandler;
 
-        private MainView? _mainView;
+        private MainView _mainView;
         private ConfigView? _configView;
         private AboutView? _aboutView;
 
-        public ViewManager(ObservableCollection<PsFile> FilesList, TrackingService trackingService, RecordManager recordManager)
-        {
-            _FilesList = FilesList;
-            _trackingService = trackingService;
-            _recordManager = recordManager;
+        public static void DisplayErrorMessage(string message) => MessageBox.Show(message, App.APP_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
 
-            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(500));
+        public ViewManager(ITrackingHandler trackingHandler)
+        {
+            _trackingHandler = trackingHandler;
+
+            _mainView = new MainView() { DataContext = new MainViewViewModel(_trackingHandler, this) };
+
+            SetTooltipDelay(500);
+        }
+
+        public static T? GetFirstCreatedWindowOfType<T>() where T : Window
+        {
+            return App.Current.Windows.OfType<T>().FirstOrDefault();
+        }
+
+        public static bool ActivateFirstWindowOfType<T>() where T : Window
+        {
+            var window = GetFirstCreatedWindowOfType<T>();
+
+            if (window is T)
+                return window.Activate();
+            else
+                return false;
         }
 
         public void ShowUpdateView(VersionInfo versionInfo)
         {
-            UpdateView updateView = new UpdateView()
+            new UpdateView()
             {
-                DataContext = new UpdateViewModel()
-                {
-                    VersionText = $"Version: {versionInfo.Version}",
-                    Description = versionInfo.Description
-                }
-            };
-            updateView.Show();
+                DataContext = new UpdateViewModel($"Version: {versionInfo.Version}", versionInfo.Description)
+            }.Show();
         }
 
-        #region Main View
-
-        private const string MAIN_WINDOW_STATE_FILENAME = "mainWindowState.";
-        private readonly string MAIN_WINDOW_STATE_FILEPATH = App.APP_FOLDER_PATH + MAIN_WINDOW_STATE_FILENAME;
-
-        public void ShowMainView()
-        {
-            MainViewViewModel mainWindowViewModel = new MainViewViewModel(ref _FilesList, this, _trackingService, _recordManager);
-            mainWindowViewModel.AlwaysOnTop = ConfigManager.Config.AlwaysOnTop;
-            mainWindowViewModel.CurrentSorting = ConfigManager.Config.SortBy;
-
-            _mainView = new MainView() { DataContext = mainWindowViewModel };
-
-            var state = LoadMainViewState();
-            SetMainViewFromState(state);
-
-            _mainView.Show();
-        }
-
-        public void MinimizeMainView()
-        {
-            _mainView.WindowState = System.Windows.WindowState.Minimized;
-        }
-
-        public void CloseMainView()
-        {
-            SaveMainViewState();
-            _mainView?.Close();
-            App.Current.Shutdown();
-        }
-
-        private void SaveMainViewState()
-        {
-            MainViewState mainViewState = new MainViewState()
-            {
-                Left = _mainView.Left,
-                Top = _mainView.Top,
-                Width = _mainView.ActualWidth
-            };
-
-            JsonManager.SerializeAndWrite(mainViewState, MAIN_WINDOW_STATE_FILEPATH);
-        }
-
-        private MainViewState LoadMainViewState()
-        {
-            var mainViewState = JsonManager.ReadAndDeserialize<MainViewState>(MAIN_WINDOW_STATE_FILEPATH);
-            return mainViewState ?? new MainViewState();
-        }
-
-        private void SetMainViewFromState(MainViewState state)
-        {
-            _mainView.Left = state.Left;
-            _mainView.Top = state.Top;
-            _mainView.Width = state.Width;
-        }
-
-        #endregion
-
-        #region Config View
+        public void ShowMainView() => _mainView.Show();
 
         public void ShowConfigView()
         {
-            var alreadyOpenedWindow = App.Current.Windows.OfType<ConfigView>().FirstOrDefault();
-            if (alreadyOpenedWindow != null)
-                alreadyOpenedWindow.Activate();
-            else
+            if (!ActivateFirstWindowOfType<ConfigView>())
             {
                 ConfigViewModel configViewModel = new ConfigViewModel();
                 _configView = new ConfigView() { DataContext = configViewModel };
@@ -119,21 +63,9 @@ namespace PSTimeTracker.Services
             }
         }
 
-        public void CloseConfigView()
-        {
-            _configView?.Close();
-        }
-
-        #endregion
-
-        #region About View
-
         public void ShowAboutView()
         {
-            var alreadyOpenedWindow = App.Current.Windows.OfType<AboutView>().FirstOrDefault();
-            if (alreadyOpenedWindow != null)
-                alreadyOpenedWindow.Activate();
-            else
+            if (!ActivateFirstWindowOfType<AboutView>())
             {
                 AboutViewModel aboutViewModel = new AboutViewModel();
                 _aboutView = new AboutView() { DataContext = aboutViewModel };
@@ -143,11 +75,7 @@ namespace PSTimeTracker.Services
             }
         }
 
-        public void CloseAboutView()
-        {
-            _aboutView?.Close();
-        }
-
-        #endregion
+        private static void SetTooltipDelay(int delayMS) =>
+            ToolTipService.InitialShowDelayProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(delayMS));
     }
 }

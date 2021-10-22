@@ -54,14 +54,14 @@ namespace PSTimeTracker.PsTracking
         private int summarySeconds;
         private int psTimeSinceLastActive = 9999;
 
-        private PsFile lastActiveFile;
+        private TrackedFile lastActiveFile;
 
-        private ObservableCollection<PsFile> _filesList;
+        private ObservableCollection<TrackedFile> _filesList;
         private readonly ProcessInfoService _processInfoService;
 
         /// <summary>Every second tracks info about opened files in Photoshop. Writes to provided collection.</summary>
         /// <param name="FilesList">Collection to write to.</param>
-        public TrackingService(ref ObservableCollection<PsFile> FilesList, ProcessInfoService processInfoService, ITracker tracker)
+        public TrackingService(ref ObservableCollection<TrackedFile> FilesList, ProcessInfoService processInfoService, ITracker tracker)
         {
             _filesList = FilesList;
             _filesList.CollectionChanged += (s, e) => CountSummarySeconds();
@@ -116,10 +116,10 @@ namespace PSTimeTracker.PsTracking
             psTimeSinceLastActive = _processInfoService.PhotoshopWindowIsActive ? 0 : psTimeSinceLastActive + 1;
             if (IgnoreWindowState == false && psTimeSinceLastActive > MaxTimeSinceLastActive) return;
 
-            if (lastActiveFile != null)
-                lastActiveFile.IsCurrentlyActive = false;
+            //if (lastActiveFile != null)
+            //    lastActiveFile.IsCurrentlyActive = false;
 
-            PsFile currentlyActiveFile;
+            TrackedFile currentlyActiveFile;
             var callResult = GetFileNameInTime(100);
 
             if (callResult.PSResponse == PSResponse.NoActiveDocument) // Stop counting if no documents open.
@@ -157,24 +157,24 @@ namespace PSTimeTracker.PsTracking
                 return new PSCallResult(PSResponse.Failed, string.Empty);
         }
 
-        private void ChangeFileRecord(PsFile currentlyOpenedFile)
+        private void ChangeFileRecord(TrackedFile currentlyOpenedFile)
         {
             currentlyOpenedFile.TrackedSeconds++;
-            currentlyOpenedFile.IsCurrentlyActive = true;
+            //currentlyOpenedFile.IsCurrentlyActive = true;
             currentlyOpenedFile.LastActiveTime = DateTimeOffset.Now;
         }
 
         /// <summary>Finds current filename in list, if it was opened before, otherwise adds file to a list.</summary>
-        private PsFile GetOrCreateCurrentlyOpenedFile(string fileName)
+        private TrackedFile GetOrCreateCurrentlyOpenedFile(string fileName)
         {
             // Find current filename in list, if it was opened before
             // Add filename to list if it's new
 
-            PsFile currentlyOpenedFile = _filesList.FirstOrDefault(f => f.FileName == fileName);
+            TrackedFile currentlyOpenedFile = _filesList.FirstOrDefault(f => f.FileName == fileName);
 
             if (currentlyOpenedFile == null)
             {
-                currentlyOpenedFile = new PsFile() { FileName = fileName, FirstActiveTime = DateTimeOffset.Now };
+                currentlyOpenedFile = new TrackedFile() { FileName = fileName, FirstActiveTime = DateTimeOffset.Now };
                 _filesList.Add(currentlyOpenedFile);
             }
 

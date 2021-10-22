@@ -13,7 +13,6 @@ namespace PSTimeTracker.Services
         private const string RECORDS_FOLDER_NAME = "records";
         private static readonly string APP_RECORDS_FOLDER_PATH = $"{App.APP_FOLDER_PATH}{RECORDS_FOLDER_NAME}/";
 
-
         /// <summary>If set to true, list will be written to the file that was restored.</summary>
         public bool SaveToLastLoadedFile { get; set; }
 
@@ -36,14 +35,14 @@ namespace PSTimeTracker.Services
         /// <summary>Delay in milliseconds between savings to file.</summary>
         public int WriteInterval { get; set; } = 10000;
 
-        private readonly ObservableCollection<PsFile> _collectionToSave;
+        private readonly ObservableCollection<TrackedFile> _collectionToSave;
 
         private bool shouldSave;
         private string lastRestoredFileName = "";
 
         /// <summary>Manages reading/writing of records to files.</summary>
         /// <param name="collectionToSave">Collection that will be saved to a file.</param>
-        public RecordManager(ObservableCollection<PsFile> collectionToSave)
+        public RecordManager(ObservableCollection<TrackedFile> collectionToSave)
         {
             _collectionToSave = collectionToSave;
 
@@ -86,14 +85,14 @@ namespace PSTimeTracker.Services
             }
             catch (Exception ex)
             {
-                App.DisplayErrorMessage("Error saving record to file: " + ex.Message);
+                ViewManager.DisplayErrorMessage("Error saving record to file: " + ex.Message);
             }
         }
 
         /// <summary>Load most recent record from file.</summary>
-        public ObservableCollection<PsFile> LoadLastRecord()
+        public ObservableCollection<TrackedFile> LoadLastRecord()
         {
-            ObservableCollection<PsFile> newList = new ObservableCollection<PsFile>();
+            ObservableCollection<TrackedFile> newList = new ObservableCollection<TrackedFile>();
 
             var fileToRead = GetOrderedRecordFiles().LastOrDefault();
 
@@ -103,12 +102,12 @@ namespace PSTimeTracker.Services
             try
             {
                 string jsonString = File.ReadAllText(fileToRead.FullName);
-                newList = JsonSerializer.Deserialize<ObservableCollection<PsFile>>(jsonString);
+                newList = JsonSerializer.Deserialize<ObservableCollection<TrackedFile>>(jsonString);
                 lastRestoredFileName = fileToRead.FullName;
             }
             catch (Exception ex)
             {
-                App.DisplayErrorMessage("Cannot restore previous records: " + ex.Message);
+                ViewManager.DisplayErrorMessage("Cannot restore previous records: " + ex.Message);
             }
 
             return CleanListProperties(newList);
@@ -125,7 +124,7 @@ namespace PSTimeTracker.Services
             }
             catch (Exception ex)
             {
-                App.DisplayErrorMessage(ex.Message);
+                ViewManager.DisplayErrorMessage(ex.Message);
             }
 
             return recordFiles;
@@ -142,13 +141,13 @@ namespace PSTimeTracker.Services
             }
         }
 
-        private ObservableCollection<PsFile> CleanListProperties(ObservableCollection<PsFile> listToClean)
+        private ObservableCollection<TrackedFile> CleanListProperties(ObservableCollection<TrackedFile> listToClean)
         {
-            foreach (var item in listToClean)
-            {
-                item.IsSelected = false;
-                item.IsCurrentlyActive = false;
-            }
+            //foreach (var item in listToClean)
+            //{
+            //    item.IsSelected = false;
+            //    item.IsCurrentlyActive = false;
+            //}
 
             return listToClean;
         }

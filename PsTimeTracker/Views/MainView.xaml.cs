@@ -1,41 +1,22 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using PropertyChanged;
 
 namespace PSTimeTracker
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class MainView : Window
     {
-
-        public double MaxListHeight { get; set; }
-
-        #region Dragging
-
-        private double previousMouseY = double.NaN;
-
-        private bool _isDragging;
-
-        public bool IsDragging
-        {
-            get { return _isDragging; }
-            set {
-                if (value == false)
-                    Mouse.Capture(null);
-
-                _isDragging = value;
-            }
-        }
-
-
-        #endregion
+        public bool IsMenuOpen { get; set; }
 
         public MainView()
         {
@@ -45,36 +26,66 @@ namespace PSTimeTracker
             {
                 if (e.Key == Key.Escape)
                 {
-                    MainListView.SelectedItem = null;
+                    TrackedFilesListControl.MainListView.SelectedItem = null;
                     e.Handled = true;
                 }
             };
 
             this.MouseLeftButtonDown += (s, e) =>
             {
-                if (MenuContrainer.IsMouseOver == false)
-                    MenuContrainer.Visibility = Visibility.Hidden;
+                if (IsMenuOpen && !MenuContrainer.IsMouseOver)
+                    IsMenuOpen = false;
             };
 
-            MaxListHeight = MainListView.MaxHeight;
-
             this.Deactivated += MainView_Deactivated;
+
+            LoadState();
         }
 
-        #region Events
+        public void SaveState()
+        {
+            new MainViewState()
+            {
+                Top = this.Top,
+                Left = this.Left,
+                Width = this.Width,
+                Height = this.Height,
+                AlwaysOnTop = this.Topmost,
+                SizeToContent = this.SizeToContent
+            }.Save();
+        }
+
+        private void LoadState()
+        {
+            var state = MainViewState.Load();
+
+            this.Top = state.Top;
+            this.Left = state.Left;
+            this.Width = state.Width;
+            this.Topmost = state.AlwaysOnTop;
+            this.SizeToContent = state.SizeToContent;
+
+            if (SizeToContent != SizeToContent.Height)
+                this.Height = state.Height;
+            else
+                this.Height = double.NaN;
+        }
 
         private void HeaderContainer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
-            this.MainListView.SelectedItem = null;
+            //this.MainListView.SelectedItem = null;
         }
 
         private void MainView_Deactivated(object sender, EventArgs e)
         {
-            this.MenuContrainer.Visibility = Visibility.Collapsed;
+            IsMenuOpen = false;
         }
 
-        #endregion
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            SaveState();
+        }
 
 
         #region Resising Window
@@ -92,66 +103,29 @@ namespace PSTimeTracker
         {
             var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Left, IntPtr.Zero);
-            //SetAutoHeight();
+            e.Handled = true;
         }
         private void RightResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
             SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Right, IntPtr.Zero);
-            //SetAutoHeight();
+            e.Handled = true;
         }
 
         private void SideResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeWE;
 
-        // Bottom
         private void BottomResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            MainListView.MaxHeight = this.Height;
-            IsDragging = true;
-            previousMouseY = e.GetPosition(MainListView).Y;
-            DragResizeBottom(e);
-        }
-
-        private void BottomResizeBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            IsDragging = false;
-        }
-
-        private void BottomResizeBorder_MouseMove(object sender, MouseEventArgs e)
-        {
-            DragResizeBottom(e);
-        }
-
-        private void DragResizeBottom(MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Released)
-                return;
-
-            if (IsDragging)
-            {
-                Mouse.Capture(BottomResizeBorder);
-
-                var currentMouseY = Mouse.GetPosition(MainListView).Y;
-
-                var oldHeight = MainListView.ActualHeight;
-
-                var offset = currentMouseY - previousMouseY;
-
-                var newHeight = oldHeight += offset;
-
-                if (newHeight > 0)
-                    MainListView.Height = newHeight;
-
-                previousMouseY = currentMouseY;
-
-                if (Mouse.LeftButton == MouseButtonState.Released)
-                    IsDragging = false;
-            }
+            this.SizeToContent = SizeToContent.Manual;
+            var hwndSource = PresentationSource.FromVisual(this) as HwndSource;
+            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Bottom, IntPtr.Zero);
+            e.Handled = true;
         }
 
         private void BottomResizeBorder_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             SetAutoHeight();
+            e.Handled = true;
         }
 
         private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeNS;
@@ -159,13 +133,12 @@ namespace PSTimeTracker
         private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.Arrow;
-            IsDragging = false;
         }
 
         private void SetAutoHeight()
         {
-            this.MainListView.MaxHeight = MaxListHeight;
-            this.MainListView.Height = double.NaN;
+            SizeToContent = SizeToContent.Height;
+            Height = double.NaN;
         }
 
         #endregion
@@ -177,6 +150,35 @@ namespace PSTimeTracker
             contextMenu.PlacementTarget = btn;
             contextMenu.IsOpen = true;
             e.Handled = true;
+        }
+
+        private void Pin_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Topmost = !this.Topmost;
+            SaveState();
+        }
+
+        private void MinimizeButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+            e.Handled = true;
+        }
+
+        private void CloseButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Close();
+            e.Handled = true;
+        }
+
+        private void MenuButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            IsMenuOpen = !IsMenuOpen;
+            e.Handled = true;
+        }
+
+        private void mainView_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+
         }
     }
 }
