@@ -4,6 +4,6 @@ namespace PSTimeTracker.ViewModels
 {
     internal class ConfigViewModel
     {
-        public Config Config { get; } = ConfigManager.Config;
+        public Config Config { get; } = App.Config;
     }
 }

@@ -41,8 +41,9 @@
             </Grid>
             <!--#endregion-->
 
-            <Grid Grid.Row="1" Margin="2 0">
-                <StackPanel Margin="5">
+            <Grid Grid.Row="1">
+                <StackPanel Margin="8 6"
+                            HorizontalAlignment="Left">
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                         <CheckBox IsChecked="{Binding Config.IgnoreAFKTimer, Mode=TwoWay, 
                                               UpdateSourceTrigger=PropertyChanged}"
@@ -53,13 +54,13 @@
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                         <CheckBox IsChecked="{Binding Config.IgnoreWindowState, Mode=TwoWay, 
                                               UpdateSourceTrigger=PropertyChanged}"
-                                  Margin="0 2" VerticalAlignment="Top"/>
-                        <TextBlock Text="Keep tracking when Photoshop is not active" HorizontalAlignment="Left" 
-                                   Width="225" TextWrapping="Wrap" Margin="5 0 0 0" 
+                                  Margin="0 2 6 0" VerticalAlignment="Top"/>
+                        <TextBlock Text="Keep tracking when Photoshop is not active"
+                                   Width="225" TextWrapping="Wrap"
                                    Style="{StaticResource TextBlockSmaller}"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal">
+                    <!--<StackPanel Orientation="Horizontal">
                         <StackPanel.ToolTip>
                             <TextBlock Style="{StaticResource TextBlockSmaller}" MaxWidth="300" TextWrapping="WrapWithOverflow" Text="Photoshop title will be used for tracking. This method has limitations. Should only be used if default method is not working."/>
                         </StackPanel.ToolTip>
@@ -74,9 +75,9 @@
                                    HorizontalAlignment="Left" 
                                    Width="225" TextWrapping="Wrap" Margin="5 0 0 0" 
                                    Style="{StaticResource TextBlockSmaller}"/>
-                    </StackPanel>
+                    </StackPanel>-->
 
-                    <Rectangle Height="1" VerticalAlignment="Top" Margin="30 20 30 8"
+                    <Rectangle Height="1" VerticalAlignment="Top" Margin="20 8 20 8"
                                    Fill="{StaticResource HeaderBorderBrush}"/>
                     
                     <StackPanel Orientation="Horizontal">

@@ -22,13 +22,13 @@ namespace PSTimeTracker
     public partial class App : Application
     {
         public const string APP_NAME = "PSTimeTracker";
-        public static Version Version { get; private set; } = new Version("1.3");
+
+        public static readonly Version Version = new Version("1.3");
         public static readonly string APP_FOLDER_PATH = $"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}/{APP_NAME}/";
         public static readonly string SESSION_ID = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
 
-        private ConfigManager _configManager;
+        public static readonly Config Config = Config.Load(Environment.CurrentDirectory + "\\config.json");
 
-        private PsTracking.ITracker _tracker;
         private RecordManager _recordManager;
 
         private ITrackingHandler _trackingHandler;
@@ -49,7 +49,7 @@ namespace PSTimeTracker
 
         private async void CheckForUpdatesAsync()
         {
-            if (ConfigManager.Config.CheckForUpdates)
+            if (Config.CheckForUpdates)
             {
                 var updateChecker = new UpdateChecker();
                 if (await updateChecker.IsUpdateAvailable())
@@ -59,7 +59,7 @@ namespace PSTimeTracker
 
         private void CreateObjectInstances()
         {
-            _configManager = new ConfigManager();
+            //_configManager = new ConfigManager();
             //_configManager.ConfigChanged += (s, e) => SetTrackerSettings();
 
             _trackingHandler = new TrackingHandler(new Tracker(new TrackerConfiguration()));
