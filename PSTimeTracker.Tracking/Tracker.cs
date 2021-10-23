@@ -1,5 +1,4 @@
-﻿using PSTimeTracker.Tracking.Utils;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -8,21 +7,8 @@ namespace PSTimeTracker.Tracking
     public interface ITracker
     {
         event EventHandler<TrackingEventArgs>? TrackingTick;
-
-        TrackerConfiguration Config { get; set; }
         bool IsTracking { get; set; }
-
-        void StopTracking();
         Task TrackAsync();
-    }
-
-    public class TrackingEventArgs
-    {
-        public TrackedFileInfo TrackedFile { get; set; }
-        public TrackResponse TrackResponse { get; set; }
-        public long TimeWithoutDocuments { get; set; }
-
-        public TrackingEventArgs() => TrackedFile = new(string.Empty);
     }
 
     public class Tracker : ITracker
@@ -30,20 +16,14 @@ namespace PSTimeTracker.Tracking
         public event EventHandler<TrackingEventArgs>? TrackingTick;
 
         public bool IsTracking { get; set; }
-        public TrackerConfiguration Config { get; set; }
 
-        private readonly PhotoshopCOM _photoshopCOM;
-        private readonly PhotoshopTitle _photoshopTitle;
+        private readonly IPhotoshop _photoshopCOM;
+        private readonly IPhotoshop _photoshopTitle;
 
-        private TrackedFileInfo _lastKnownFile = new(string.Empty);
+        private string _lastKnownFile = string.Empty;
 
-        private long _secondsWithoutDocuments;
-        private int _psInactiveTimeSeconds;
-
-        public Tracker(TrackerConfiguration trackerConfiguration)
+        public Tracker()
         {
-            Config = trackerConfiguration;
-
             _photoshopCOM = new PhotoshopCOM();
             _photoshopTitle = new PhotoshopTitle();
         }
@@ -57,16 +37,7 @@ namespace PSTimeTracker.Tracking
             {
                 stopwatch.Restart();
 
-                TrackingEventArgs trackingEventArgs;
-
-                if (!ProcessUtils.IsProcessRunning("photoshop"))
-                    trackingEventArgs = CreateTrackingArgs(TrackedFileInfo.Empty, TrackResponse.PSNotRunning, _secondsWithoutDocuments);
-                else if (IsUserAFK())
-                    trackingEventArgs = CreateTrackingArgs(TrackedFileInfo.Empty, TrackResponse.UserIsAFK, _secondsWithoutDocuments);
-                else if (!IsWindowActive())
-                    trackingEventArgs = CreateTrackingArgs(TrackedFileInfo.Empty, TrackResponse.PsNotActive, _secondsWithoutDocuments);
-                else
-                    trackingEventArgs = TrackFile();
+                TrackingEventArgs trackingEventArgs = TrackFile();
 
                 TrackingTick?.Invoke(this, trackingEventArgs);
 
@@ -75,66 +46,97 @@ namespace PSTimeTracker.Tracking
             }
         }
 
-        public void StopTracking() => IsTracking = false;
-
         private TrackingEventArgs TrackFile()
         {
-            TrackedFileInfo currentlyTrackedFile = TrackedFileInfo.Empty;
-            PSGetNameResult result = GetFileNameInTime(Config.CallTimeoutMilliseconds);
+            //if (Process.GetProcessesByName("photoshop").FirstOrDefault() is null)
+            //    return TrackingEventArgs.NotRunning;
 
-            TrackResponse trackResponse = SetCurrentFileAndResponse(ref currentlyTrackedFile, result);
+            PSGetNameResult result = GetFileNameInTime(100);
+            string currentFile = result.Filename;
+            TrackResponse trackResponse;
 
-            _lastKnownFile = currentlyTrackedFile;
-
-            return CreateTrackingArgs(currentlyTrackedFile, trackResponse, _secondsWithoutDocuments);
-        }
-
-        private TrackResponse SetCurrentFileAndResponse(ref TrackedFileInfo currentlyTrackedFile, PSGetNameResult result)
-        {
             switch (result.PSResponse)
             {
                 case PSResponse.Success:
-                    currentlyTrackedFile = new TrackedFileInfo(result.Filename);
-                    return TrackResponse.Success;
+                    trackResponse = TrackResponse.Success;
+                    break;
                 case PSResponse.NoActiveDocument:
-                    _secondsWithoutDocuments++;
-                    return TrackResponse.NoActiveDocument;
+                    trackResponse = TrackResponse.NoActiveDocument;
+                    break;
                 case PSResponse.PSNotRunning:
-                    return TrackResponse.PSNotRunning;
+                    trackResponse = TrackResponse.PSNotRunning;
+                    break;
                 case PSResponse.Busy:
                 case PSResponse.Failed:
                 case PSResponse.TimedOut:
                     var titleResult = _photoshopTitle.GetActiveDocumentName();
 
-                    currentlyTrackedFile = titleResult.PSResponse == PSResponse.Success ?
-                        new TrackedFileInfo(titleResult.Filename) : _lastKnownFile;
-
-                    return TrackResponse.LastKnown;
+                    if (titleResult.PSResponse == PSResponse.Success)
+                    {
+                        currentFile = titleResult.Filename;
+                        trackResponse = TrackResponse.Success;
+                    }
+                    else
+                    {
+                        currentFile = _lastKnownFile;
+                        trackResponse = TrackResponse.LastKnown;
+                    }
+                    break;
                 default:
-                    return TrackResponse.Failed;
+                    trackResponse = TrackResponse.Failed;
+                    break;
             }
+
+            //if (Config.IgnoreExtension)
+            //    currentFile = currentFile[..currentFile.LastIndexOf('.')];
+
+            _lastKnownFile = currentFile;
+
+            return new TrackingEventArgs(currentFile, trackResponse);
         }
 
-        private bool IsUserAFK() => Config.IgnoreAFK ? false : LastInputInfo.IdleTime.TotalSeconds >= Config.AFKTimeout;
+        //private TrackResponse SetCurrentFileAndResponse(ref string currentlyTrackedFile, PSGetNameResult result)
+        //{
+        //    switch (result.PSResponse)
+        //    {
+        //        case PSResponse.Success:
+        //            currentlyTrackedFile = result.Filename;
+        //            return TrackResponse.Success;
+        //        case PSResponse.NoActiveDocument:
+        //            _secondsWithoutDocuments++;
+        //            return TrackResponse.NoActiveDocument;
+        //        case PSResponse.PSNotRunning:
+        //            return TrackResponse.PSNotRunning;
+        //        case PSResponse.Busy:
+        //        case PSResponse.Failed:
+        //        case PSResponse.TimedOut:
+        //            var titleResult = _photoshopTitle.GetActiveDocumentName();
 
-        private bool IsWindowActive()
-        {
-            if (Config.IgnoreActiveWindow)
-                return true;
+        //            if (titleResult.PSResponse == PSResponse.Success)
+        //            {
+        //                currentlyTrackedFile = titleResult.Filename;
+        //                return TrackResponse.Success;
+        //            }
+        //            else
+        //            {
+        //                currentlyTrackedFile = _lastKnownFile;
+        //                return TrackResponse.LastKnown;
+        //            }
+        //        default:
+        //            return TrackResponse.Failed;
+        //    }
+        //}
 
-            _psInactiveTimeSeconds = ProcessUtils.IsWindowActive("photoshop") ? 0 : _psInactiveTimeSeconds++;
-            return _psInactiveTimeSeconds <= Config.ActiveWindowTimeout;
-        }
+        //private bool IsUserAFK() => Config.IgnoreAFK ? false : LastInputInfo.IdleTime.TotalSeconds >= Config.AFKTimeout;
 
-        private TrackingEventArgs CreateTrackingArgs(TrackedFileInfo trackedFile, TrackResponse response, long secondsWithoutDocuments)
-        {
-            return new TrackingEventArgs()
-            {
-                TrackedFile = trackedFile,
-                TrackResponse = response,
-                TimeWithoutDocuments = secondsWithoutDocuments
-            };
-        }
+        //private bool IsWindowActive()
+        //{
+        //    if (Config.IgnoreActiveWindow)
+        //        return true;
+
+        //    _psInactiveTimeSeconds = ProcessUtils.IsWindowActive("photoshop") ? 0 : _psInactiveTimeSeconds++;
+        //    return _psInactiveTimeSeconds <= Config.ActiveWindowTimeout;
+        //}
 
         private PSGetNameResult GetFileNameInTime(int timeoutMilliseconds)
         {

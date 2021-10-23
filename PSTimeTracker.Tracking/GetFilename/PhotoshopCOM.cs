@@ -8,7 +8,7 @@ namespace PSTimeTracker.Tracking
         PSGetNameResult GetActiveDocumentName();
     }
 
-    public class PhotoshopCOM
+    public class PhotoshopCOM : IPhotoshop
     {
         private const int CODE_NO_ACTIVE_DOCUMENT = -2147352565;
         private const int CODE_APP_IS_BUSY = -2147417846;

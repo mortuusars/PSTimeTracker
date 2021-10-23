@@ -1,5 +1,6 @@
 ﻿using PSTimeTracker.Services;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -13,13 +14,19 @@ namespace PSTimeTracker.Configuration
         public bool CheckForUpdates { get => checkForUpdates; set { checkForUpdates = value; OnConfigPropertyChanged(); } }
         private bool checkForUpdates;
 
-        public bool IgnoreWindowState { get => ignoreWindowState; set { ignoreWindowState = value; OnConfigPropertyChanged(); } }
-        private bool ignoreWindowState;
+        public bool IgnoreActiveWindow { get => ignoreActiveWindow; set { ignoreActiveWindow = value; OnConfigPropertyChanged(); } }
+        private bool ignoreActiveWindow;
         public bool IgnoreAFKTimer { get => ignoreAFKTimer; set { ignoreAFKTimer = value; OnConfigPropertyChanged(); } }
         private bool ignoreAFKTimer;
 
         public bool IgnoreFileExtension { get => ignoreFileExtension; set { ignoreFileExtension = value; OnConfigPropertyChanged(); } }
         private bool ignoreFileExtension;
+
+        public int MaxAFKTime { get => maxAFKTime; set { maxAFKTime = value; OnConfigPropertyChanged(); } }
+        private int maxAFKTime;
+
+        public int PsActiveWindowTimeout { get => psActiveWindowTimeout; set { psActiveWindowTimeout = value; OnConfigPropertyChanged(); } }
+        private int psActiveWindowTimeout;
 
         private static string _cfgFileName;
 
@@ -40,18 +47,35 @@ namespace PSTimeTracker.Configuration
             {
                 string file = File.ReadAllText(_cfgFileName);
 
-                var doc = JsonDocument.Parse(file);
-                config.checkForUpdates = doc.RootElement.GetProperty(nameof(CheckForUpdates)).GetBoolean();
-                config.ignoreAFKTimer = doc.RootElement.GetProperty(nameof(IgnoreAFKTimer)).GetBoolean();
-                config.ignoreWindowState = doc.RootElement.GetProperty(nameof(IgnoreWindowState)).GetBoolean();
-                config.ignoreFileExtension = doc.RootElement.GetProperty(nameof(IgnoreFileExtension)).GetBoolean();
+                using (JsonDocument jdoc = JsonDocument.Parse(file))
+                {
+                    config.checkForUpdates = GetPropertyByName(jdoc, nameof(CheckForUpdates))?.GetBoolean() ?? config.checkForUpdates;
+                    config.ignoreAFKTimer = GetPropertyByName(jdoc, nameof(IgnoreAFKTimer))?.GetBoolean() ?? config.ignoreAFKTimer;
+                    config.ignoreActiveWindow = GetPropertyByName(jdoc, nameof(IgnoreActiveWindow))?.GetBoolean() ?? config.ignoreActiveWindow;
+                    config.ignoreFileExtension = GetPropertyByName(jdoc, nameof(IgnoreFileExtension))?.GetBoolean() ?? config.IgnoreFileExtension;
+                    config.maxAFKTime = GetPropertyByName(jdoc, nameof(MaxAFKTime))?.GetInt32() ?? config.maxAFKTime;
+                    config.psActiveWindowTimeout = GetPropertyByName(jdoc, nameof(PsActiveWindowTimeout))?.GetInt32() ?? config.psActiveWindowTimeout;
+                }
 
                 return config;
             }
             catch (Exception ex)
             {
                 ViewManager.DisplayErrorMessage("Failed lo load config: " + ex.Message);
-                return CreateDefault();
+                config.Save();
+                return config;
+            }
+        }
+
+        private static JsonElement? GetPropertyByName(JsonDocument jsonDocument, string propertyName)
+        {
+            try
+            {
+                return jsonDocument.RootElement.GetProperty(propertyName);
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
@@ -59,9 +83,11 @@ namespace PSTimeTracker.Configuration
         {
             Config config = new();
             config.checkForUpdates = true;
-            config.ignoreWindowState = false;
+            config.ignoreActiveWindow = false;
             config.ignoreAFKTimer = false;
             config.ignoreFileExtension = false;
+            config.maxAFKTime = 6;
+            config.psActiveWindowTimeout = 3;
 
             return config;
         }

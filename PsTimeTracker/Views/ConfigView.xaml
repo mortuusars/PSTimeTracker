@@ -44,16 +44,21 @@
             <Grid Grid.Row="1">
                 <StackPanel Margin="8 6"
                             HorizontalAlignment="Left">
+
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <CheckBox IsChecked="{Binding Config.IgnoreAFKTimer, Mode=TwoWay, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                        <CheckBox IsChecked="{Binding Config.IgnoreFileExtension, Mode=TwoWay}"
+                                  VerticalAlignment="Center"/>
+                        <TextBlock Text="Ignore file extension" Margin="5 0 0 0" Style="{StaticResource TextBlockSmaller}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                        <CheckBox IsChecked="{Binding Config.IgnoreAFKTimer, Mode=TwoWay}"
                                   VerticalAlignment="Center"/>
                         <TextBlock Text="Keep tracking when AFK" Margin="5 0 0 0" Style="{StaticResource TextBlockSmaller}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <CheckBox IsChecked="{Binding Config.IgnoreWindowState, Mode=TwoWay, 
-                                              UpdateSourceTrigger=PropertyChanged}"
+                        <CheckBox IsChecked="{Binding Config.IgnoreActiveWindow, Mode=TwoWay}"
                                   Margin="0 2 6 0" VerticalAlignment="Top"/>
                         <TextBlock Text="Keep tracking when Photoshop is not active"
                                    Width="225" TextWrapping="Wrap"
@@ -83,8 +88,7 @@
                     <StackPanel Orientation="Horizontal">
                         
                         
-                        <CheckBox IsChecked="{Binding Config.CheckForUpdates, Mode=TwoWay,
-                                              UpdateSourceTrigger=PropertyChanged}"
+                        <CheckBox IsChecked="{Binding Config.CheckForUpdates, Mode=TwoWay}"
                                   VerticalAlignment="Top">
                         </CheckBox>
                         <TextBlock Text="Check for updates" 

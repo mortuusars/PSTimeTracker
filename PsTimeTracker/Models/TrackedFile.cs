@@ -12,6 +12,13 @@ namespace PSTimeTracker.Models
         public DateTimeOffset LastActiveTime { get; set; }
         public bool IsCurrentlyActive { get; set; }
 
+        public static TrackedFile Empty { get => new TrackedFile("") { 
+            TrackedSeconds = -1, 
+            FirstActiveTime = DateTimeOffset.MinValue,
+            LastActiveTime = DateTimeOffset.MinValue,
+            IsCurrentlyActive = false }; 
+        }
+
         public TrackedFile() { }
 
         public TrackedFile(string fileName)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace PSTimeTracker.Tracking
+namespace PSTimeTracker
 {
     public static class LastInputInfo
     {

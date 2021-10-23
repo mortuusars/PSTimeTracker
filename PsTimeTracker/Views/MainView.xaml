@@ -16,7 +16,7 @@
         WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType"
         UseLayoutRounding="True"
-        Background="{x:Null}" AllowDrop="True" PreviewDragEnter="mainView_PreviewDragEnter">
+        Background="{x:Null}" AllowDrop="True">
 
     <Window.InputBindings>
         <KeyBinding Key="Delete" Command="{Binding RemoveItemsCommand}"/>

@@ -38,12 +38,8 @@ namespace PSTimeTracker
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
-
-            CreateObjectInstances();
-
+            Setup();
             CheckForUpdatesAsync();
-
             _viewManager.ShowMainView();
         }
 
@@ -57,15 +53,13 @@ namespace PSTimeTracker
             }
         }
 
-        private void CreateObjectInstances()
+        private void Setup()
         {
-            //_configManager = new ConfigManager();
-            //_configManager.ConfigChanged += (s, e) => SetTrackerSettings();
+            Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
 
-            _trackingHandler = new TrackingHandler(new Tracker(new TrackerConfiguration()));
+            _trackingHandler = new TrackingHandler();
             _viewManager = new ViewManager(_trackingHandler);
         }
-
 
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e) => CrashManager.HandleCrash(e);
     }

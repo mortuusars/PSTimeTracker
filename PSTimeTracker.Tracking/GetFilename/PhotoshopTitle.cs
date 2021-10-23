@@ -1,15 +1,21 @@
-﻿using PSTimeTracker.Tracking.Utils;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PSTimeTracker.Tracking
 {
-    public class PhotoshopTitle
+    public class PhotoshopTitle : IPhotoshop
     {
         private static readonly Regex _regex = new(@".*\s+@\s+");
 
         public PSGetNameResult GetActiveDocumentName()
         {
-            string filename = MatchFilename(ProcessUtils.GetWindowTitle("photoshop"));
+            Process? psProc = Process.GetProcessesByName("photoshop").FirstOrDefault();
+
+            if (psProc is null)
+                return new PSGetNameResult(PSResponse.PSNotRunning, string.Empty);
+
+            string filename = MatchFilename(psProc.MainWindowTitle);
 
             if (filename.Length > 0)
                 return new PSGetNameResult(PSResponse.Success, filename);

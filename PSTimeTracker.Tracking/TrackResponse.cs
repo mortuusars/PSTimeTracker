@@ -6,8 +6,6 @@
         LastKnown,
         NoActiveDocument,
         PSNotRunning,
-        Failed,
-        PsNotActive,
-        UserIsAFK
+        Failed
     }
 }

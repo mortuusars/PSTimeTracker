@@ -29,7 +29,7 @@ namespace PSTimeTracker.ViewModels
 
             RestoreSessionCommand = new RelayCommand(_ => System.Console.WriteLine());
 
-            TrackingHandler.StartTracking();
+            TrackingHandler.StartTrackingAsync();
         }
     }
 }

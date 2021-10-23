@@ -3,12 +3,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace PSTimeTracker.Tracking.Utils
+namespace PSTimeTracker
 {
     public static class ProcessUtils
     {
         public static bool IsProcessRunning(string processName) => GetProcess(processName) != null;
-        public static bool IsWindowActive(string processName) => GetActiveWindowProcess()?.ProcessName == processName;
+        public static bool IsWindowActive(string processName)
+        {
+            string? procName = GetActiveWindowProcess()?.ProcessName;
+            return procName is not null && procName.Equals(processName, StringComparison.OrdinalIgnoreCase);
+        }
 
         /// <summary>Returns empty string if process is not found.</summary>
         public static string GetWindowTitle(string processName) => GetProcess(processName)?.MainWindowTitle ?? string.Empty;

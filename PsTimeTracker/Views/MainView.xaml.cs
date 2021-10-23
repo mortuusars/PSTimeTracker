@@ -176,9 +176,9 @@ namespace PSTimeTracker
             e.Handled = true;
         }
 
-        private void mainView_PreviewDragEnter(object sender, DragEventArgs e)
-        {
+        //private void mainView_PreviewDragEnter(object sender, DragEventArgs e)
+        //{
 
-        }
+        //}
     }
 }

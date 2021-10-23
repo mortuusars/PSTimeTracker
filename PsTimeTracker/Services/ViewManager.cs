@@ -59,7 +59,7 @@ namespace PSTimeTracker.Services
                 _configView = new ConfigView() { DataContext = configViewModel };
                 _configView.Owner = _mainView;
                 _configView.Show();
-                _configView.Top -= 200;
+                _configView.Top += 200;
             }
         }
 
