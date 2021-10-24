@@ -57,7 +57,7 @@ namespace PSTimeTracker
         {
             Directory.CreateDirectory(APP_FOLDER_PATH); // Create folder for app files, if it does not exists already.
 
-            _trackingHandler = new TrackingHandler();
+            _trackingHandler = new TrackingHandler(Config);
             _viewManager = new ViewManager(_trackingHandler);
         }
 

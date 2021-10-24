@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PropertyChanged;
+using PSTimeTracker.Configuration;
 using PSTimeTracker.Models;
 using PSTimeTracker.Tracking;
-using PropertyChanged;
+using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace PSTimeTracker
 {
@@ -25,20 +23,22 @@ namespace PSTimeTracker
     {
         public ObservableCollection<TrackedFile> TrackedFiles { get; private set; }
         public long SummarySeconds { get; private set; }
-
         public TrackingStatus Status { get; private set; }
 
+        private readonly Config _config;
         private readonly ITracker _tracker;
 
         private TrackedFile _lastKnownFile;
-        private int _psInactiveTime = App.Config.PsActiveWindowTimeout + 1;
+        private int _psInactiveTime;
 
-        public TrackingHandler()
+        public TrackingHandler(Config config)
         {
+            _config = config;
             _tracker = new Tracker();
             _tracker.TrackingTick += OnTrackingTick;
 
             _lastKnownFile = TrackedFile.Empty;
+            _psInactiveTime = _config.PsActiveWindowTimeout + 1;
             TrackedFiles = new ObservableCollection<TrackedFile>();
         }
 
@@ -66,20 +66,20 @@ namespace PSTimeTracker
 
             _lastKnownFile.IsCurrentlyActive = false;
 
-            if (!App.Config.IgnoreAFKTimer && LastInputInfo.IdleTime.TotalSeconds > App.Config.MaxAFKTime)
+            if (!_config.IgnoreAFKTimer && LastInputInfo.IdleTime.TotalSeconds > App.Config.MaxAFKTime)
             {
                 Status = TrackingStatus.UserIsAFK;
                 return;
             }
 
-            if (!App.Config.IgnoreActiveWindow)
+            if (!_config.IgnoreActiveWindow)
             {
                 if (ProcessUtils.IsWindowActive("photoshop"))
                     _psInactiveTime = 0;
                 else
                     _psInactiveTime++;
 
-                if ( _psInactiveTime >= App.Config.PsActiveWindowTimeout)
+                if (_psInactiveTime >= App.Config.PsActiveWindowTimeout)
                 {
                     Status = TrackingStatus.PsIsNotActive;
                     return;
@@ -99,14 +99,7 @@ namespace PSTimeTracker
 
             if (trackingArgs.TrackResponse is TrackResponse.Success or TrackResponse.LastKnown)
             {
-                //if (trackingArgs.TrackedFileName?.Length == 0)
-                //    return;
-
-                string trackedFileName = App.Config.IgnoreFileExtension ? 
-                    trackingArgs.TrackedFileName[..trackingArgs.TrackedFileName.LastIndexOf('.')] : 
-                    trackingArgs.TrackedFileName;
-
-                TrackedFile trackedFile = GetOrCreateTrackedFile(trackedFileName);
+                TrackedFile trackedFile = GetOrCreateTrackedFile(trackingArgs.TrackedFileName);
                 trackedFile.TrackedSeconds++;
                 trackedFile.LastActiveTime = DateTimeOffset.Now;
                 trackedFile.IsCurrentlyActive = true;
@@ -132,7 +125,10 @@ namespace PSTimeTracker
 
         private TrackedFile GetOrCreateTrackedFile(string trackedFileName)
         {
-            if (_lastKnownFile is not null && _lastKnownFile.FileName == trackedFileName)
+            if (_config.IgnoreFileExtension)
+                trackedFileName = RemoveExtension(trackedFileName);
+
+            if (_lastKnownFile.FileName == trackedFileName)
                 return _lastKnownFile;
 
             TrackedFile? file = TrackedFiles.FirstOrDefault(f => f.FileName == trackedFileName);
@@ -145,6 +141,12 @@ namespace PSTimeTracker
                 TrackedFiles.Add(newFile);
                 return newFile;
             }
+        }
+
+        private string RemoveExtension(string trackedFileName)
+        {
+            int dotIndex = trackedFileName.LastIndexOf('.');
+            return dotIndex > 0 ? trackedFileName[..dotIndex] : trackedFileName;
         }
     }
 
