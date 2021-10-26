@@ -1,6 +1,8 @@
 ﻿using System.Windows.Input;
 using PSTimeTracker.Services;
 using PropertyChanged;
+using System.Diagnostics;
+using System;
 
 namespace PSTimeTracker.ViewModels
 {
@@ -14,7 +16,10 @@ namespace PSTimeTracker.ViewModels
         public ICommand OpenConfigCommand { get; }
         public ICommand OpenAboutCommand { get; }
 
-        public ICommand RestoreSessionCommand { get; }
+        public ICommand MergeCommand { get; set; }
+        public object OnMergeCommand { get; private set; }
+
+        //public ICommand RestoreSessionCommand { get; }
 
         private readonly ViewManager _viewManager;
 
@@ -27,9 +32,16 @@ namespace PSTimeTracker.ViewModels
             OpenConfigCommand = new RelayCommand(_ => _viewManager.ShowConfigView());
             OpenAboutCommand = new RelayCommand(_ => _viewManager.ShowAboutView());
 
-            RestoreSessionCommand = new RelayCommand(_ => System.Console.WriteLine());
+            MergeCommand = new RelayCommand(item => MergeFiles(item));
+
+            //RestoreSessionCommand = new RelayCommand(_ => System.Console.WriteLine());
 
             TrackingHandler.StartTrackingAsync();
+        }
+
+        private void MergeFiles(object item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

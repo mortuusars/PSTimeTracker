@@ -9,7 +9,10 @@ namespace PSTimeTracker.WPF.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return TimeFormatter.GetTimeStringFromSecods((int)value);
+            if (value.GetType() == typeof(int))
+                return TimeFormatter.GetTimeStringFromSeconds((int)value);
+            else 
+                return TimeFormatter.GetTimeStringFromSeconds((long)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

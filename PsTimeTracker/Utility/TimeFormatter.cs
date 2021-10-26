@@ -8,7 +8,16 @@ namespace PSTimeTracker
         /// Formats seconds to full time. 12:34:56 or if hours < 0: 12:34.
         /// </summary>
         /// <param name="seconds"></param>
-        public static string GetTimeStringFromSecods(int seconds)
+        public static string GetTimeStringFromSeconds(int seconds)
+        {
+            return GetTimeStringFromSeconds((long)seconds);
+        }
+
+        /// <summary>
+        /// Formats seconds to full time. 12:34:56 or if hours < 0: 12:34.
+        /// </summary>
+        /// <param name="seconds"></param>
+        public static string GetTimeStringFromSeconds(long seconds)
         {
             DateTimeOffset time = new DateTimeOffset().AddSeconds(seconds);
 

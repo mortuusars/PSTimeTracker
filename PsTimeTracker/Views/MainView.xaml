@@ -213,7 +213,7 @@
                            FontFamily="{StaticResource MontserratRegular}"
                            FontSize="17" 
                            Foreground="{StaticResource MainForegroundBrush}"
-                           Text="{Binding TrackingHandler.SummarySeconds}" d:Text="Info or title"/>
+                           Text="{Binding TrackingHandler.SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" d:Text="Info or title"/>
 
                 <Grid MouseDown="MenuButton_MouseDown" Background="Transparent">
                     <Image Name="HeaderMenuButton" Style="{StaticResource Menu}"

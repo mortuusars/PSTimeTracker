@@ -40,6 +40,10 @@ namespace PSTimeTracker
             _lastKnownFile = TrackedFile.Empty;
             _psInactiveTime = _config.PsActiveWindowTimeout + 1;
             TrackedFiles = new ObservableCollection<TrackedFile>();
+
+#if DEBUG
+            TrackedFiles.Add(new TrackedFile("test") { TrackedSeconds = 7492 });
+#endif
         }
 
         public async void StartTrackingAsync()
