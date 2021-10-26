@@ -185,10 +185,10 @@
                         CornerRadius="3.5 3.5 0 0">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
+                            <Setter Property="Background" Value="#efefef"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="False">
-                                    <Setter Property="Background" Value="{StaticResource HeaderBorderBrush}"/>
+                                <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -208,7 +208,7 @@
                 <TextBlock Name="WindowTitle" 
                            Grid.Column="1"
                            Margin="4 0 0 0"
-                           HorizontalAlignment="Left" 
+                           HorizontalAlignment="Left"
                            VerticalAlignment="Center"
                            FontFamily="{StaticResource MontserratRegular}"
                            FontSize="17" 
