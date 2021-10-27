@@ -12,6 +12,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="240">
 
+    
+    
     <UserControl.Resources>
 
         <wpf:BindingProxy x:Key="bindingProxy" Data="{Binding}"/>

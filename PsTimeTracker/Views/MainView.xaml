@@ -19,7 +19,8 @@
         Background="{x:Null}" AllowDrop="True">
 
     <Window.InputBindings>
-        <KeyBinding Key="Delete" Command="{Binding RemoveItemsCommand}"/>
+        <KeyBinding Key="Delete" Command="{Binding RemoveFilesCommand}"
+                    CommandParameter="{Binding ElementName=TrackedFilesListControl, Path=SelectedFiles}"/>
     </Window.InputBindings>
 
     <Window.Resources>

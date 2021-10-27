@@ -3,6 +3,7 @@ using PSTimeTracker.Configuration;
 using PSTimeTracker.Models;
 using PSTimeTracker.Tracking;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace PSTimeTracker
         ObservableCollection<TrackedFile> TrackedFiles { get; }
         long SummarySeconds { get; }
 
-        void RemoveFiles();
+        void RemoveFiles(IEnumerable<TrackedFile> filesToRemove);
         void StartTrackingAsync();
     }
 
@@ -58,9 +59,12 @@ namespace PSTimeTracker
             }
         }
 
-        public void RemoveFiles()
+        public void RemoveFiles(IEnumerable<TrackedFile> filesToRemove)
         {
-            throw new NotImplementedException();
+            foreach (var file in filesToRemove)
+            {
+                TrackedFiles.Remove(file);
+            }
         }
 
         private void OnTrackingTick(object? sender, TrackingEventArgs trackingArgs)
