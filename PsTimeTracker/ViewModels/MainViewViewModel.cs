@@ -21,6 +21,7 @@ namespace PSTimeTracker.ViewModels
         public ICommand OpenAboutCommand { get; }
         public ICommand RemoveFilesCommand { get; }
         public ICommand MergeCommand { get; }
+        public ICommand AddDebugFileCommand { get; }
 
         private readonly ViewManager _viewManager;
 
@@ -36,7 +37,18 @@ namespace PSTimeTracker.ViewModels
             RemoveFilesCommand = new RelayCommand(_ => RemoveFiles(SelectedFiles));
             MergeCommand = new RelayCommand(item => MergeFiles(item, SelectedFiles));
 
+            AddDebugFileCommand = new RelayCommand(_ => AddDebugFile());
+
             TrackingHandler.StartTrackingAsync();
+        }
+
+        private void AddDebugFile()
+        {
+            TrackingHandler.TrackedFiles.Add(new TrackedFile()
+            {
+                FileName = new Random().Next().ToString(),
+                TrackedSeconds = new Random().Next(0, 4999)
+            });
         }
 
         private void RemoveFiles(IList? files)

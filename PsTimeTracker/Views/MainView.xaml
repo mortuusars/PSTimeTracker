@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:user="clr-namespace:PSTimeTracker.Views.UserControls"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:test="clr-namespace:PSTimeTracker.Testing"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=mscorlib"
         xmlns:tracking="clr-namespace:PSTimeTracker.PsTracking"
         mc:Ignorable="d"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
         x:Name="mainView" Title="Photoshop Time Tracker"
         Width="300" MinWidth="280" MaxWidth="1200"
         MaxHeight="1000" MinHeight="60"
@@ -179,7 +178,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.ColumnSpan="3"
@@ -228,6 +227,15 @@
                             Orientation="Horizontal" 
                             HorizontalAlignment="Right">
 
+                    <!-- DEBUG FILE -->
+                    <Image Margin="0 0 10 0" Width="14" Height="14"
+                           Style="{StaticResource MinimizeButton}"
+                           Visibility="{Binding Source={x:Static diag:Debugger.IsAttached}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Image.InputBindings>
+                            <MouseBinding Gesture="LeftClick" Command="{Binding AddDebugFileCommand}"/>
+                        </Image.InputBindings>
+                    </Image>
+                    
                     <Image Margin="0 0 5 0" Width="14" Height="14"
                            MouseDown="MinimizeButton_MouseDown"
                            Style="{StaticResource MinimizeButton}"/>
@@ -235,6 +243,9 @@
                     <Image Margin="5 0 8 0" Width="14" Height="14"
                            MouseDown="CloseButton_MouseDown" 
                            Style="{StaticResource CloseButton}"/>
+
+                    
+
                 </StackPanel>
 
             </Grid>
