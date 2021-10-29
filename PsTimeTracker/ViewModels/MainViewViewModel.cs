@@ -1,12 +1,12 @@
-﻿using System.Windows.Input;
-using PSTimeTracker.Services;
-using PropertyChanged;
-using System.Diagnostics;
-using System;
+﻿using PropertyChanged;
 using PSTimeTracker.Models;
+using PSTimeTracker.Services;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 
 namespace PSTimeTracker.ViewModels
 {
@@ -15,7 +15,7 @@ namespace PSTimeTracker.ViewModels
     {
         public ITrackingHandler TrackingHandler { get; }
 
-        //public bool IsRestoreAvailable { get; private set; }
+        public IList? SelectedFiles { get; set; }
 
         public ICommand OpenConfigCommand { get; }
         public ICommand OpenAboutCommand { get; }
@@ -33,29 +33,37 @@ namespace PSTimeTracker.ViewModels
             OpenConfigCommand = new RelayCommand(_ => _viewManager.ShowConfigView());
             OpenAboutCommand = new RelayCommand(_ => _viewManager.ShowAboutView());
 
-            RemoveFilesCommand = new RelayCommand(files => RemoveFiles(files));
-            MergeCommand = new RelayCommand(item => MergeFiles(item));
+            RemoveFilesCommand = new RelayCommand(_ => RemoveFiles(SelectedFiles));
+            MergeCommand = new RelayCommand(item => MergeFiles(item, SelectedFiles));
 
             TrackingHandler.StartTrackingAsync();
         }
 
-        private void RemoveFiles(object files)
+        private void RemoveFiles(IList? files)
         {
+            if (files is null)
+                return;
+
             try
             {
-                var list = (System.Collections.IList)files;
-                var filesToRemove = list.Cast<TrackedFile>().ToArray();
+                var filesToRemove = files.Cast<TrackedFile>().ToArray();
                 TrackingHandler.RemoveFiles(filesToRemove);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Failed to remove files: \n\n" + ex.Message, "PSTimeTracker", MessageBoxButton.OK, MessageBoxImage.Error);
-            }            
+            }
         }
 
-        private void MergeFiles(object item)
+        private void MergeFiles(object item, IList? selectedFiles)
         {
-            throw new NotImplementedException();
+            if (item is TrackedFile destination && selectedFiles is not null)
+            {
+                IList<TrackedFile> inputs = selectedFiles.Cast<TrackedFile>().ToList();
+                inputs.Remove(destination);
+
+                TrackingHandler.MergeFiles(destination, inputs);
+            }
         }
     }
 }

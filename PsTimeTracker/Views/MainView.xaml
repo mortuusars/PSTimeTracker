@@ -20,7 +20,7 @@
 
     <Window.InputBindings>
         <KeyBinding Key="Delete" Command="{Binding RemoveFilesCommand}"
-                    CommandParameter="{Binding ElementName=TrackedFilesListControl, Path=SelectedFiles}"/>
+                    CommandParameter="{Binding ElementName=TrackedFilesListControl, Path=SelectedItemsList}"/>
     </Window.InputBindings>
 
     <Window.Resources>
@@ -240,8 +240,10 @@
             </Grid>
             
 
-             <!--TRACKED LIST--> 
-            <user:TrackedFilesList x:Name="TrackedFilesListControl" Grid.Row="1"/>
+            <!--TRACKED LIST--> 
+            <user:TrackedFilesList x:Name="TrackedFilesListControl" 
+                                   Grid.Row="1"
+                                   SelectedItemsList="{Binding SelectedFiles, Mode=TwoWay}"/>
 
              <!--Can Restore Dialog--> 
             <Grid 

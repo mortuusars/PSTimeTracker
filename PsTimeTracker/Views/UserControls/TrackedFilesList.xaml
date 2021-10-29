@@ -11,12 +11,10 @@
              x:Name="root"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="240">
-
-    
     
     <UserControl.Resources>
 
-        <wpf:BindingProxy x:Key="bindingProxy" Data="{Binding}"/>
+        <wpf:BindingProxy x:Key="MainDataContext" Data="{Binding}"/>
 
         <Style x:Key="TextBlockStyle" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource RobotoLight}"/>
@@ -54,7 +52,6 @@
         </Style>
 
         <!-- Item Border -->
-
         <Style x:Key="ItemBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource ListItemBorderBrush}"/>
@@ -106,7 +103,8 @@
                             <ContentPresenter.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Merge"
-                                              Command="{Binding Data.MergeCommand, Source={StaticResource bindingProxy}}"
+                                              Command="{Binding Data.MergeCommand, 
+                                                Source={StaticResource MainDataContext}}"
                                               CommandParameter="{Binding}"/>
                                 </ContextMenu>
                             </ContentPresenter.ContextMenu>
@@ -117,7 +115,6 @@
         </Style>
 
         <!-- Item Template -->
-
         <DataTemplate x:Key="ItemDataTemplate">
             <Border Style="{StaticResource ItemBorderStyle}">
                 

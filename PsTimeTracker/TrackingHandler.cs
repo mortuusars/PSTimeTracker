@@ -12,11 +12,27 @@ namespace PSTimeTracker
 {
     public interface ITrackingHandler
     {
+        /// <summary>
+        /// Collection of the tracked files.
+        /// </summary>
         ObservableCollection<TrackedFile> TrackedFiles { get; }
+        /// <summary>
+        /// Combined time of all tracked files.
+        /// </summary>
         long SummarySeconds { get; }
 
-        void RemoveFiles(IEnumerable<TrackedFile> filesToRemove);
         void StartTrackingAsync();
+        /// <summary>
+        /// Merge several files into one, combining their time and removing input files.
+        /// </summary>
+        /// <param name="destination">File to which others would be merged to.</param>
+        /// <param name="inputs">List of files, that would be merged into destination. They will be removed in the process.</param>
+        void MergeFiles(TrackedFile destination, IEnumerable<TrackedFile> inputs);
+        /// <summary>
+        /// Removes files from TrackedFiles collection.
+        /// </summary>
+        /// <param name="filesToRemove"></param>
+        void RemoveFiles(IEnumerable<TrackedFile> filesToRemove);
     }
 
     [AddINotifyPropertyChangedInterface]
@@ -44,6 +60,9 @@ namespace PSTimeTracker
 
 #if DEBUG
             TrackedFiles.Add(new TrackedFile("test") { TrackedSeconds = 7492 });
+            TrackedFiles.Add(new TrackedFile("test1") { TrackedSeconds = 2 });
+            TrackedFiles.Add(new TrackedFile("test2") { TrackedSeconds = 5 });
+            TrackedFiles.Add(new TrackedFile("test2") { TrackedSeconds = 5 });
 #endif
         }
 
@@ -64,6 +83,18 @@ namespace PSTimeTracker
             foreach (var file in filesToRemove)
             {
                 TrackedFiles.Remove(file);
+            }
+        }
+
+        public void MergeFiles(TrackedFile destination, IEnumerable<TrackedFile> inputs)
+        {
+            if (TrackedFiles.Contains(destination))
+            {
+                foreach (var inputFile in inputs)
+                {
+                    destination.TrackedSeconds += inputFile.TrackedSeconds;
+                    TrackedFiles.Remove(inputFile);
+                }
             }
         }
 
