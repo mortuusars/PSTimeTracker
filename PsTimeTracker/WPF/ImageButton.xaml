@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="PSTimeTracker.WPF.ImageButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="50">
+    
+    <UserControl.Resources>
+        <sys:Double x:Key="ButtonsDefaultOpacity">0.25</sys:Double>
+        <sys:Double x:Key="ButtonsActiveOpacity">0.6</sys:Double>
+    </UserControl.Resources>
+
+    <Image MouseDown="Image_MouseDown">
+        <Image.Style>
+            <Style TargetType="Image">
+                <Setter Property="Source" Value="{Binding Source, ElementName=root}"/>
+                <Setter Property="Opacity" Value="{StaticResource ButtonsDefaultOpacity}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.05"                                                 
+                                                     To="{StaticResource ButtonsActiveOpacity}"
+                                                     Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0:0:0.25"
+                                                     To="{StaticResource ButtonsDefaultOpacity}" 
+                                                     FillBehavior="Stop"
+                                                     Storyboard.TargetProperty="Opacity"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+
+                    <DataTrigger Binding="{Binding ActivateAlternativeStyle, ElementName=root}" Value="True">
+                        <Setter Property="Opacity" Value="0.6"/>
+                        <Setter Property="Source" Value="{Binding AlternativeSource, ElementName=root}"/>
+                    </DataTrigger>
+
+                </Style.Triggers>
+            </Style>
+        </Image.Style>
+    </Image>
+</UserControl>
