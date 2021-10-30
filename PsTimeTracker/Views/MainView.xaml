@@ -32,20 +32,6 @@
 
         <sys:Double x:Key="ResizeBorderThickness">9</sys:Double>
 
-        <Style x:Key="ResizeBorder" TargetType="{x:Type Border}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-
-        <Style x:Key="SideResizeBorder" TargetType="{x:Type Border}" BasedOn="{StaticResource ResizeBorder}">
-            <Setter Property="Width" Value="{StaticResource ResizeBorderThickness}"/>
-        </Style>
-
-        <Style x:Key="BottomResizeBorder" TargetType="{x:Type Border}" BasedOn="{StaticResource ResizeBorder}">
-            <Setter Property="Height" Value="{StaticResource ResizeBorderThickness}"/>
-        </Style>
-
-
         <Style x:Key="Menu" TargetType="Image" BasedOn="{StaticResource FadedImageButton}">
             <Setter Property="Source" Value="/Resources/Images/menu_24.png"/>
             <Setter Property="Width" Value="16"/>
@@ -152,8 +138,18 @@
 
         <Grid x:Name="MainWindowGrid"
               Margin="15"
-              VerticalAlignment="Stretch"
-              Effect="{StaticResource Shadow}">
+              VerticalAlignment="Stretch">
+
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Effect" Value="{StaticResource Shadow}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="False">
+                            <Setter Property="Effect" Value="{StaticResource ShadowSmaller}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
 
             <Grid.RowDefinitions>
                 <!-- Header -->
@@ -170,6 +166,8 @@
                 CornerRadius="4"
                 BorderThickness="1.2"/>
 
+            
+
             <!-- HEADER -->
             <Grid Name="HeaderContainer" 
                   Grid.Row="0"
@@ -182,10 +180,10 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.ColumnSpan="3"
-                        CornerRadius="3.5 3.5 0 0">
+                        CornerRadius="3.5">
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Background" Value="#efefef"/>
+                            <Setter Property="Background" Value="#f1f1f1"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="True">
                                     <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
@@ -193,17 +191,7 @@
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
-                </Border>
-
-                <Rectangle Name="MainHeaderDivider"
-                           Grid.ColumnSpan="3"
-                           Fill="{StaticResource HeaderBorderBrush}" 
-                           Height="1" 
-                           Margin="0 0"
-                           d:Visibility="Visible"
-                           VerticalAlignment="Bottom"
-                           Style="{StaticResource HeaderDivider}">
-                </Rectangle>
+                </Border>                
 
                 <TextBlock Name="WindowTitle" 
                            Grid.Column="1"
@@ -249,12 +237,43 @@
                 </StackPanel>
 
             </Grid>
-            
 
-            <!--TRACKED LIST--> 
-            <user:TrackedFilesList x:Name="TrackedFilesListControl" 
-                                   Grid.Row="1"
-                                   SelectedItemsList="{Binding SelectedFiles, Mode=TwoWay}"/>
+            <Grid Grid.Row="1"
+                  Panel.ZIndex="-1">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                
+                <Border x:Name="ItemsBG"
+                        Grid.Row="1"
+                        Margin="0 -8 0 0"
+                        CornerRadius="0 0 3.5 3.5"
+                        Background="{StaticResource MainGradient}"/>
+
+                <Rectangle Name="MainHeaderDivider"
+                           Grid.ColumnSpan="3"
+                           Fill="{StaticResource HeaderBorderBrush}" 
+                           Height="1"
+                           d:Visibility="Visible"
+                           VerticalAlignment="Top"
+                           Style="{StaticResource HeaderDivider}">
+                </Rectangle>
+                
+                <!--TRACKED LIST-->
+                <user:TrackedFilesList x:Name="TrackedFilesListControl" 
+                                       Grid.Row="1"
+                                       SelectedItemsList="{Binding SelectedFiles, Mode=TwoWay}"/>
+
+                
+            </Grid>           
+            
 
             <!--Can Restore Dialog--> 
             <Grid 
@@ -266,31 +285,42 @@
             <!-- RESIZE BORDERS -->
             <Border x:Name="LeftResizeBorder"
                     Grid.RowSpan="2"
+                    Width="{StaticResource ResizeBorderThickness}"
+                    Background="Transparent"
                     Margin="-6 0"
                     HorizontalAlignment="Left"
-                    Style="{StaticResource SideResizeBorder}"
-                    MouseLeftButtonDown="LeftResizeBorder_MouseLeftButtonDown"
-                    MouseEnter="SideResizeBorder_MouseEnter"
-                    MouseLeave="ResizeBorder_MouseLeave"/>
+                    Cursor="SizeWE"
+                    MouseLeftButtonDown="LeftResizeBorder_MouseLeftButtonDown"/>
 
             <Border x:Name="RightResizeBorder"
                     Grid.RowSpan="2"
+                    Width="{StaticResource ResizeBorderThickness}"
+                    Background="Transparent"
                     Margin="-8 0"
                     HorizontalAlignment="Right"
-                    Style="{StaticResource SideResizeBorder}"
-                    MouseLeftButtonDown="RightResizeBorder_MouseLeftButtonDown"
-                    MouseEnter="SideResizeBorder_MouseEnter"
-                    MouseLeave="ResizeBorder_MouseLeave"/>
+                    Cursor="SizeWE"
+                    MouseLeftButtonDown="RightResizeBorder_MouseLeftButtonDown"/>
 
             <Border x:Name="BottomResizeBorder"
                     Grid.RowSpan="2"
+                    Height="{StaticResource ResizeBorderThickness}"
+                    Background="Transparent"
                     Margin="0 -6"
-                    Style="{StaticResource BottomResizeBorder}"
                     VerticalAlignment="Bottom"
+                    Cursor="SizeNS"
                     MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"
-                    MouseRightButtonUp="BottomResizeBorder_MouseRightButtonUp"
-                    MouseEnter="BottomResizeBorder_MouseEnter"
-                    MouseLeave="ResizeBorder_MouseLeave"/>
+                    MouseRightButtonUp="BottomResizeBorder_MouseRightButtonUp">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
         </Grid>
 
         
@@ -343,7 +373,8 @@
                                          Margin="0 0 6 0"
                                          ToolTip="Always on top"
                                          Source="/Resources/Images/pin_24.png"
-                                         MouseDown="Pin_MouseDown"/>
+                                         MouseDown="Pin_MouseDown"
+                                         />
 
                         <Rectangle x:Name="HeaderDivider"
                                    Height="1"

@@ -48,9 +48,9 @@
                     </Trigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
-            
-            <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="3" Direction="-90" Opacity="0.3"/>
-            <DropShadowEffect x:Key="ShadowSmaller" BlurRadius="8" ShadowDepth="3" Direction="-90" Opacity="0.2"/>
+
+            <DropShadowEffect x:Key="Shadow" BlurRadius="12" ShadowDepth="1" Direction="-90" Opacity="0.35"/>
+            <DropShadowEffect x:Key="ShadowSmaller" BlurRadius="8" ShadowDepth="2" Direction="-90" Opacity="0.2"/>
 
             <Style x:Key="TextBlockDefault" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource MontserratLight}"/>

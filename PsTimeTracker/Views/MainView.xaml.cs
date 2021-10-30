@@ -112,8 +112,6 @@ namespace PSTimeTracker
             e.Handled = true;
         }
 
-        private void SideResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeWE;
-
         private void BottomResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.SizeToContent = SizeToContent.Manual;
@@ -126,13 +124,6 @@ namespace PSTimeTracker
         {
             SetAutoHeight();
             e.Handled = true;
-        }
-
-        private void BottomResizeBorder_MouseEnter(object sender, MouseEventArgs e) => Mouse.OverrideCursor = Cursors.SizeNS;
-
-        private void ResizeBorder_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Arrow;
         }
 
         private void SetAutoHeight()

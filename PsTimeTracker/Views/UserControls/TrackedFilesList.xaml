@@ -34,27 +34,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ListViewContainer" TargetType="{x:Type ListView}">
-            <Setter Property="Background" Value="{StaticResource MainGradient}"/>
-            <Setter Property="BorderBrush" Value="{x:Null}"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Visibility" Value="Visible"/>
-            <Style.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="0 0 3.5 3.5"/>
-                </Style>
-            </Style.Resources>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
         <!-- Item Border -->
         <Style x:Key="ItemBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource ListItemBorderBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource MainBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="1.5"/>
             <Setter Property="Margin" Value="0 2"/>
@@ -157,12 +140,13 @@
 
 
     <ListView Name="MainListView" Padding="5 3 5 3"
+              Background="Transparent"
+              BorderThickness="0"
               VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
               ItemsSource="{Binding TrackingHandler.TrackedFiles}"
               ItemContainerStyle="{StaticResource ListViewItemStyle}"
-              ItemTemplate="{StaticResource ItemDataTemplate}"
-              Style="{StaticResource ListViewContainer}">
+              ItemTemplate="{StaticResource ItemDataTemplate}">
         <d:ListView.ItemsSource>
             <x:Array Type="{x:Type models:TrackedFile}">
                 <models:TrackedFile FileName="DSC1239120" TrackedSeconds="241" IsCurrentlyActive="True"/>
