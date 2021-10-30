@@ -269,8 +269,7 @@
                 <!--TRACKED LIST-->
                 <user:TrackedFilesList x:Name="TrackedFilesListControl" 
                                        Grid.Row="1"
-                                       SelectedItemsList="{Binding SelectedFiles, Mode=TwoWay}"/>
-
+                                       SelectedItemsList="{Binding SelectedFiles, Mode=OneWayToSource}"/>
                 
             </Grid>           
             

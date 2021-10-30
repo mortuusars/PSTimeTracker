@@ -93,30 +93,33 @@ namespace PSTimeTracker
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImportAttribute("user32.dll")]
-        public static extern bool ReleaseCapture();
-
         private enum ResizeDirection { Left = 61441, Right = 61442, Top = 61443, Bottom = 61446, BottomRight = 61448, }
 
-        // Sides
+        private void StartResize(Visual visual, ResizeDirection direction)
+        {
+            var hwndSource = (HwndSource)PresentationSource.FromVisual(visual);
+            SendMessage(hwndSource.Handle, 0x112, (IntPtr)direction, IntPtr.Zero);
+        }
+
         private void LeftResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
-            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Left, IntPtr.Zero);
+            var sizing = this.SizeToContent;
+            StartResize((Visual)sender, ResizeDirection.Left);
+            this.SizeToContent = sizing;
             e.Handled = true;
         }
+
         private void RightResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var hwndSource = PresentationSource.FromVisual((Visual)sender) as HwndSource;
-            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Right, IntPtr.Zero);
+            var sizing = this.SizeToContent;
+            StartResize((Visual)sender, ResizeDirection.Right);
+            this.SizeToContent = sizing;
             e.Handled = true;
         }
 
         private void BottomResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this.SizeToContent = SizeToContent.Manual;
-            var hwndSource = PresentationSource.FromVisual(this) as HwndSource;
-            SendMessage(hwndSource.Handle, 0x112, (IntPtr)ResizeDirection.Bottom, IntPtr.Zero);
+            StartResize((Visual)sender, ResizeDirection.Bottom);
             e.Handled = true;
         }
 
@@ -129,18 +132,19 @@ namespace PSTimeTracker
         private void SetAutoHeight()
         {
             SizeToContent = SizeToContent.Height;
-            Height = double.NaN;
         }
 
         #endregion
 
         private void MenuSortingButton_Click_1(object sender, RoutedEventArgs e)
         {
-            var btn = sender as Button;
-            ContextMenu contextMenu = btn.ContextMenu;
-            contextMenu.PlacementTarget = btn;
-            contextMenu.IsOpen = true;
-            e.Handled = true;
+            if (sender is Button btn)
+            {
+                ContextMenu contextMenu = btn.ContextMenu;
+                contextMenu.PlacementTarget = btn;
+                contextMenu.IsOpen = true;
+                e.Handled = true;
+            }
         }
 
         private void Pin_MouseDown(object sender, MouseButtonEventArgs e)
