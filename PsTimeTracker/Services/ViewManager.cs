@@ -71,7 +71,6 @@ namespace PSTimeTracker.Services
                 _aboutView = new AboutView() { DataContext = aboutViewModel };
                 _aboutView.Owner = _mainView;
                 _aboutView.Show();
-                _aboutView.Top -= 400;
             }
         }
 
