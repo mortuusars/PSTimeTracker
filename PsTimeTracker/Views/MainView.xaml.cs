@@ -32,7 +32,7 @@ namespace PSTimeTracker
                 }
             };
 
-            this.MouseLeftButtonDown += (s, e) =>
+            this.PreviewMouseLeftButtonDown += (s, e) =>
             {
                 if (IsMenuOpen && !MenuContrainer.IsMouseOver)
                     IsMenuOpen = false;
