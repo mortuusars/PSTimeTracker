@@ -9,8 +9,8 @@
              d:DesignHeight="50" d:DesignWidth="50">
     
     <UserControl.Resources>
-        <sys:Double x:Key="ButtonsDefaultOpacity">0.25</sys:Double>
-        <sys:Double x:Key="ButtonsActiveOpacity">0.6</sys:Double>
+        <sys:Double x:Key="ButtonsDefaultOpacity">0.4</sys:Double>
+        <sys:Double x:Key="ButtonsActiveOpacity">0.75</sys:Double>
     </UserControl.Resources>
 
     <Image MouseDown="Image_MouseDown">

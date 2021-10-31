@@ -2,14 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--MAIN-->
-    <SolidColorBrush x:Key="MainBorderBrush" Color="#777"/>
+    <SolidColorBrush x:Key="MainBorderBrush" Color="#666"/>
     
-    <SolidColorBrush x:Key="HeaderBorderBrush" Color="#a2a2a2"/>
+    <SolidColorBrush x:Key="HeaderBorderBrush" Color="#999"/>
     <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#f9f9f9"/>
     <SolidColorBrush x:Key="InactiveHeaderBackgroundBrush" Color="#f1f1f1"/>
-    <SolidColorBrush x:Key="HeaderForegroundBrush" Color="#5d5d5d"/>
+    <SolidColorBrush x:Key="HeaderForegroundBrush" Color="#555"/>
 
-    <SolidColorBrush x:Key="MainForegroundBrush" Color="#777"/>
+    <SolidColorBrush x:Key="MainForegroundBrush" Color="#666"/>
 
     
     <!-- Tracked Files -->

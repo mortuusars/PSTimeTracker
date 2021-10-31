@@ -8,9 +8,10 @@
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=mscorlib"
         xmlns:tracking="clr-namespace:PSTimeTracker.PsTracking" xmlns:wpf="clr-namespace:PSTimeTracker.WPF"
         mc:Ignorable="d"
-        x:Name="mainView" Title="Photoshop Time Tracker"
+        x:Name="mainView" 
+        Title="PS Time Tracker"
         Width="300" MinWidth="280" MaxWidth="1200"
-        MaxHeight="1000" MinHeight="60"
+        MaxHeight="1000" MinHeight="90"
         SizeToContent="Height"
         WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="ClearType"
@@ -134,159 +135,173 @@
 
 
 
-    <Grid x:Name="MainContainer" MinHeight="40">
+    <Grid x:Name="WindowArea" MinHeight="40">
 
-        <Grid x:Name="MainWindowGrid"
-              Margin="15"
-              VerticalAlignment="Stretch">
-
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Effect" Value="{StaticResource Shadow}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="False">
-                            <Setter Property="Effect" Value="{StaticResource ShadowSmaller}"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-
-            <Grid.RowDefinitions>
-                <!-- Header -->
-                <RowDefinition Height="30"/>
-                <!-- Main Region -->
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <Border 
-                x:Name="MainBorder"
-                Margin="-1.2"
-                Grid.RowSpan="2"
-                BorderBrush="{StaticResource MainBorderBrush}"
-                CornerRadius="4"
-                BorderThickness="1.2"/>
-
-            
-
-            <!-- HEADER -->
-            <Grid Name="HeaderContainer" 
-                  Grid.Row="0"
-                  MouseLeftButtonDown="HeaderContainer_MouseLeftButtonDown">
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-
-                <Border Grid.ColumnSpan="3"
-                        CornerRadius="3.5">
-                    <Border.Style>
-                        <Style TargetType="Border">
-                            <Setter Property="Background" Value="#f1f1f1"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>                
-
-                <TextBlock Name="WindowTitle" 
-                           Grid.Column="1"
-                           Margin="4 0 0 0"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Center"
-                           FontFamily="{StaticResource MontserratRegular}"
-                           FontSize="17" 
-                           Foreground="{StaticResource MainForegroundBrush}"
-                           Text="{Binding TrackingHandler.SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" d:Text="Info or title"/>
-
-                
-                <Grid MouseDown="MenuButton_MouseDown" Background="Transparent">
-                    <wpf:ImageButton x:Name="HeaderMenuButton" 
-                                     Width="16" Height="16"
-                                     Margin="4 0 0 0"
-                                     Source="/Resources/Images/menu_24.png"/>
-                </Grid>
-
-
-                <StackPanel Name="RightHeaderButtonsContainer" 
-                            Grid.Column="2"
-                            Orientation="Horizontal" 
-                            HorizontalAlignment="Right">
-
-                    <!-- DEBUG FILE -->
-                    <wpf:ImageButton Width="14" Height="14"
-                                     Margin="4 0 10 0"
-                                     Source="/Resources/Images/pin_24.png"
-                                     Visibility="{Binding Source={x:Static diag:Debugger.IsAttached}, 
-                                     Converter={StaticResource BoolToVisibilityConverter}}"
-                                     d:Visibility="Visible"
-                                     Command="{Binding AddDebugFileCommand}"/>
-
-                    <wpf:ImageButton Margin="0 0 5 0" Width="14" Height="14"
-                                     Source="/Resources/Images/minimize_24.png"
-                                     MouseDown="MinimizeButton_MouseDown"/>                    
-
-                    <wpf:ImageButton Margin="5 0 8 0" Width="14" Height="14"
-                                     Source="/Resources/Images/close_24.png"
-                                     MouseDown="CloseButton_MouseDown"/>
-                    
-                </StackPanel>
-
-            </Grid>
-
-            <Grid Grid.Row="1"
-                  Panel.ZIndex="-1">
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Setter Property="Visibility" Value="Visible"/>
+        <Grid Margin="15 15 15 35">
+            <Border x:Name="OuterBorder"                
+                    CornerRadius="5"
+                    BorderBrush="{StaticResource MainBorderBrush}"
+                    BorderThickness="3">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
-                                <Setter Property="Visibility" Value="Collapsed"/>
+                            <DataTrigger Binding="{Binding ElementName=mainView, Path=SizeToContent}" Value="Height">
+                                <Setter Property="VerticalAlignment" Value="Top"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>
-                
-                <Border x:Name="ItemsBG"
-                        Grid.Row="1"
-                        Margin="0 -8 0 0"
-                        CornerRadius="0 0 3.5 3.5"
-                        Background="{StaticResource MainGradient}"/>
+                </Border.Style>
 
-                <Rectangle Name="MainHeaderDivider"
-                           Grid.ColumnSpan="3"
-                           Fill="{StaticResource HeaderBorderBrush}" 
-                           Height="1"
-                           d:Visibility="Visible"
-                           VerticalAlignment="Top"
-                           Style="{StaticResource HeaderDivider}">
-                </Rectangle>
-                
-                <!--TRACKED LIST-->
-                <user:TrackedFilesList x:Name="TrackedFilesListControl" 
-                                       Grid.Row="1"
-                                       SelectedItemsList="{Binding SelectedFiles, Mode=OneWayToSource}"/>
-                
-            </Grid>           
-            
+                <Grid x:Name="MainWindowContainer"
+                      Margin="-1"
+                      VerticalAlignment="Stretch">
 
-            <!--Can Restore Dialog--> 
-            <Grid 
-                Grid.Row="1"
-                Visibility="Collapsed">
-                <user:RestoreDialog/>
-            </Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Setter Property="Effect" Value="{StaticResource Shadow}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="False">
+                                    <Setter Property="Effect" Value="{StaticResource ShadowSmaller}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <Grid.RowDefinitions>
+                        <!-- Header -->
+                        <RowDefinition Height="30"/>
+                        <!-- Files -->
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+
+                    <!-- HEADER -->
+                    <Grid Name="HeaderContainer" 
+                          Grid.Row="0"
+                          MouseLeftButtonDown="HeaderContainer_MouseLeftButtonDown">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.ColumnSpan="3"
+                                CornerRadius="5.3">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="#f1f1f1"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=mainView, Path=IsActive}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                        </Border>
+
+                        <TextBlock Name="WindowTitle" 
+                                   Grid.Column="1"
+                                   Margin="4 0 0 0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{StaticResource MontserratRegular}"
+                                   FontSize="17" 
+                                   Foreground="{StaticResource MainForegroundBrush}"
+                                   Text="{Binding TrackingHandler.SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" d:Text="Info or title"/>
+
+
+                        <Grid MouseDown="MenuButton_MouseDown" Background="Transparent">
+                            <wpf:ImageButton x:Name="HeaderMenuButton" 
+                                             Width="16" Height="16"
+                                             Margin="4 0 0 0"
+                                             Source="/Resources/Images/menu_24.png"/>
+                        </Grid>
+
+
+                        <StackPanel Name="RightHeaderButtonsContainer" 
+                                    Grid.Column="2"
+                                    Orientation="Horizontal" 
+                                    HorizontalAlignment="Right">
+
+                            <!-- DEBUG FILE -->
+                            <wpf:ImageButton Width="18" Height="18"
+                                             Margin="4 0 10 0"
+                                             Source="/Resources/Images/bug.png"
+                                             Visibility="{Binding Source={x:Static diag:Debugger.IsAttached}, 
+                                             Converter={StaticResource BoolToVisibilityConverter}}"
+                                             d:Visibility="Visible"
+                                             Command="{Binding AddDebugFileCommand}"/>
+
+                            <wpf:ImageButton Margin="0 0 5 0" Width="14" Height="14"
+                                             Source="/Resources/Images/minimize_24.png"
+                                             MouseDown="MinimizeButton_MouseDown"/>
+
+                            <wpf:ImageButton Margin="5 0 8 0" Width="14" Height="14"
+                                             Source="/Resources/Images/close_24.png"
+                                             MouseDown="CloseButton_MouseDown"/>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid Grid.Row="1"
+                          Panel.ZIndex="-1">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=mainView, Path=SizeToContent}" Value="Height"/>
+                                            <Condition Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+
+                        <Border x:Name="ItemsBG"
+                                Grid.Row="1"
+                                Margin="0 -8 0 0"
+                                CornerRadius="0 0 5.3 5.3"
+                                Background="{StaticResource MainGradient}"/>
+
+                        <Rectangle Name="MainHeaderDivider"
+                                   Grid.ColumnSpan="3"
+                                   Fill="{StaticResource HeaderBorderBrush}" 
+                                   Height="1"
+                                   d:Visibility="Visible"
+                                   VerticalAlignment="Top"
+                                   Style="{StaticResource HeaderDivider}">
+                        </Rectangle>
+
+                        <!--TRACKED LIST-->
+                        <user:TrackedFilesList x:Name="TrackedFilesListControl" 
+                                               Grid.Row="1"
+                                               SelectedItemsList="{Binding SelectedFiles, Mode=OneWayToSource}"/>
+
+                    </Grid>
+
+
+                    <!--Can Restore Dialog-->
+                    <!--<Grid Grid.Row="1" Visibility="Collapsed">
+                         <user:RestoreDialog/>
+                         </Grid>-->
+
+                </Grid>
+            </Border>
 
             <!-- RESIZE BORDERS -->
             <Border x:Name="LeftResizeBorder"
                     Grid.RowSpan="2"
                     Width="{StaticResource ResizeBorderThickness}"
                     Background="Transparent"
-                    Margin="-6 0"
+                    Margin="-4 0"
                     HorizontalAlignment="Left"
                     Cursor="SizeWE"
                     MouseLeftButtonDown="LeftResizeBorder_MouseLeftButtonDown"/>
@@ -295,34 +310,40 @@
                     Grid.RowSpan="2"
                     Width="{StaticResource ResizeBorderThickness}"
                     Background="Transparent"
-                    Margin="-8 0"
+                    Margin="-4 0"
                     HorizontalAlignment="Right"
                     Cursor="SizeWE"
                     MouseLeftButtonDown="RightResizeBorder_MouseLeftButtonDown"/>
 
             <Border x:Name="BottomResizeBorder"
-                    Grid.RowSpan="2"
+                    Grid.Row="1"
                     Height="{StaticResource ResizeBorderThickness}"
                     Background="Transparent"
-                    Margin="0 -6"
+                    Margin="0 -5"
                     VerticalAlignment="Bottom"
                     Cursor="SizeNS"
-                    MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"
-                    MouseRightButtonUp="BottomResizeBorder_MouseRightButtonUp">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Visible"/>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-            </Border>
-        </Grid>
-
+                    MouseLeftButtonDown="BottomResizeBorder_MouseLeftButtonDown"/>
+        </Grid>       
         
+        
+
+        <!--SET AUTO HEIGHT-->
+        <user:RoundButtonImage x:Name="clampAutoSizeButton"
+                               Grid.Row="1"
+                               VerticalAlignment="Bottom"
+                               ImageSource="/Resources/Images/resize_to_64.png"
+                               Width="28" Height="28"
+                               Background="{StaticResource HeaderBackgroundBrush}"
+                               HoverBackground="{StaticResource MainGradient}"
+                               Stroke="{StaticResource MainBorderBrush}"
+                               StrokeThickness="1.2"
+                               IsVisible="False"
+                               d:IsVisible="True"
+                               MouseDown="clampAutoSizeButton_MouseDown"
+                               MouseEnter="clampAutoSizeButton_MouseEnter"
+                               MouseLeave="clampAutoSizeButton_MouseLeave"
+                               ToolTip="Set Auto-Height to this size"/>
+
         <!-- MENU -->
         <Grid x:Name="MenuContrainer"
               HorizontalAlignment="Left"

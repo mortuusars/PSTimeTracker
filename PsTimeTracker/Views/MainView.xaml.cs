@@ -6,17 +6,18 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 using PropertyChanged;
 
 namespace PSTimeTracker
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     [AddINotifyPropertyChangedInterface]
     public partial class MainView : Window
     {
         public bool IsMenuOpen { get; set; }
+
+        private static double _defaultMaxHeight = 1050;
+        private static readonly DispatcherTimer _clampAutoSizeTimer = new();
 
         public MainView()
         {
@@ -37,12 +38,12 @@ namespace PSTimeTracker
                     IsMenuOpen = false;
             };
 
-            this.Deactivated += MainView_Deactivated;
+            this.Deactivated += (s, e) => IsMenuOpen = false;
 
             LoadState();
         }
 
-        public void SaveState()
+        public void SaveWindowState()
         {
             new MainViewState()
             {
@@ -50,6 +51,7 @@ namespace PSTimeTracker
                 Left = this.Left,
                 Width = this.Width,
                 Height = this.Height,
+                MaxHeight = this.MaxHeight,
                 AlwaysOnTop = this.Topmost,
                 SizeToContent = this.SizeToContent
             }.Save();
@@ -64,6 +66,7 @@ namespace PSTimeTracker
             this.Width = state.Width;
             this.Topmost = state.AlwaysOnTop;
             this.SizeToContent = state.SizeToContent;
+            this.MaxHeight = state.MaxHeight;
 
             if (SizeToContent != SizeToContent.Height)
                 this.Height = state.Height;
@@ -74,17 +77,11 @@ namespace PSTimeTracker
         private void HeaderContainer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
-            //this.MainListView.SelectedItem = null;
-        }
-
-        private void MainView_Deactivated(object sender, EventArgs e)
-        {
-            IsMenuOpen = false;
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            SaveState();
+            SaveWindowState();
         }
 
 
@@ -103,35 +100,51 @@ namespace PSTimeTracker
 
         private void LeftResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
             var sizing = this.SizeToContent;
             StartResize((Visual)sender, ResizeDirection.Left);
             this.SizeToContent = sizing;
-            e.Handled = true;
+            SaveWindowState();
         }
 
         private void RightResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
             var sizing = this.SizeToContent;
             StartResize((Visual)sender, ResizeDirection.Right);
             this.SizeToContent = sizing;
-            e.Handled = true;
+            SaveWindowState();
         }
 
         private void BottomResizeBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            StartResize((Visual)sender, ResizeDirection.Bottom);
             e.Handled = true;
+            this.MaxHeight = _defaultMaxHeight;
+            StartResize((Visual)sender, ResizeDirection.Bottom);
+            SaveWindowState();
+
+            clampAutoSizeButton.Visibility = Visibility.Visible;
+            clampAutoSizeButton.IsVisible = true;
+            HideClampButtonAfter(2);
         }
 
-        private void BottomResizeBorder_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void HideClampButtonAfter(int seconds)
         {
-            SetAutoHeight();
-            e.Handled = true;
+            _clampAutoSizeTimer.Stop();
+            _clampAutoSizeTimer.Interval = TimeSpan.FromSeconds(seconds);
+            _clampAutoSizeTimer.Start();
+            _clampAutoSizeTimer.Tick += (s, e) =>
+            {
+                _clampAutoSizeTimer.Stop();
+                clampAutoSizeButton.IsVisible = false;
+            };
         }
 
         private void SetAutoHeight()
         {
+            clampAutoSizeButton.IsVisible = false;
             SizeToContent = SizeToContent.Height;
+            SaveWindowState();
         }
 
         #endregion
@@ -150,7 +163,7 @@ namespace PSTimeTracker
         private void Pin_MouseDown(object sender, MouseButtonEventArgs e)
         {
             this.Topmost = !this.Topmost;
-            SaveState();
+            SaveWindowState();
         }
 
         private void MinimizeButton_MouseDown(object sender, MouseButtonEventArgs e)
@@ -171,9 +184,23 @@ namespace PSTimeTracker
             e.Handled = true;
         }
 
-        //private void mainView_PreviewDragEnter(object sender, DragEventArgs e)
-        //{
+        private void clampAutoSizeButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            clampAutoSizeButton.Visibility = Visibility.Collapsed;
 
-        //}
+            this.MaxHeight = this.Height;
+            SetAutoHeight();
+        }
+
+        private void clampAutoSizeButton_MouseEnter(object sender, MouseEventArgs e)
+        {
+            _clampAutoSizeTimer.Stop();
+        }
+
+        private void clampAutoSizeButton_MouseLeave(object sender, MouseEventArgs e)
+        {
+            HideClampButtonAfter(1);
+        }
     }
 }

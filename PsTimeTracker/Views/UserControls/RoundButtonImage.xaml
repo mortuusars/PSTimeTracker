@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="PSTimeTracker.Views.UserControls.RoundButtonImage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PSTimeTracker.Views.UserControls"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="100">
+
+    <UserControl.Resources>
+        <Storyboard x:Key="FadeIn">
+            <DoubleAnimation Duration="0:0:0.1"
+                             To="1"
+                             Storyboard.TargetProperty="Opacity">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Key="FadeOut">
+            <DoubleAnimation Duration="0:0:0.45"
+                             To="0"
+                             Storyboard.TargetProperty="Opacity">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </UserControl.Resources>
+    
+    <Grid Background="{x:Null}">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Setter Property="Opacity" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=root, Path=IsVisible}" Value="True">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource FadeIn}"/>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard Storyboard="{StaticResource FadeOut}"/>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        <Ellipse Width="{Binding ElementName=root, Path=Width}" 
+                 Height="{Binding ElementName=root, Path=Height}"
+                 Stroke="{Binding ElementName=root, Path=Stroke}"
+                 StrokeThickness="{Binding ElementName=root, Path=StrokeThickness}">
+            <Ellipse.Style>
+                <Style TargetType="Ellipse">
+                    <Setter Property="Fill" Value="{Binding ElementName=root, Path=Background}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=root, Path=IsMouseOver}" Value="True">
+                            <Setter Property="Fill" Value="{Binding ElementName=root, Path=HoverBackground}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Ellipse.Style>
+        </Ellipse>
+        <Image Source="{Binding ElementName=root, Path=ImageSource}"
+               Margin="0 2 0 0"
+               Height="14"/>
+    </Grid>
+</UserControl>

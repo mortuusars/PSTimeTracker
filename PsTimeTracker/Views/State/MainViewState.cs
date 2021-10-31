@@ -14,6 +14,7 @@ namespace PSTimeTracker
         public double Top { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
+        public double MaxHeight { get; set; }
         public bool AlwaysOnTop { get; set; }
         public SizeToContent SizeToContent { get; set; }
         public Sorting SortingOrder { get; set; }
@@ -27,7 +28,12 @@ namespace PSTimeTracker
         public static MainViewState Load()
         {
             return JsonManager.ReadAndDeserialize<MainViewState>(App.APP_FOLDER_PATH + STATE_DIR_NAME + STATE_FILENAME)
-                ?? new MainViewState();
+                ?? new MainViewState()
+                {
+                    MaxHeight = 1050,
+                    Height = 400,
+                    SizeToContent = SizeToContent.Height
+                };
         }
     }
 }
