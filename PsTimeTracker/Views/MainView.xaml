@@ -209,7 +209,20 @@
                                    FontFamily="{StaticResource MontserratRegular}"
                                    FontSize="17" 
                                    Foreground="{StaticResource MainForegroundBrush}"
-                                   Text="{Binding TrackingHandler.SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}" d:Text="Info or title"/>
+                                   
+                                   d:Text="Info or title">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" 
+                                            Value="{Binding TrackingHandler.SummarySeconds, Converter={StaticResource SecondsToTimeConverter}}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
+                                            <Setter Property="Text" Value="PS Time Tracker"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
 
                         <Grid MouseDown="MenuButton_MouseDown" Background="Transparent">
