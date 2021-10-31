@@ -75,6 +75,9 @@ namespace PSTimeTracker
         {
             foreach (var file in filesToRemove)
             {
+                if (_lastKnownFile == file)
+                    _lastKnownFile = TrackedFile.Empty;
+
                 TrackedFiles.Remove(file);
             }
         }
