@@ -208,8 +208,8 @@
                                    VerticalAlignment="Center"
                                    FontFamily="{StaticResource MontserratRegular}"
                                    FontSize="17" 
-                                   Foreground="{StaticResource MainForegroundBrush}"
-                                   
+                                   Foreground="{StaticResource MainForegroundBrush}"      
+                                   Visibility="{Binding SelectedFiles.Count, Converter={StaticResource CountZeroToVisibilityConverter}}"
                                    d:Text="Info or title">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -218,6 +218,27 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding TrackingHandler.TrackedFiles.Count}" Value="0">
                                             <Setter Property="Text" Value="PS Time Tracker"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <TextBlock Grid.Column="1"
+                                   Margin="4 0 0 0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{StaticResource MontserratRegular}"
+                                   FontSize="17" 
+                                   Foreground="{StaticResource MainForegroundBrush}"    
+                                   Text="{Binding SelectedInfo}"
+                                   d:Text="Selected Info">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VirtualizingPanel.Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedFiles.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

@@ -7,7 +7,7 @@
              xmlns:test="clr-namespace:PSTimeTracker.Testing" 
              xmlns:models="clr-namespace:PSTimeTracker.Models" 
              xmlns:sys="clr-namespace:System;assembly=System.Runtime" 
-             xmlns:wpf="clr-namespace:PSTimeTracker.WPF"
+             xmlns:wpf="clr-namespace:PSTimeTracker.WPF" xmlns:Behaviours="http://schemas.microsoft.com/xaml/behaviors"
              x:Name="root"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="240">
@@ -148,6 +148,14 @@
               ItemsSource="{Binding TrackingHandler.TrackedFiles}"
               ItemContainerStyle="{StaticResource ListViewItemStyle}"
               ItemTemplate="{StaticResource ItemDataTemplate}">
+
+        <Behaviours:Interaction.Triggers>
+            <Behaviours:EventTrigger EventName="SelectionChanged">
+                <Behaviours:InvokeCommandAction Command="{Binding Data.SelectionChangedCommand, 
+                                                Source={StaticResource MainDataContext}}"/>
+            </Behaviours:EventTrigger>
+        </Behaviours:Interaction.Triggers>
+        
         <d:ListView.ItemsSource>
             <x:Array Type="{x:Type models:TrackedFile}">
                 <models:TrackedFile FileName="DSC1239120" TrackedSeconds="241" IsCurrentlyActive="True"/>

@@ -15,6 +15,8 @@ namespace PSTimeTracker.ViewModels
     {
         public ITrackingHandler TrackingHandler { get; }
 
+        public string SelectedInfo { get; private set; } = string.Empty;
+
         public IList? SelectedFiles { get; set; }
 
         public ICommand OpenConfigCommand { get; }
@@ -22,6 +24,8 @@ namespace PSTimeTracker.ViewModels
         public ICommand RemoveFilesCommand { get; }
         public ICommand MergeCommand { get; }
         public ICommand AddDebugFileCommand { get; }
+
+        public ICommand SelectionChangedCommand { get; }
 
         private readonly ViewManager _viewManager;
 
@@ -38,6 +42,8 @@ namespace PSTimeTracker.ViewModels
             MergeCommand = new RelayCommand(item => MergeFiles(item, SelectedFiles));
 
             AddDebugFileCommand = new RelayCommand(_ => AddDebugFile());
+
+            SelectionChangedCommand = new RelayCommand(_ => UpdateSelectedInfo(SelectedFiles));
 
             TrackingHandler.StartTrackingAsync();
         }
@@ -76,6 +82,22 @@ namespace PSTimeTracker.ViewModels
 
                 TrackingHandler.MergeFiles(destination, inputs);
             }
+        }
+
+        private void UpdateSelectedInfo(IList? selectedFiles)
+        {
+            if (selectedFiles is null)
+                return;
+
+            int selectedSummary = 0;
+            int count = selectedFiles.Count;
+
+            foreach (var file in selectedFiles)
+            {
+                selectedSummary += ((TrackedFile)file).TrackedSeconds;
+            }
+
+            SelectedInfo = $"{TimeFormatter.GetTimeStringFromSeconds(selectedSummary)} | {count} file/s";
         }
     }
 }

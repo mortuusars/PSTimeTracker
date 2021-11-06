@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:CountZeroToVisibilityConverter x:Key="CountZeroToVisibilityConverter"/>
             <converters:SecondsToTimeConverter x:Key="SecondsToTimeConverter"/>
             <converters:DateTimeToStringConverter x:Key="DateTimeToStringConverter"/>
             <converters:OpacityPositionConverter x:Key="OpacityPositionConverter"/>
