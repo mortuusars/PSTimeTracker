@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PSTimeTracker.Tracking
@@ -7,15 +8,16 @@ namespace PSTimeTracker.Tracking
     public interface ITracker
     {
         event EventHandler<TrackingEventArgs>? TrackingTick;
-        bool IsTracking { get; set; }
+        bool IsTracking { get; }
         Task TrackAsync();
+        void Stop();
     }
 
     public class Tracker : ITracker
     {
         public event EventHandler<TrackingEventArgs>? TrackingTick;
 
-        public bool IsTracking { get; set; }
+        public bool IsTracking { get; private set; }
 
         private readonly IPhotoshop _photoshopCOM;
         private readonly IPhotoshop _photoshopTitle;
@@ -38,7 +40,6 @@ namespace PSTimeTracker.Tracking
                 stopwatch.Restart();
 
                 TrackingEventArgs trackingEventArgs = TrackFile();
-
                 TrackingTick?.Invoke(this, trackingEventArgs);
 
                 int delay = Math.Max(1000 - (int)stopwatch.ElapsedMilliseconds, 0);
@@ -46,12 +47,17 @@ namespace PSTimeTracker.Tracking
             }
         }
 
+        public void Stop()
+        {
+            IsTracking = false;
+        }
+
         private TrackingEventArgs TrackFile()
         {
-            //if (Process.GetProcessesByName("photoshop").FirstOrDefault() is null)
-            //    return TrackingEventArgs.NotRunning;
+            if (Process.GetProcessesByName("photoshop").Length == 0)
+                return TrackingEventArgs.NotRunning;
 
-            PSGetNameResult result = GetFileNameInTime(100);
+            PSFileNameResult result = GetFileName();
             string currentFile = result.Filename;
             TrackResponse trackResponse;
 
@@ -69,82 +75,36 @@ namespace PSTimeTracker.Tracking
                 case PSResponse.Busy:
                 case PSResponse.Failed:
                 case PSResponse.TimedOut:
-                    var titleResult = _photoshopTitle.GetActiveDocumentName();
-
-                    if (titleResult.PSResponse == PSResponse.Success)
-                    {
-                        currentFile = titleResult.Filename;
-                        trackResponse = TrackResponse.Success;
-                    }
-                    else
-                    {
-                        currentFile = _lastKnownFile;
-                        trackResponse = TrackResponse.LastKnown;
-                    }
+                    currentFile = _lastKnownFile;
+                    trackResponse = TrackResponse.LastKnown;
                     break;
                 default:
                     trackResponse = TrackResponse.Failed;
                     break;
             }
 
-            //if (Config.IgnoreExtension)
-            //    currentFile = currentFile[..currentFile.LastIndexOf('.')];
-
             _lastKnownFile = currentFile;
 
             return new TrackingEventArgs(currentFile, trackResponse);
         }
 
-        //private TrackResponse SetCurrentFileAndResponse(ref string currentlyTrackedFile, PSGetNameResult result)
-        //{
-        //    switch (result.PSResponse)
-        //    {
-        //        case PSResponse.Success:
-        //            currentlyTrackedFile = result.Filename;
-        //            return TrackResponse.Success;
-        //        case PSResponse.NoActiveDocument:
-        //            _secondsWithoutDocuments++;
-        //            return TrackResponse.NoActiveDocument;
-        //        case PSResponse.PSNotRunning:
-        //            return TrackResponse.PSNotRunning;
-        //        case PSResponse.Busy:
-        //        case PSResponse.Failed:
-        //        case PSResponse.TimedOut:
-        //            var titleResult = _photoshopTitle.GetActiveDocumentName();
+        private PSFileNameResult GetFileName()
+        {
+            var comResult = GetComFileNameWithTimeout(100);
 
-        //            if (titleResult.PSResponse == PSResponse.Success)
-        //            {
-        //                currentlyTrackedFile = titleResult.Filename;
-        //                return TrackResponse.Success;
-        //            }
-        //            else
-        //            {
-        //                currentlyTrackedFile = _lastKnownFile;
-        //                return TrackResponse.LastKnown;
-        //            }
-        //        default:
-        //            return TrackResponse.Failed;
-        //    }
-        //}
+            if (comResult.PSResponse != PSResponse.TimedOut)
+                return comResult;
 
-        //private bool IsUserAFK() => Config.IgnoreAFK ? false : LastInputInfo.IdleTime.TotalSeconds >= Config.AFKTimeout;
+            return _photoshopTitle.GetActiveDocumentName();
+        }
 
-        //private bool IsWindowActive()
-        //{
-        //    if (Config.IgnoreActiveWindow)
-        //        return true;
-
-        //    _psInactiveTimeSeconds = ProcessUtils.IsWindowActive("photoshop") ? 0 : _psInactiveTimeSeconds++;
-        //    return _psInactiveTimeSeconds <= Config.ActiveWindowTimeout;
-        //}
-
-        private PSGetNameResult GetFileNameInTime(int timeoutMilliseconds)
+        private PSFileNameResult GetComFileNameWithTimeout(int timeoutMilliseconds)
         {
             var task = Task.Run(() => _photoshopCOM.GetActiveDocumentName());
             if (task.Wait(timeoutMilliseconds))
                 return task.Result;
             else
-                return new PSGetNameResult(PSResponse.TimedOut, string.Empty);
+                return new PSFileNameResult(PSResponse.TimedOut, string.Empty);
         }
     }
 }

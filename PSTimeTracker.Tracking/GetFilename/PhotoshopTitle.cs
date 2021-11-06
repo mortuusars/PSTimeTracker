@@ -8,19 +8,19 @@ namespace PSTimeTracker.Tracking
     {
         private static readonly Regex _regex = new(@".*\s+@\s+");
 
-        public PSGetNameResult GetActiveDocumentName()
+        public PSFileNameResult GetActiveDocumentName()
         {
             Process? psProc = Process.GetProcessesByName("photoshop").FirstOrDefault();
 
             if (psProc is null)
-                return new PSGetNameResult(PSResponse.PSNotRunning, string.Empty);
+                return new PSFileNameResult(PSResponse.PSNotRunning, string.Empty);
 
             string filename = MatchFilename(psProc.MainWindowTitle);
 
             if (filename.Length > 0)
-                return new PSGetNameResult(PSResponse.Success, filename);
+                return new PSFileNameResult(PSResponse.Success, filename);
 
-            return new PSGetNameResult(PSResponse.Failed, filename);
+            return new PSFileNameResult(PSResponse.Failed, filename);
         }
 
         private static string MatchFilename(string title)

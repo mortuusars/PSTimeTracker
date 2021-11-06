@@ -96,9 +96,6 @@ namespace PSTimeTracker
 
         private void OnTrackingTick(object? sender, TrackingEventArgs trackingArgs)
         {
-            //Debug.WriteLine($"{trackingArgs.TrackedFile?.FileName} + {trackingArgs.TrackResponse}");
-            //Debug.WriteLine(Status.ToString());
-
             _lastKnownFile.IsCurrentlyActive = false;
 
             if (!_config.IgnoreAFKTimer && LastInputInfo.IdleTime.TotalSeconds > App.Config.MaxAFKTime)
@@ -124,6 +121,7 @@ namespace PSTimeTracker
             if (trackingArgs.TrackResponse is TrackResponse.NoActiveDocument)
             {
                 Status = TrackingStatus.NoDocuments;
+                return;
             }
 
             if (trackingArgs.TrackResponse is TrackResponse.Failed)
