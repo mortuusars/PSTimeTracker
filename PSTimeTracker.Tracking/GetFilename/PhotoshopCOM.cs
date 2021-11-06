@@ -22,7 +22,7 @@ namespace PSTimeTracker.Tracking
 
             try
             {
-                string filename = _photoshop.ActiveDocument.Name;
+                string filename = _photoshop!.ActiveDocument.Name;
                 return new PSFileNameResult(PSResponse.Success, filename);
             }
             catch (Exception ex) when (ex.HResult == CODE_APP_IS_BUSY)

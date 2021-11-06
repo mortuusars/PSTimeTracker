@@ -36,6 +36,9 @@ namespace PSTimeTracker
             {
                 if (IsMenuOpen && !MenuContrainer.IsMouseOver)
                     IsMenuOpen = false;
+
+                if (e.OriginalSource is not ListBoxItem)
+                    TrackedFilesListControl.ClearSelection();
             };
 
             this.Deactivated += (s, e) => IsMenuOpen = false;

@@ -20,5 +20,10 @@ namespace PSTimeTracker.Views.UserControls
             InitializeComponent();
             MainListView.SelectionChanged += (s, e) => SelectedItemsList = MainListView.SelectedItems;
         }
+
+        public void ClearSelection()
+        {
+            MainListView.UnselectAll();
+        }
     }
 }
