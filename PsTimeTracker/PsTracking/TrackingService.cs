@@ -174,7 +174,7 @@ namespace PSTimeTracker.PsTracking
 
             if (currentlyOpenedFile == null)
             {
-                currentlyOpenedFile = new TrackedFile() { FileName = fileName, FirstActiveTime = DateTimeOffset.Now };
+                currentlyOpenedFile = new TrackedFile() { FileName = fileName, AddedTime = DateTimeOffset.Now };
                 _filesList.Add(currentlyOpenedFile);
             }
 

@@ -4,8 +4,11 @@ using PSTimeTracker.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace PSTimeTracker.ViewModels
@@ -13,6 +16,7 @@ namespace PSTimeTracker.ViewModels
     [AddINotifyPropertyChangedInterface]
     public class MainViewViewModel
     {
+        public ICollectionView TrackedFiles { get; set; }
         public ITrackingHandler TrackingHandler { get; }
 
         public string SelectedInfo { get; private set; } = string.Empty;
@@ -24,14 +28,21 @@ namespace PSTimeTracker.ViewModels
         public ICommand RemoveFilesCommand { get; }
         public ICommand MergeCommand { get; }
         public ICommand AddDebugFileCommand { get; }
+        public ICommand SortListCommand { get; }
+
 
         public ICommand SelectionChangedCommand { get; }
+
+        private TrackedFilesSortingBy _currentSorting;
 
         private readonly ViewManager _viewManager;
 
         public MainViewViewModel(ITrackingHandler trackingHandler, ViewManager viewManager)
         {
             TrackingHandler = trackingHandler;
+
+            TrackedFiles = CollectionViewSource.GetDefaultView(TrackingHandler.TrackedFiles);
+            
 
             _viewManager = viewManager;
 
@@ -42,10 +53,33 @@ namespace PSTimeTracker.ViewModels
             MergeCommand = new RelayCommand(item => MergeFiles(item, SelectedFiles));
 
             AddDebugFileCommand = new RelayCommand(_ => AddDebugFile());
+            SortListCommand = new RelayCommand(sortBy => SortCollectionView((TrackedFilesSortingBy)sortBy));
 
             SelectionChangedCommand = new RelayCommand(_ => UpdateSelectedInfo(SelectedFiles));
 
             TrackingHandler.StartTrackingAsync();
+        }
+
+        private void SortCollectionView(TrackedFilesSortingBy sortingBy)
+        {
+            SortDescription prevSort = TrackedFiles.SortDescriptions.FirstOrDefault();
+
+            SortDescription newSort = sortingBy switch
+            {
+                TrackedFilesSortingBy.Filename => new SortDescription() { PropertyName = nameof(TrackedFile.FileName) },
+                TrackedFilesSortingBy.TrackedTime => new SortDescription() { PropertyName = nameof(TrackedFile.TrackedSeconds) },
+                TrackedFilesSortingBy.LastAdded => new SortDescription() { PropertyName = nameof(TrackedFile.AddedTime) },
+                TrackedFilesSortingBy.LastActive => new SortDescription() { PropertyName = nameof(TrackedFile.LastActiveTime) },
+                _ => throw new ArgumentOutOfRangeException(nameof(sortingBy), $"Sorting by {sortingBy} is not accounted for.")
+            };
+
+            if (prevSort.PropertyName is not null 
+                && prevSort.PropertyName.Equals(newSort.PropertyName) 
+                && prevSort.Direction is ListSortDirection.Ascending)
+                newSort.Direction = ListSortDirection.Descending;
+
+            TrackedFiles.SortDescriptions.Clear();
+            TrackedFiles.SortDescriptions.Add(newSort);
         }
 
         private void AddDebugFile()

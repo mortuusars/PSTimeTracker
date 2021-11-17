@@ -145,7 +145,7 @@
               VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"
               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
               FocusVisualStyle="{x:Null}"
-              ItemsSource="{Binding TrackingHandler.TrackedFiles}"
+              ItemsSource="{Binding TrackedFiles}"
               ItemContainerStyle="{StaticResource ListViewItemStyle}"
               ItemTemplate="{StaticResource ItemDataTemplate}">
 

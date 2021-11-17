@@ -6,7 +6,9 @@
         xmlns:user="clr-namespace:PSTimeTracker.Views.UserControls"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=mscorlib"
-        xmlns:tracking="clr-namespace:PSTimeTracker.PsTracking" xmlns:wpf="clr-namespace:PSTimeTracker.WPF"
+        xmlns:tracking="clr-namespace:PSTimeTracker.PsTracking" 
+        xmlns:wpf="clr-namespace:PSTimeTracker.WPF"
+        xmlns:models="clr-namespace:PSTimeTracker.Models"
         mc:Ignorable="d"
         x:Name="mainView" 
         Title="PS Time Tracker"
@@ -27,7 +29,7 @@
 
         <ObjectDataProvider x:Key="SortingContextMenuData" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="tracking:Sorting"/>
+                <x:Type TypeName="models:TrackedFilesSortingBy"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
