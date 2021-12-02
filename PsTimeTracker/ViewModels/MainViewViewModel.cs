@@ -58,9 +58,11 @@ namespace PSTimeTracker.ViewModels
             SelectionChangedCommand = new RelayCommand(_ => UpdateSelectedInfo(SelectedFiles));
 
             TrackingHandler.StartTrackingAsync();
+
+            SortCollectionView(TrackedFilesSortingBy.LastAdded, ListSortDirection.Descending);
         }
 
-        private void SortCollectionView(TrackedFilesSortingBy sortingBy)
+        private void SortCollectionView(TrackedFilesSortingBy sortingBy, ListSortDirection? direction = null)
         {
             SortDescription prevSort = TrackedFiles.SortDescriptions.FirstOrDefault();
 
@@ -73,7 +75,9 @@ namespace PSTimeTracker.ViewModels
                 _ => throw new ArgumentOutOfRangeException(nameof(sortingBy), $"Sorting by {sortingBy} is not accounted for.")
             };
 
-            if (prevSort.PropertyName is not null 
+            if (direction is not null)
+                newSort.Direction = (ListSortDirection)direction;
+            else if (prevSort.PropertyName is not null 
                 && prevSort.PropertyName.Equals(newSort.PropertyName) 
                 && prevSort.Direction is ListSortDirection.Ascending)
                 newSort.Direction = ListSortDirection.Descending;
