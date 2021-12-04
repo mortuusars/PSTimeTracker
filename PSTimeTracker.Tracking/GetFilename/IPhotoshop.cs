@@ -2,6 +2,6 @@
 {
     public interface IPhotoshop
     {
-        PSFileNameResult GetActiveDocumentName();
+        TrackFileResult GetActiveDocumentName();
     }
 }

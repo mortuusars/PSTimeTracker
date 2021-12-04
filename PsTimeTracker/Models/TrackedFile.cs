@@ -1,31 +1,121 @@
-﻿using System;
-using PropertyChanged;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using System;
+using System.Timers;
+using System.Windows.Threading;
 
-namespace PSTimeTracker.Models
+namespace PSTimeTracker.Models;
+
+/// <summary>
+/// Represents a file that can be activated and updated.
+/// </summary>
+public class TrackedFile : ObservableObject
 {
-    [AddINotifyPropertyChangedInterface]
-    public class TrackedFile
+    /// <summary>
+    /// Filename.
+    /// </summary>
+    public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(nameof(FileName)); } }
+    /// <summary>
+    /// Indicates for how many seconds of time file was active.
+    /// </summary>
+    public int TrackedSeconds { get => _trackedSeconds; set { _trackedSeconds = value; OnPropertyChanged(nameof(TrackedSeconds)); } }
+    /// <summary>
+    /// Time when this file was created or first active.
+    /// </summary>
+    public DateTimeOffset AddedTime { get => _addedTime; set { _addedTime = value; OnPropertyChanged(nameof(AddedTime)); } }
+    /// <summary>
+    /// Time when this file was last active.
+    /// </summary>
+    public DateTimeOffset LastActiveTime { get => _lastActiveTime; set { _lastActiveTime = value; OnPropertyChanged(nameof(LastActiveTime)); } }
+    /// <summary>
+    /// Indicates that this file is active.
+    /// </summary>
+    public bool IsCurrentlyActive { get => _isCurrentlyActive; set { _isCurrentlyActive = value; OnPropertyChanged(nameof(IsCurrentlyActive)); } }
+
+    private string _fileName;
+    private int _trackedSeconds;
+    private DateTimeOffset _addedTime;
+    private DateTimeOffset _lastActiveTime;
+    private bool _isCurrentlyActive;
+
+    private readonly DispatcherTimer _activatedTimer;
+
+    /// <summary>
+    /// Empty tracked file.
+    /// </summary>
+    public static TrackedFile Empty { get; } = new TrackedFile("")
     {
-        public string? FileName { get; set; }
-        public int TrackedSeconds { get; set; }
-        public DateTimeOffset AddedTime { get; set; }
-        public DateTimeOffset LastActiveTime { get; set; }
-        public bool IsCurrentlyActive { get; set; }
+        _trackedSeconds = -1,
+        _addedTime = DateTimeOffset.MinValue,
+        _lastActiveTime = DateTimeOffset.MinValue,
+    };
 
-        public static TrackedFile Empty { get => new TrackedFile("") { 
-            TrackedSeconds = -1, 
-            AddedTime = DateTimeOffset.MinValue,
-            LastActiveTime = DateTimeOffset.MinValue,
-            IsCurrentlyActive = false }; 
-        }
+    /// <summary>
+    /// Creates an instance of a file with empty filename.
+    /// </summary>
+    public TrackedFile()
+    {
+        _activatedTimer = new DispatcherTimer();
+        _activatedTimer.Interval = TimeSpan.FromSeconds(1);
 
-        public TrackedFile() 
+        _fileName = "";
+        _addedTime = DateTimeOffset.Now;
+        _lastActiveTime = DateTimeOffset.MinValue;
+    }
+
+    /// <summary>
+    /// Creates an instance of a file with a given filename.
+    /// </summary>
+    /// <param name="fileName"></param>
+    public TrackedFile(string fileName) : this() { FileName = fileName; }
+
+    /// <summary>
+    /// Activates a file and updates its time for specified amount of seconds. File will be updated every second.
+    /// </summary>
+    /// <param name="seconds">File will be updated every second for this time. Value would be clamped to 0 if negative.</param>
+    public void ActivateFor(int seconds)
+    {
+        IncrementTime();
+
+        seconds = Math.Max(seconds, 0);
+        _activatedTimer.Start();
+        _activatedTimer.Tick += (_, _) =>
         {
-            FileName = "";
-            AddedTime = DateTimeOffset.Now;
-            LastActiveTime = DateTimeOffset.MinValue;
-        }
+            seconds--;
+            if (seconds > 0)
+                IncrementTime();
+        };
+    }
 
-        public TrackedFile(string fileName) : this() { FileName = fileName; }
+    /// <summary>
+    /// Activates and updates a file.
+    /// </summary>
+    public void Activate()
+    {
+        IncrementTime();
+    }
+
+    /// <summary>
+    /// Deactivates a file by setting <see cref="IsCurrentlyActive"/> to <see langword="false"/>.
+    /// </summary>
+    public void Deactivate()
+    {
+        _activatedTimer.Stop();
+        IsCurrentlyActive = false;
+    }
+
+    /// <summary>
+    /// Indicates that this tracked file is equal to empty.
+    /// </summary>
+    /// <returns><see langword="true"/> if FileName is null or empty or tracked seconds is less than 0 or added time is minValue. Otherwise <see langword="false"/>.</returns>
+    public bool IsEmpty()
+    {
+        return string.IsNullOrWhiteSpace(FileName) || TrackedSeconds < 0 || AddedTime == DateTimeOffset.MinValue;
+    }
+
+    private void IncrementTime()
+    {
+        TrackedSeconds++;
+        LastActiveTime = DateTime.Now;
+        IsCurrentlyActive = true;
     }
 }

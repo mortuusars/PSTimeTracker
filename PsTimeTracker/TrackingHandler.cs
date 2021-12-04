@@ -1,4 +1,5 @@
-﻿using PropertyChanged;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
+using PropertyChanged;
 using PSTimeTracker.Configuration;
 using PSTimeTracker.Models;
 using PSTimeTracker.Tracking;
@@ -7,6 +8,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace PSTimeTracker
 {
@@ -16,12 +19,18 @@ namespace PSTimeTracker
         /// Collection of the tracked files.
         /// </summary>
         ObservableCollection<TrackedFile> TrackedFiles { get; }
+
         /// <summary>
         /// Combined time of all tracked files.
         /// </summary>
         long SummarySeconds { get; }
 
-        void StartTrackingAsync();
+        /// <summary>
+        /// 
+        /// </summary>
+        void StartTracking();
+        void StopTracking();
+
         /// <summary>
         /// Merge several files into one, combining their time and removing input files.
         /// </summary>
@@ -35,40 +44,88 @@ namespace PSTimeTracker
         void RemoveFiles(IEnumerable<TrackedFile> filesToRemove);
     }
 
-    [AddINotifyPropertyChangedInterface]
-    public class TrackingHandler : ITrackingHandler
+    public class TrackingHandler : ObservableObject, ITrackingHandler
     {
-        public ObservableCollection<TrackedFile> TrackedFiles { get; private set; }
-        public long SummarySeconds { get; private set; }
-        public TrackingStatus Status { get; private set; }
+        public ObservableCollection<TrackedFile> TrackedFiles { get; }
+        public long SummarySeconds { get => _summarySeconds; private set { _summarySeconds = value; OnPropertyChanged(nameof(SummarySeconds)); } }
+        public TrackingStatus TrackingStatus { get; private set; }
 
-        private readonly Config _config;
-        private readonly ITracker _tracker;
+        public bool IsTracking { get => _isTracking; set { _isTracking = value; OnPropertyChanged(nameof(IsTracking)); } }
+
+        public TimeSpan TrackingInterval { get => _trackingInterval; set { _trackingInterval = value; OnPropertyChanged(nameof(TrackingInterval)); _trackingTimer.Interval = value; } }
+
+        private long _summarySeconds;
+        private bool _isTracking;
 
         private TrackedFile _lastKnownFile;
         private int _psInactiveTime;
+        private TimeSpan _trackingInterval;
+        private readonly DispatcherTimer _trackingTimer;
+
+        private readonly ITracker _tracker;
+        private readonly Config _config;
 
         public TrackingHandler(Config config)
         {
-            _config = config;
             _tracker = new Tracker();
-            _tracker.TrackingTick += OnTrackingTick;
+            _config = config;
+
+            _trackingTimer = new DispatcherTimer();
+            _trackingTimer.Interval = TimeSpan.FromSeconds(1);
+            _trackingTimer.Tick += OnTrackingTick;
 
             _lastKnownFile = TrackedFile.Empty;
-            _psInactiveTime = _config.PsActiveWindowTimeout + 1;
+            _psInactiveTime = _config.PsInactiveWindowTimeout + 1;
             TrackedFiles = new ObservableCollection<TrackedFile>();
         }
 
-        public async void StartTrackingAsync()
+        public void StartTracking()
         {
-            try
+            IsTracking = true;
+            _trackingTimer.Start();
+        }
+
+        public void StopTracking()
+        {
+            IsTracking = false;
+            _trackingTimer.Stop();
+        }
+
+        private async void OnTrackingTick(object? sender, EventArgs e)
+        {
+            if (UserIsAFK())
             {
-                await _tracker.TrackAsync();
+                _lastKnownFile.Deactivate();
+                TrackingStatus = TrackingStatus.UserIsAFK;
+                return;
             }
-            catch (Exception)
+
+            if (_config.KeepTrackingWhenWindowInactive is false && PSWindowIsNotActive())
             {
-                throw;
+                _lastKnownFile.Deactivate();
+                TrackingStatus = TrackingStatus.PsIsNotActive;
+                return;
             }
+
+            TrackFileResult result = await _tracker.TrackFilenameAsync();
+
+            TrackingStatus = result.Status switch
+            {
+                Status.Success => string.IsNullOrWhiteSpace(result.Filename) ? UseLastKnownFile() : UseKnownFile(result),
+                Status.Busy or Status.TimedOut => UseLastKnownFile(),
+                Status.PSNotRunning => TrackingStatus.NotRunning,
+                Status.NoActiveDocument => TrackingStatus.NoDocuments,
+                _ => TrackingStatus.Failed
+            };
+
+            if (TrackingStatus is TrackingStatus.NoDocuments or TrackingStatus.NotRunning or TrackingStatus.Failed)
+                _lastKnownFile.Deactivate();
+
+            UpdateSummary();
+
+            //Console.WriteLine(TrackingStatus);
+            //Console.ReadLine();
+            //Debug.WriteLine(TrackingStatus);
         }
 
         public void RemoveFiles(IEnumerable<TrackedFile> filesToRemove)
@@ -94,66 +151,54 @@ namespace PSTimeTracker
             }
         }
 
-        private void OnTrackingTick(object? sender, TrackingEventArgs trackingArgs)
+        private TrackingStatus UseKnownFile(TrackFileResult result)
         {
-            _lastKnownFile.IsCurrentlyActive = false;
+            _lastKnownFile.Deactivate();
 
-            if (!_config.IgnoreAFKTimer && LastInputInfo.IdleTime.TotalSeconds > App.Config.MaxAFKTime)
-            {
-                Status = TrackingStatus.UserIsAFK;
-                return;
-            }
+            TrackedFile trackedFile = GetOrCreateTrackedFile(result.Filename);
+            trackedFile.ActivateFor((int)_trackingTimer.Interval.TotalSeconds);
+            _lastKnownFile = trackedFile;
 
-            if (!_config.IgnoreActiveWindow)
-            {
-                if (ProcessUtils.IsWindowActive("photoshop"))
-                    _psInactiveTime = 0;
-                else
-                    _psInactiveTime++;
+            return TrackingStatus.Success;
+        }
 
-                if (_psInactiveTime >= App.Config.PsActiveWindowTimeout)
-                {
-                    Status = TrackingStatus.PsIsNotActive;
-                    return;
-                }
-            }
+        private TrackingStatus UseLastKnownFile()
+        {
+            if (_lastKnownFile.IsEmpty())
+                return TrackingStatus.Failed;
 
-            if (trackingArgs.TrackResponse is TrackResponse.NoActiveDocument)
-            {
-                Status = TrackingStatus.NoDocuments;
-                return;
-            }
+            TrackedFile trackedFile = GetOrCreateTrackedFile(_lastKnownFile.FileName);
+            trackedFile.ActivateFor((int)_trackingTimer.Interval.TotalSeconds);
+            return TrackingStatus.LastKnown;
+        }
 
-            if (trackingArgs.TrackResponse is TrackResponse.Failed)
-            {
-                Status = TrackingStatus.Failed;
-                return;
-            }
+        private bool UserIsAFK()
+        {
+            return _config.IgnoreAFK is false && LastInputInfo.IdleTime.TotalSeconds > _config.MaxAFKTime;
+        }
 
-            if (trackingArgs.TrackResponse is TrackResponse.Success or TrackResponse.LastKnown)
-            {
-                TrackedFile trackedFile = GetOrCreateTrackedFile(trackingArgs.TrackedFileName);
-                trackedFile.TrackedSeconds++;
-                trackedFile.LastActiveTime = DateTimeOffset.Now;
-                trackedFile.IsCurrentlyActive = true;
+        private bool PSWindowIsNotActive()
+        {
+            if (ProcessUtils.IsWindowActive("photoshop"))
+                _psInactiveTime = 0;
+            else
+                _psInactiveTime++;
 
-                _lastKnownFile = trackedFile;
-                Status = TrackingStatus.Success;
-            }
-
-            UpdateSummary();
+            return _psInactiveTime >= App.Config.PsInactiveWindowTimeout;
         }
 
         private void UpdateSummary()
         {
-            int summary = 0;
+            SummarySeconds = TrackedFiles.Aggregate(0, (total, next) => next.TrackedSeconds);
 
-            foreach (var file in TrackedFiles)
-            {
-                summary += file.TrackedSeconds;
-            }
+            //int summary = 0;
 
-            SummarySeconds = summary;
+            //foreach (var file in TrackedFiles)
+            //{
+            //    summary += file.TrackedSeconds;
+            //}
+
+            //SummarySeconds = summary;
         }
 
         private TrackedFile GetOrCreateTrackedFile(string trackedFileName)
@@ -190,6 +235,7 @@ namespace PSTimeTracker
         NotRunning,
         PsIsNotActive,
         UserIsAFK,
-        Failed
+        Failed,
+        LastKnown
     }
 }

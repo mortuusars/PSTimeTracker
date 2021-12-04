@@ -57,7 +57,7 @@ namespace PSTimeTracker.ViewModels
 
             SelectionChangedCommand = new RelayCommand(_ => UpdateSelectedInfo(SelectedFiles));
 
-            TrackingHandler.StartTrackingAsync();
+            TrackingHandler.StartTracking();
 
             SortCollectionView(TrackedFilesSortingBy.LastAdded, ListSortDirection.Descending);
         }

@@ -14,9 +14,9 @@ namespace PSTimeTracker.Configuration
         public bool CheckForUpdates { get => checkForUpdates; set { checkForUpdates = value; OnConfigPropertyChanged(); } }
         private bool checkForUpdates;
 
-        public bool IgnoreActiveWindow { get => ignoreActiveWindow; set { ignoreActiveWindow = value; OnConfigPropertyChanged(); } }
+        public bool KeepTrackingWhenWindowInactive { get => ignoreActiveWindow; set { ignoreActiveWindow = value; OnConfigPropertyChanged(); } }
         private bool ignoreActiveWindow;
-        public bool IgnoreAFKTimer { get => ignoreAFKTimer; set { ignoreAFKTimer = value; OnConfigPropertyChanged(); } }
+        public bool IgnoreAFK { get => ignoreAFKTimer; set { ignoreAFKTimer = value; OnConfigPropertyChanged(); } }
         private bool ignoreAFKTimer;
 
         public bool IgnoreFileExtension { get => ignoreFileExtension; set { ignoreFileExtension = value; OnConfigPropertyChanged(); } }
@@ -25,7 +25,7 @@ namespace PSTimeTracker.Configuration
         public int MaxAFKTime { get => maxAFKTime; set { maxAFKTime = value; OnConfigPropertyChanged(); } }
         private int maxAFKTime;
 
-        public int PsActiveWindowTimeout { get => psActiveWindowTimeout; set { psActiveWindowTimeout = value; OnConfigPropertyChanged(); } }
+        public int PsInactiveWindowTimeout { get => psActiveWindowTimeout; set { psActiveWindowTimeout = value; OnConfigPropertyChanged(); } }
         private int psActiveWindowTimeout;
 
         private static string _cfgFileName;
@@ -50,11 +50,11 @@ namespace PSTimeTracker.Configuration
                 using (JsonDocument jdoc = JsonDocument.Parse(file))
                 {
                     config.checkForUpdates = GetPropertyByName(jdoc, nameof(CheckForUpdates))?.GetBoolean() ?? config.checkForUpdates;
-                    config.ignoreAFKTimer = GetPropertyByName(jdoc, nameof(IgnoreAFKTimer))?.GetBoolean() ?? config.ignoreAFKTimer;
-                    config.ignoreActiveWindow = GetPropertyByName(jdoc, nameof(IgnoreActiveWindow))?.GetBoolean() ?? config.ignoreActiveWindow;
+                    config.ignoreAFKTimer = GetPropertyByName(jdoc, nameof(IgnoreAFK))?.GetBoolean() ?? config.ignoreAFKTimer;
+                    config.ignoreActiveWindow = GetPropertyByName(jdoc, nameof(KeepTrackingWhenWindowInactive))?.GetBoolean() ?? config.ignoreActiveWindow;
                     config.ignoreFileExtension = GetPropertyByName(jdoc, nameof(IgnoreFileExtension))?.GetBoolean() ?? config.IgnoreFileExtension;
                     config.maxAFKTime = GetPropertyByName(jdoc, nameof(MaxAFKTime))?.GetInt32() ?? config.maxAFKTime;
-                    config.psActiveWindowTimeout = GetPropertyByName(jdoc, nameof(PsActiveWindowTimeout))?.GetInt32() ?? config.psActiveWindowTimeout;
+                    config.psActiveWindowTimeout = GetPropertyByName(jdoc, nameof(PsInactiveWindowTimeout))?.GetInt32() ?? config.psActiveWindowTimeout;
                 }
 
                 return config;
