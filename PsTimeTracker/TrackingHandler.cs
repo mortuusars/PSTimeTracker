@@ -122,10 +122,6 @@ namespace PSTimeTracker
                 _lastKnownFile.Deactivate();
 
             UpdateSummary();
-
-            //Console.WriteLine(TrackingStatus);
-            //Console.ReadLine();
-            //Debug.WriteLine(TrackingStatus);
         }
 
         public void RemoveFiles(IEnumerable<TrackedFile> filesToRemove)

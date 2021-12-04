@@ -1,4 +1,5 @@
-﻿using PSTimeTracker.Configuration;
+﻿using AsyncAwaitBestPractices;
+using PSTimeTracker.Configuration;
 using PSTimeTracker.Services;
 using PSTimeTracker.Update;
 using System;
@@ -25,11 +26,6 @@ namespace PSTimeTracker
 
         private ITrackingHandler? _trackingHandler;
         private ViewManager? _viewManager;
-
-        public App()
-        {
-            InitializeComponent();
-        }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
